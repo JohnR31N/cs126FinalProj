@@ -1,0 +1,11 @@
+{
+  "src\\cli\\main.py": "a8667a6747b6d243d4688f52327341f7ec69322c725808dfa7d123a96c65b83a",
+  "src\\data\\mnist.py": "2ae79592b9068028cbe5a828369fdeb2a26145c1cc9bfaf236cda6a25c5473ea",
+  "src\\eval\\metrics.py": "3c1e843fbe1aef7cd475cc9b5626750c5dc4b4cfd72e1fefb32fb78917467aa2",
+  "src\\eval\\reporting.py": "a3bdf80f329b3631dc04ec83c94b22a7ab051a57d12b30ec60212d77847964d0",
+  "src\\method\\cae.py": "187b5d44af6e78f7f07a435cef76fadd2572d38034e712fe94811c29efe8f30b",
+  "src\\method\\idec.py": "c77d2bcb270af2ca62673a132e23c9c735b4400c92b2553997f41e2d18ce0bda",
+  "src\\method\\svdd.py": "a6f8381ae3e58e8bd5bac8433e43c4f8b7eb9e5d815d6337fe5778e60f6ac1e0",
+  "src\\method\\svdd_network.py": "d9b7b3ca6559da8cfd78b5adc5ddc21a1414ed9d00b327a8d34d1b0ea7cc204b",
+  "src\\utils\\common.py": "c2a3acc2c0997115d36a77e27be9ca40ef786273f0a30ce88c9b95927bc4b717"
+}

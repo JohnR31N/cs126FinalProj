@@ -1,0 +1,62 @@
+Written before any experiment results were observed on 2026-11-15.
+
+Purpose: choose one final-project anchor by researching all five options and
+running three core reproductions, not finish the final class submission.
+
+Seed set: 0, 1, 2. MNIST data split fixed by seed 126. CAE and IDEC use
+12,000 randomly sampled original training images; validation uses a disjoint
+3,000 training images. The original 10,000 test images are held out.
+No feature selector or cluster learner receives ground-truth labels.
+Clustering labels are used only for reporting. CAE ExtraTrees classification
+is a downstream supervised evaluation after unsupervised feature selection.
+Deep SVDD uses all normal-class original training examples for classes 0,3,8
+and all 10,000 original test examples, following the upstream class convention.
+
+CAE core reproduction: linear decoder, 50 selectors, independent Gumbel noise
+per selector per minibatch, exponential temperature 10 -> 0.01, Adam .001,
+800 epochs. Refit ordinary least squares after hard feature selection as in
+paper section 4.2. Report MSE and 50-tree ExtraTrees accuracy, selected unique
+count, mean maximum probability, runtime, and all three seeds. Compare random
+50 and top-variance 50 with the same OLS and classification evaluation.
+Scope difference: subset and split differ from the paper's 5,400/600 setup,
+fixed budget instead of training until confidence > .99, PyTorch port.
+
+CAE exploratory hypothesis: penalizing overlap of selector probabilities
+will increase the number of unique hard selections. It may or may not improve
+OLS reconstruction, because highly correlated features can be interchangeable.
+Modification: +0.1 * sum_{i!=j} dot(p_i,p_j)/K, p_i=softmax(logits_i).
+Matched seeds, initialization, batch order and budgets. Weight fixed before
+results; no test-based tuning. This is a course ablation, not a novelty claim:
+Nilsson et al. ICML 2024 already study duplicates and a different regularizer.
+Evidence for practical benefit would require lower paired test MSE, not only
+more unique selectors. Three seeds are exploratory and not definitive inference.
+
+IDEC core reproduction: paper encoder 784-500-500-2000-10 and mirrored decoder;
+ReLU hidden layers, linear embedding/output; global Student-t assignments,
+frequency-corrected squared target detached and refreshed every 140 steps;
+MSE + .1 KL, batch 256, Adam .001, max 4,000 steps, label-delta stopping .001.
+Pretrain a plain autoencoder for 100 epochs; this deliberately differs from
+the paper's greedy denoising pretraining and full 70,000-point transduction.
+Use upstream MNIST intensity scaling uint8/50 for IDEC (CAE uses uint8/255).
+Compare identical pretrained AE+kmeans, IDEC and remove-reconstruction ablation.
+The last is a controlled DEC-objective ablation, not the published DEC recipe.
+Report train ACC/NMI/ARI, separate held-out descriptive clustering metrics,
+reconstruction MSE, convergence and runtime. No selection using test labels.
+
+Deep SVDD: upstream MIT-licensed LeNet and autoencoder architectures,
+GCN L1 plus upstream train-derived per-class min/max, fixed nonzero center,
+no bias, non-affine batch normalization. Upstream README MNIST schedule:
+150 AE epochs +150 one-class epochs, lr .0001, decay at50, batch200,
+AE weight_decay .0005, SVDD weight_decay .0000005. Upstream PyTorch CNN uses
+default leaky-ReLU slope .01 (paper describes .1). Report both AE and SVDD
+AUROC for classes 0,3,8, each with3 seeds. This reproduces a subset of upstream
+conditions, not all10 classes or paper's 10 seeds. Modern scheduler after
+optimizer and tensor data path replace legacy loader/API calls.
+
+Implementation review note (before any IDEC training): corrected the shared
+loader's [0,1] tensor to upstream IDEC uint8/50 scaling. Each IDEC run records
+the effective implementation hashes. No results were used for this correction.
+
+Research selection criteria: clear testable limitation, interpretable controls,
+stable baseline, affordable multi-seed and multi-condition sweeps, honest
+attribution. Scores across different tasks must not be directly ranked.

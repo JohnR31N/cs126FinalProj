@@ -1,0 +1,14 @@
+Follow-up decided after the 800-epoch CAE pilot, before any 1600-epoch runs.
+Decision basis: all three CAE baselines and all three penalized CAEs failed
+the paper's mean-max probability > .99 convergence criterion. The baseline
+already had50 unique final features; a collision penalty was unnecessary for
+that endpoint. The observed negative reconstruction result could also reflect
+unequal convergence progress under an equal epoch budget.
+
+Question: does the direction of the penalty effect persist when both methods
+receive double the same budget? Train from scratch for1600 epochs; all other
+configuration, seed set, data splits and evaluation procedures unchanged.
+This is a declared exploratory follow-up, not the original pre-run hypothesis,
+not tuning on test results, and not selection of the best final checkpoint.
+Report both800 and1600 budgets with no replacement of the original results.
+No claim of universal harm or novel regularization method is permitted.

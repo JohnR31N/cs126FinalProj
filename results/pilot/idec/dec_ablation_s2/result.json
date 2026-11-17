@@ -1,0 +1,39 @@
+{
+  "method": "dec_ablation",
+  "seed": 2,
+  "dataset": "MNIST",
+  "train_n": 12000,
+  "config": {
+    "dims": [
+      784,
+      500,
+      500,
+      2000,
+      10
+    ],
+    "pretrain_epochs": 100,
+    "max_steps": 4000,
+    "batch_size": 256,
+    "lr": 0.001,
+    "gamma": 0.1,
+    "update_interval": 140,
+    "tol": 0.001
+  },
+  "train_seconds": 2.4726769000990316,
+  "steps": 1121,
+  "converged": true,
+  "reconstruction_mse": 1.6415786743164062,
+  "initial": {
+    "acc": 0.7329166666666667,
+    "nmi": 0.646493605854703,
+    "ari": 0.5507905361102464
+  },
+  "heldout": {
+    "acc": 0.7729,
+    "nmi": 0.693137584360416,
+    "ari": 0.6365527529818774
+  },
+  "acc": 0.76825,
+  "nmi": 0.6754762863804852,
+  "ari": 0.6232863874902181
+}

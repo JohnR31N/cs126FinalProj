@@ -1,0 +1,63 @@
+[
+  {
+    "name": "idec",
+    "url": "https://www.ijcai.org/proceedings/2017/0243.pdf",
+    "sha256": "cfd62cf43f19452165c323ad0bc39e657c4511b4e819389bb6090f7cadb8c2ba",
+    "pages": 7
+  },
+  {
+    "name": "vade",
+    "url": "https://www.ijcai.org/proceedings/2017/0273.pdf",
+    "sha256": "9271ccbdf49b18eda099d2cc84c44451ffd7e73879e0eebf6f80ea5ed0f1d070",
+    "pages": 8
+  },
+  {
+    "name": "pvc",
+    "url": "https://www.lamda.nju.edu.cn/publication/aaai14pvc.pdf",
+    "sha256": "e35b4bb838178a2336920c91faa9807646538c052905b0312781979e17491b57",
+    "pages": 7
+  },
+  {
+    "name": "cae",
+    "url": "https://proceedings.mlr.press/v97/balin19a/balin19a.pdf",
+    "sha256": "805ab7f80e9abbfdb35fd47b649c9df177055f2df88f5ef7c36c18ace2385570",
+    "pages": 10
+  },
+  {
+    "name": "svdd",
+    "url": "https://proceedings.mlr.press/v80/ruff18a/ruff18a.pdf",
+    "sha256": "077d0123efdb9b76c82a5b8522c2d2cc449302e6d764c80c8bcf7e5e3717c7d4",
+    "pages": 10
+  },
+  {
+    "name": "ip_cae",
+    "url": "https://raw.githubusercontent.com/mlresearch/v235/main/assets/nilsson24b/nilsson24b.pdf",
+    "sha256": "b63b93a569c21fb65764dc405289b1c87f907b3d6594f9dd462d25549310f0b7",
+    "pages": 16
+  },
+  {
+    "name": "Concrete-Autoencoders",
+    "remote": "https://github.com/mfbalin/Concrete-Autoencoders.git",
+    "commit": "cc9ba622ac30f4c21f96cdbf2f450d591817e08b"
+  },
+  {
+    "name": "Deep-SVDD-PyTorch",
+    "remote": "https://github.com/lukasruff/Deep-SVDD-PyTorch.git",
+    "commit": "1901612d595e23675fb75c4ebb563dd0ffebc21e"
+  },
+  {
+    "name": "IDEC",
+    "remote": "https://github.com/XifengGuo/IDEC.git",
+    "commit": "4a661c211f082022249758ab3312f7db21e2aa99"
+  },
+  {
+    "name": "VaDE",
+    "remote": "https://github.com/slim1017/VaDE.git",
+    "commit": "eca52b4b57e32a68f578de7a54eda5d39907b0fe"
+  },
+  {
+    "name": "cae_supp",
+    "url": "https://proceedings.mlr.press/v97/balin19a/balin19a-supp.pdf",
+    "sha256": "54ed7c47ba425e62c4e1c6fe435f7f083cd410edab14bc57d64e8c049e8620ce"
+  }
+]

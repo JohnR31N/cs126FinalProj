@@ -1,0 +1,650 @@
+[
+  {
+    "epoch": 1,
+    "train_stochastic_mse": 0.08422168344259262,
+    "val_joint_hard_mse": 0.13593250513076782,
+    "mean_max_probability": 0.0015166457742452621,
+    "unique_features": 46,
+    "temperature": 9.956919592956844
+  },
+  {
+    "epoch": 20,
+    "train_stochastic_mse": 0.06223749741911888,
+    "val_joint_hard_mse": 0.19908973574638367,
+    "mean_max_probability": 0.002440161071717739,
+    "unique_features": 42,
+    "temperature": 9.172759353897796
+  },
+  {
+    "epoch": 40,
+    "train_stochastic_mse": 0.06075238063931465,
+    "val_joint_hard_mse": 0.20377205312252045,
+    "mean_max_probability": 0.006598716136068106,
+    "unique_features": 44,
+    "temperature": 8.413951416451951
+  },
+  {
+    "epoch": 60,
+    "train_stochastic_mse": 0.05344264954328537,
+    "val_joint_hard_mse": 0.7765156030654907,
+    "mean_max_probability": 0.013965489342808723,
+    "unique_features": 41,
+    "temperature": 7.717915155850124
+  },
+  {
+    "epoch": 80,
+    "train_stochastic_mse": 0.046226195991039276,
+    "val_joint_hard_mse": 1.4176433086395264,
+    "mean_max_probability": 0.018785573542118073,
+    "unique_features": 44,
+    "temperature": 7.079457843841379
+  },
+  {
+    "epoch": 100,
+    "train_stochastic_mse": 0.04167378693819046,
+    "val_joint_hard_mse": 1.3769947290420532,
+    "mean_max_probability": 0.02585875429213047,
+    "unique_features": 44,
+    "temperature": 6.493816315762113
+  },
+  {
+    "epoch": 120,
+    "train_stochastic_mse": 0.038114894181489944,
+    "val_joint_hard_mse": 1.2570242881774902,
+    "mean_max_probability": 0.038981784135103226,
+    "unique_features": 44,
+    "temperature": 5.956621435290105
+  },
+  {
+    "epoch": 140,
+    "train_stochastic_mse": 0.03447818011045456,
+    "val_joint_hard_mse": 1.2445734739303589,
+    "mean_max_probability": 0.057712286710739136,
+    "unique_features": 43,
+    "temperature": 5.463865498818542
+  },
+  {
+    "epoch": 160,
+    "train_stochastic_mse": 0.031022461131215096,
+    "val_joint_hard_mse": 1.174811601638794,
+    "mean_max_probability": 0.07921900600194931,
+    "unique_features": 48,
+    "temperature": 5.011872336272722
+  },
+  {
+    "epoch": 180,
+    "train_stochastic_mse": 0.027868006378412247,
+    "val_joint_hard_mse": 1.099829077720642,
+    "mean_max_probability": 0.10729943215847015,
+    "unique_features": 48,
+    "temperature": 4.597269885308722
+  },
+  {
+    "epoch": 200,
+    "train_stochastic_mse": 0.02528930827975273,
+    "val_joint_hard_mse": 1.0495365858078003,
+    "mean_max_probability": 0.13399715721607208,
+    "unique_features": 50,
+    "temperature": 4.216965034285822
+  },
+  {
+    "epoch": 220,
+    "train_stochastic_mse": 0.023350516334176064,
+    "val_joint_hard_mse": 0.9749832153320312,
+    "mean_max_probability": 0.15246833860874176,
+    "unique_features": 50,
+    "temperature": 3.8681205463305215
+  },
+  {
+    "epoch": 240,
+    "train_stochastic_mse": 0.021962327882647514,
+    "val_joint_hard_mse": 0.8630613088607788,
+    "mean_max_probability": 0.1606079638004303,
+    "unique_features": 48,
+    "temperature": 3.5481338923357546
+  },
+  {
+    "epoch": 260,
+    "train_stochastic_mse": 0.021033549681305885,
+    "val_joint_hard_mse": 0.7946195602416992,
+    "mean_max_probability": 0.16120600700378418,
+    "unique_features": 48,
+    "temperature": 3.2546178349804586
+  },
+  {
+    "epoch": 280,
+    "train_stochastic_mse": 0.02092280238866806,
+    "val_joint_hard_mse": 0.7339482307434082,
+    "mean_max_probability": 0.15793050825595856,
+    "unique_features": 48,
+    "temperature": 2.98538261891796
+  },
+  {
+    "epoch": 300,
+    "train_stochastic_mse": 0.020898159593343735,
+    "val_joint_hard_mse": 0.6677543520927429,
+    "mean_max_probability": 0.15250158309936523,
+    "unique_features": 48,
+    "temperature": 2.7384196342643614
+  },
+  {
+    "epoch": 320,
+    "train_stochastic_mse": 0.021625444293022156,
+    "val_joint_hard_mse": 0.5632136464118958,
+    "mean_max_probability": 0.14570559561252594,
+    "unique_features": 49,
+    "temperature": 2.51188643150958
+  },
+  {
+    "epoch": 340,
+    "train_stochastic_mse": 0.022282181307673454,
+    "val_joint_hard_mse": 0.47822174429893494,
+    "mean_max_probability": 0.1390073150396347,
+    "unique_features": 48,
+    "temperature": 2.3040929760558457
+  },
+  {
+    "epoch": 360,
+    "train_stochastic_mse": 0.023241762071847916,
+    "val_joint_hard_mse": 0.393991619348526,
+    "mean_max_probability": 0.13436473906040192,
+    "unique_features": 49,
+    "temperature": 2.113489039836647
+  },
+  {
+    "epoch": 380,
+    "train_stochastic_mse": 0.025426693260669708,
+    "val_joint_hard_mse": 0.31438785791397095,
+    "mean_max_probability": 0.13022705912590027,
+    "unique_features": 50,
+    "temperature": 1.9386526359522074
+  },
+  {
+    "epoch": 400,
+    "train_stochastic_mse": 0.025224924087524414,
+    "val_joint_hard_mse": 0.23918981850147247,
+    "mean_max_probability": 0.12971825897693634,
+    "unique_features": 50,
+    "temperature": 1.778279410038923
+  },
+  {
+    "epoch": 420,
+    "train_stochastic_mse": 0.02687121368944645,
+    "val_joint_hard_mse": 0.1775873750448227,
+    "mean_max_probability": 0.13103096187114716,
+    "unique_features": 50,
+    "temperature": 1.6311729092278382
+  },
+  {
+    "epoch": 440,
+    "train_stochastic_mse": 0.027667095884680748,
+    "val_joint_hard_mse": 0.12489330768585205,
+    "mean_max_probability": 0.13599467277526855,
+    "unique_features": 50,
+    "temperature": 1.4962356560944332
+  },
+  {
+    "epoch": 460,
+    "train_stochastic_mse": 0.028273586183786392,
+    "val_joint_hard_mse": 0.08803073316812515,
+    "mean_max_probability": 0.14692115783691406,
+    "unique_features": 49,
+    "temperature": 1.3724609610075622
+  },
+  {
+    "epoch": 480,
+    "train_stochastic_mse": 0.028265392407774925,
+    "val_joint_hard_mse": 0.06467976421117783,
+    "mean_max_probability": 0.16759933531284332,
+    "unique_features": 49,
+    "temperature": 1.2589254117941673
+  },
+  {
+    "epoch": 500,
+    "train_stochastic_mse": 0.028191009536385536,
+    "val_joint_hard_mse": 0.048600006848573685,
+    "mean_max_probability": 0.19952628016471863,
+    "unique_features": 50,
+    "temperature": 1.1547819846894583
+  },
+  {
+    "epoch": 520,
+    "train_stochastic_mse": 0.027066316455602646,
+    "val_joint_hard_mse": 0.038417741656303406,
+    "mean_max_probability": 0.2451433390378952,
+    "unique_features": 50,
+    "temperature": 1.0592537251772889
+  },
+  {
+    "epoch": 540,
+    "train_stochastic_mse": 0.026933468878269196,
+    "val_joint_hard_mse": 0.03130173683166504,
+    "mean_max_probability": 0.3021864891052246,
+    "unique_features": 50,
+    "temperature": 0.971627951577106
+  },
+  {
+    "epoch": 560,
+    "train_stochastic_mse": 0.025598200038075447,
+    "val_joint_hard_mse": 0.02692934311926365,
+    "mean_max_probability": 0.36784830689430237,
+    "unique_features": 50,
+    "temperature": 0.8912509381337457
+  },
+  {
+    "epoch": 580,
+    "train_stochastic_mse": 0.02457977831363678,
+    "val_joint_hard_mse": 0.024396540597081184,
+    "mean_max_probability": 0.4383319318294525,
+    "unique_features": 50,
+    "temperature": 0.81752303794365
+  },
+  {
+    "epoch": 600,
+    "train_stochastic_mse": 0.023650316521525383,
+    "val_joint_hard_mse": 0.022668244317173958,
+    "mean_max_probability": 0.5111753940582275,
+    "unique_features": 50,
+    "temperature": 0.7498942093324558
+  },
+  {
+    "epoch": 620,
+    "train_stochastic_mse": 0.022802038118243217,
+    "val_joint_hard_mse": 0.021266300231218338,
+    "mean_max_probability": 0.585806131362915,
+    "unique_features": 50,
+    "temperature": 0.6878599123088075
+  },
+  {
+    "epoch": 640,
+    "train_stochastic_mse": 0.022200897336006165,
+    "val_joint_hard_mse": 0.020502319559454918,
+    "mean_max_probability": 0.6518078446388245,
+    "unique_features": 50,
+    "temperature": 0.6309573444801931
+  },
+  {
+    "epoch": 660,
+    "train_stochastic_mse": 0.0211712047457695,
+    "val_joint_hard_mse": 0.019905755296349525,
+    "mean_max_probability": 0.7083975076675415,
+    "unique_features": 50,
+    "temperature": 0.5787619883491207
+  },
+  {
+    "epoch": 680,
+    "train_stochastic_mse": 0.02062886208295822,
+    "val_joint_hard_mse": 0.01945275068283081,
+    "mean_max_probability": 0.7553583383560181,
+    "unique_features": 50,
+    "temperature": 0.5308844442309884
+  },
+  {
+    "epoch": 700,
+    "train_stochastic_mse": 0.02044769562780857,
+    "val_joint_hard_mse": 0.01929607056081295,
+    "mean_max_probability": 0.794937252998352,
+    "unique_features": 50,
+    "temperature": 0.4869675251658631
+  },
+  {
+    "epoch": 720,
+    "train_stochastic_mse": 0.020202379673719406,
+    "val_joint_hard_mse": 0.01911919191479683,
+    "mean_max_probability": 0.8274090886116028,
+    "unique_features": 50,
+    "temperature": 0.4466835921509631
+  },
+  {
+    "epoch": 740,
+    "train_stochastic_mse": 0.020280055701732635,
+    "val_joint_hard_mse": 0.01900385692715645,
+    "mean_max_probability": 0.8539971709251404,
+    "unique_features": 50,
+    "temperature": 0.40973210981354147
+  },
+  {
+    "epoch": 760,
+    "train_stochastic_mse": 0.0199359692633152,
+    "val_joint_hard_mse": 0.01896335929632187,
+    "mean_max_probability": 0.8740317821502686,
+    "unique_features": 50,
+    "temperature": 0.37583740428844425
+  },
+  {
+    "epoch": 780,
+    "train_stochastic_mse": 0.019703224301338196,
+    "val_joint_hard_mse": 0.01891554333269596,
+    "mean_max_probability": 0.8890067338943481,
+    "unique_features": 50,
+    "temperature": 0.34474660657314943
+  },
+  {
+    "epoch": 800,
+    "train_stochastic_mse": 0.01947636529803276,
+    "val_joint_hard_mse": 0.018805822357535362,
+    "mean_max_probability": 0.9021749496459961,
+    "unique_features": 50,
+    "temperature": 0.3162277660168379
+  },
+  {
+    "epoch": 820,
+    "train_stochastic_mse": 0.019494079053401947,
+    "val_joint_hard_mse": 0.018774833530187607,
+    "mean_max_probability": 0.9162235260009766,
+    "unique_features": 50,
+    "temperature": 0.29006811986931547
+  },
+  {
+    "epoch": 840,
+    "train_stochastic_mse": 0.01933850720524788,
+    "val_joint_hard_mse": 0.018714886158704758,
+    "mean_max_probability": 0.9278689622879028,
+    "unique_features": 50,
+    "temperature": 0.2660725059798809
+  },
+  {
+    "epoch": 860,
+    "train_stochastic_mse": 0.01947280578315258,
+    "val_joint_hard_mse": 0.01869596168398857,
+    "mean_max_probability": 0.9375844597816467,
+    "unique_features": 50,
+    "temperature": 0.2440619068041981
+  },
+  {
+    "epoch": 880,
+    "train_stochastic_mse": 0.01928221620619297,
+    "val_joint_hard_mse": 0.018643919378519058,
+    "mean_max_probability": 0.9464022517204285,
+    "unique_features": 50,
+    "temperature": 0.2238721138568339
+  },
+  {
+    "epoch": 900,
+    "train_stochastic_mse": 0.01928885281085968,
+    "val_joint_hard_mse": 0.01863507740199566,
+    "mean_max_probability": 0.9539466500282288,
+    "unique_features": 50,
+    "temperature": 0.20535250264571459
+  },
+  {
+    "epoch": 920,
+    "train_stochastic_mse": 0.019041946157813072,
+    "val_joint_hard_mse": 0.01860480196774006,
+    "mean_max_probability": 0.9608016610145569,
+    "unique_features": 50,
+    "temperature": 0.18836490894898011
+  },
+  {
+    "epoch": 940,
+    "train_stochastic_mse": 0.01912754215300083,
+    "val_joint_hard_mse": 0.01860881969332695,
+    "mean_max_probability": 0.9659124612808228,
+    "unique_features": 50,
+    "temperature": 0.17278259805078633
+  },
+  {
+    "epoch": 960,
+    "train_stochastic_mse": 0.018997082486748695,
+    "val_joint_hard_mse": 0.018609264865517616,
+    "mean_max_probability": 0.9702839255332947,
+    "unique_features": 50,
+    "temperature": 0.15848931924611137
+  },
+  {
+    "epoch": 980,
+    "train_stochastic_mse": 0.0189454834908247,
+    "val_joint_hard_mse": 0.01859220862388611,
+    "mean_max_probability": 0.9735223650932312,
+    "unique_features": 50,
+    "temperature": 0.14537843856076615
+  },
+  {
+    "epoch": 1000,
+    "train_stochastic_mse": 0.018958033993840218,
+    "val_joint_hard_mse": 0.018603606149554253,
+    "mean_max_probability": 0.9760195016860962,
+    "unique_features": 50,
+    "temperature": 0.1333521432163324
+  },
+  {
+    "epoch": 1020,
+    "train_stochastic_mse": 0.018914945423603058,
+    "val_joint_hard_mse": 0.018595097586512566,
+    "mean_max_probability": 0.9778744578361511,
+    "unique_features": 50,
+    "temperature": 0.1223207119049932
+  },
+  {
+    "epoch": 1040,
+    "train_stochastic_mse": 0.018855532631278038,
+    "val_joint_hard_mse": 0.018595989793539047,
+    "mean_max_probability": 0.9799609184265137,
+    "unique_features": 50,
+    "temperature": 0.11220184543019632
+  },
+  {
+    "epoch": 1060,
+    "train_stochastic_mse": 0.019007384777069092,
+    "val_joint_hard_mse": 0.018599390983581543,
+    "mean_max_probability": 0.9815739393234253,
+    "unique_features": 50,
+    "temperature": 0.10292005271944282
+  },
+  {
+    "epoch": 1080,
+    "train_stochastic_mse": 0.018939439207315445,
+    "val_joint_hard_mse": 0.01859107054769993,
+    "mean_max_probability": 0.9828050136566162,
+    "unique_features": 50,
+    "temperature": 0.0944060876285923
+  },
+  {
+    "epoch": 1100,
+    "train_stochastic_mse": 0.018802585080266,
+    "val_joint_hard_mse": 0.018576089292764664,
+    "mean_max_probability": 0.9838576912879944,
+    "unique_features": 50,
+    "temperature": 0.08659643233600654
+  },
+  {
+    "epoch": 1120,
+    "train_stochastic_mse": 0.018732450902462006,
+    "val_joint_hard_mse": 0.018581021577119827,
+    "mean_max_probability": 0.9848347306251526,
+    "unique_features": 50,
+    "temperature": 0.07943282347242817
+  },
+  {
+    "epoch": 1140,
+    "train_stochastic_mse": 0.018871070817112923,
+    "val_joint_hard_mse": 0.018576178699731827,
+    "mean_max_probability": 0.985908031463623,
+    "unique_features": 50,
+    "temperature": 0.07286181745132277
+  },
+  {
+    "epoch": 1160,
+    "train_stochastic_mse": 0.018824661150574684,
+    "val_joint_hard_mse": 0.018589256331324577,
+    "mean_max_probability": 0.9865541458129883,
+    "unique_features": 50,
+    "temperature": 0.06683439175686147
+  },
+  {
+    "epoch": 1180,
+    "train_stochastic_mse": 0.018797600641846657,
+    "val_joint_hard_mse": 0.018580151721835136,
+    "mean_max_probability": 0.9872205853462219,
+    "unique_features": 50,
+    "temperature": 0.06130557921498205
+  },
+  {
+    "epoch": 1200,
+    "train_stochastic_mse": 0.018721871078014374,
+    "val_joint_hard_mse": 0.01858726143836975,
+    "mean_max_probability": 0.9877601265907288,
+    "unique_features": 50,
+    "temperature": 0.05623413251903491
+  },
+  {
+    "epoch": 1220,
+    "train_stochastic_mse": 0.018800556659698486,
+    "val_joint_hard_mse": 0.01858416572213173,
+    "mean_max_probability": 0.9881856441497803,
+    "unique_features": 50,
+    "temperature": 0.05158221650723058
+  },
+  {
+    "epoch": 1240,
+    "train_stochastic_mse": 0.01882239244878292,
+    "val_joint_hard_mse": 0.01858358643949032,
+    "mean_max_probability": 0.9886199831962585,
+    "unique_features": 50,
+    "temperature": 0.047315125896148044
+  },
+  {
+    "epoch": 1260,
+    "train_stochastic_mse": 0.018686378374695778,
+    "val_joint_hard_mse": 0.018574755638837814,
+    "mean_max_probability": 0.9892898201942444,
+    "unique_features": 50,
+    "temperature": 0.04340102636447439
+  },
+  {
+    "epoch": 1280,
+    "train_stochastic_mse": 0.018703974783420563,
+    "val_joint_hard_mse": 0.018579017370939255,
+    "mean_max_probability": 0.9897560477256775,
+    "unique_features": 50,
+    "temperature": 0.03981071705534972
+  },
+  {
+    "epoch": 1300,
+    "train_stochastic_mse": 0.01872412860393524,
+    "val_joint_hard_mse": 0.018586792051792145,
+    "mean_max_probability": 0.9902161955833435,
+    "unique_features": 50,
+    "temperature": 0.03651741272548377
+  },
+  {
+    "epoch": 1320,
+    "train_stochastic_mse": 0.018761761486530304,
+    "val_joint_hard_mse": 0.018606727942824364,
+    "mean_max_probability": 0.9905729293823242,
+    "unique_features": 50,
+    "temperature": 0.03349654391578278
+  },
+  {
+    "epoch": 1340,
+    "train_stochastic_mse": 0.01866418868303299,
+    "val_joint_hard_mse": 0.01857561431825161,
+    "mean_max_probability": 0.9909496903419495,
+    "unique_features": 50,
+    "temperature": 0.030725573652674462
+  },
+  {
+    "epoch": 1360,
+    "train_stochastic_mse": 0.018759187310934067,
+    "val_joint_hard_mse": 0.018578194081783295,
+    "mean_max_probability": 0.9912033081054688,
+    "unique_features": 50,
+    "temperature": 0.028183829312644543
+  },
+  {
+    "epoch": 1380,
+    "train_stochastic_mse": 0.018649546429514885,
+    "val_joint_hard_mse": 0.018567219376564026,
+    "mean_max_probability": 0.9914448261260986,
+    "unique_features": 50,
+    "temperature": 0.025852348395621897
+  },
+  {
+    "epoch": 1400,
+    "train_stochastic_mse": 0.018770797178149223,
+    "val_joint_hard_mse": 0.018570318818092346,
+    "mean_max_probability": 0.991635262966156,
+    "unique_features": 50,
+    "temperature": 0.023713737056616554
+  },
+  {
+    "epoch": 1420,
+    "train_stochastic_mse": 0.01864718645811081,
+    "val_joint_hard_mse": 0.01858910173177719,
+    "mean_max_probability": 0.9917882084846497,
+    "unique_features": 50,
+    "temperature": 0.021752040340195233
+  },
+  {
+    "epoch": 1440,
+    "train_stochastic_mse": 0.018890922889113426,
+    "val_joint_hard_mse": 0.01858527958393097,
+    "mean_max_probability": 0.9919968843460083,
+    "unique_features": 50,
+    "temperature": 0.019952623149688792
+  },
+  {
+    "epoch": 1460,
+    "train_stochastic_mse": 0.01881091669201851,
+    "val_joint_hard_mse": 0.01858425885438919,
+    "mean_max_probability": 0.9921633005142212,
+    "unique_features": 50,
+    "temperature": 0.018302061063110563
+  },
+  {
+    "epoch": 1480,
+    "train_stochastic_mse": 0.018646614626049995,
+    "val_joint_hard_mse": 0.018571697175502777,
+    "mean_max_probability": 0.9923681616783142,
+    "unique_features": 50,
+    "temperature": 0.016788040181225598
+  },
+  {
+    "epoch": 1500,
+    "train_stochastic_mse": 0.018759576603770256,
+    "val_joint_hard_mse": 0.018607720732688904,
+    "mean_max_probability": 0.9924873113632202,
+    "unique_features": 50,
+    "temperature": 0.01539926526059492
+  },
+  {
+    "epoch": 1520,
+    "train_stochastic_mse": 0.018890846520662308,
+    "val_joint_hard_mse": 0.01857582852244377,
+    "mean_max_probability": 0.9925723671913147,
+    "unique_features": 50,
+    "temperature": 0.014125375446227549
+  },
+  {
+    "epoch": 1540,
+    "train_stochastic_mse": 0.01878768391907215,
+    "val_joint_hard_mse": 0.01857711561024189,
+    "mean_max_probability": 0.9926565289497375,
+    "unique_features": 50,
+    "temperature": 0.012956866975170192
+  },
+  {
+    "epoch": 1560,
+    "train_stochastic_mse": 0.018771003931760788,
+    "val_joint_hard_mse": 0.01858668588101864,
+    "mean_max_probability": 0.9927730560302734,
+    "unique_features": 50,
+    "temperature": 0.011885022274370185
+  },
+  {
+    "epoch": 1580,
+    "train_stochastic_mse": 0.018759556114673615,
+    "val_joint_hard_mse": 0.018582994118332863,
+    "mean_max_probability": 0.9928540587425232,
+    "unique_features": 50,
+    "temperature": 0.010901844923851274
+  },
+  {
+    "epoch": 1600,
+    "train_stochastic_mse": 0.018665561452507973,
+    "val_joint_hard_mse": 0.018569355830550194,
+    "mean_max_probability": 0.9929014444351196,
+    "unique_features": 50,
+    "temperature": 0.01
+  }
+]

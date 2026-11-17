@@ -1,0 +1,10 @@
+{
+  "seeds": [0, 1, 2],
+  "split_seed": 126,
+  "train_size": 12000,
+  "validation_size": 3000,
+  "device": "cuda",
+  "cae": {"features": 50, "epochs": 800, "batch_size": 256, "lr": 0.001, "start_temp": 10.0, "end_temp": 0.01, "collision_weights": [0.0, 0.1]},
+  "idec": {"dims": [784, 500, 500, 2000, 10], "pretrain_epochs": 100, "max_steps": 4000, "batch_size": 256, "lr": 0.001, "gamma": 0.1, "update_interval": 140, "tol": 0.001},
+  "svdd": {"normal_classes": [0, 3, 8], "ae_epochs": 150, "epochs": 150, "batch_size": 200, "lr": 0.0001, "lr_milestone": 50, "ae_weight_decay": 0.0005, "weight_decay": 0.0000005}
+}

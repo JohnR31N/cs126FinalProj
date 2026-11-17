@@ -1,0 +1,39 @@
+{
+  "method": "idec",
+  "seed": 0,
+  "dataset": "MNIST",
+  "train_n": 12000,
+  "config": {
+    "dims": [
+      784,
+      500,
+      500,
+      2000,
+      10
+    ],
+    "pretrain_epochs": 100,
+    "max_steps": 4000,
+    "batch_size": 256,
+    "lr": 0.001,
+    "gamma": 0.1,
+    "update_interval": 140,
+    "tol": 0.001
+  },
+  "train_seconds": 9.49308539996855,
+  "steps": 4000,
+  "converged": false,
+  "reconstruction_mse": 0.31457090377807617,
+  "initial": {
+    "acc": 0.7693333333333333,
+    "nmi": 0.663577902277789,
+    "ari": 0.5981092961253726
+  },
+  "heldout": {
+    "acc": 0.7686,
+    "nmi": 0.6827361256011937,
+    "ari": 0.5957941602290365
+  },
+  "acc": 0.77725,
+  "nmi": 0.6855932192928123,
+  "ari": 0.6074371899285603
+}

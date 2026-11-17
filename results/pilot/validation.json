@@ -1,0 +1,16 @@
+{
+  "records": 30,
+  "groups": 10,
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "svdd_scores_recomputed": 9,
+  "clustering_predictions_recomputed": 6,
+  "feature_selection_evaluations_recomputed": 12,
+  "ols_max_absolute_difference": 1.4528632164001465e-07,
+  "ols_rtol": 1e-05,
+  "ols_atol": 1e-08,
+  "passed": true
+}

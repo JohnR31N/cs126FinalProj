@@ -1,0 +1,25 @@
+{
+  "method": "deep_svdd",
+  "dataset": "MNIST",
+  "seed": 0,
+  "normal_class": 3,
+  "train_n": 6131,
+  "test_n": 10000,
+  "config": {
+    "normal_classes": [
+      0,
+      3,
+      8
+    ],
+    "ae_epochs": 150,
+    "epochs": 150,
+    "batch_size": 200,
+    "lr": 0.0001,
+    "lr_milestone": 50,
+    "ae_weight_decay": 0.0005,
+    "weight_decay": 5e-07
+  },
+  "train_seconds": 17.29731199995149,
+  "auc": 0.8967388407361314,
+  "ae_auc": 0.856461965440148
+}
