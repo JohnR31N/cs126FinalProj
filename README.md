@@ -1,5 +1,7 @@
 # COSI 126A Final Project: paper selection and core reproductions
 
+**Final 选题已定为 IDEC。** [独立项目、报告和演示稿](IDEC/README.md) 收录了原作者权重的 MNIST 复现，以及检验条纹干扰的配对实验。下面保留前期对五篇候选论文的调研和先导实验。
+
 本目录用于选题研究与先导复现实验。已经调研作业列出的五篇论文，并为 **Concrete Autoencoders、Deep SVDD、IDEC** 实现可运行的核心复现。它不是最终课程提交包；最终作业需要围绕一篇论文形成完整的假设、修改、实验、报告和演示。
 
 先看下面的结果图、[逐次结果](results/pilot/runs.csv) 和 [统计汇总](results/pilot/summary.json)。克隆后可在浏览器打开 `results/pilot/review.html` 查看完整交互链接。课程作业原件仅保留在本地；公开仓库通过下方原始论文链接记录选题来源。

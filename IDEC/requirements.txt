@@ -1,0 +1,9 @@
+numpy==2.5.4
+scipy==1.18.1
+scikit-learn==1.9.1
+matplotlib==3.11.2
+requests==2.34.2
+threadpoolctl==3.8.0
+pytest==9.2.0
+# Install torch separately for the desired CUDA or CPU build.
+h5py==3.16.0

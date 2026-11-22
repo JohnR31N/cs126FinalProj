@@ -1,0 +1,26 @@
+[
+  {
+    "case": "Both stable",
+    "count": 6577,
+    "index": 1,
+    "digit": 2
+  },
+  {
+    "case": "Only IDEC flips",
+    "count": 376,
+    "index": 59,
+    "digit": 5
+  },
+  {
+    "case": "Only projected flips",
+    "count": 191,
+    "index": 15,
+    "digit": 5
+  },
+  {
+    "case": "Both flip",
+    "count": 2856,
+    "index": 0,
+    "digit": 7
+  }
+]

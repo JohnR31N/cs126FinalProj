@@ -1,0 +1,23 @@
+{
+  "n": 70000,
+  "seed": 0,
+  "updates": 20000,
+  "last_change": 0.0051142857142857144,
+  "initial": {
+    "acc": 0.8185285714285714,
+    "nmi": 0.7474009809404404
+  },
+  "final": {
+    "acc": 0.8810142857142857,
+    "nmi": 0.8650153434883981
+  },
+  "seconds": 97.42841689987108,
+  "converted_weight_parity": {
+    "embedding_max_abs": 2.86102294921875e-05,
+    "reconstruction_max_abs": 1.0609626770019531e-05
+  },
+  "weight_url": "https://raw.githubusercontent.com/XifengGuo/data-and-models/d361bfe06686c0762df58624ef95a8c0fc9162be/ae_weights/mnist_ae_weights.h5",
+  "weight_sha256": "cfbe90aaf332c63ed0eeb1fbd1441d3d089249900ce0c9abf94169e25dcc8f6e",
+  "torch": "2.11.0+cu128",
+  "device": "cuda"
+}

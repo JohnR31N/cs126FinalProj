@@ -1,0 +1,11 @@
+\begin{columns}[T,onlytextwidth]
+\column{.47\textwidth}
+\key{The change helped modestly}\par\medskip
+At strong amplitude, flip rate fell from \textbf{41.72\% to 39.50\%}. All five seeds became less sensitive. Accuracy rose from 58.79\% to 59.43\%.
+\column{.47\textwidth}
+\key{Sensitivity began earlier}\par\medskip
+Before IDEC fine-tuning, AE + K-means already flipped on \textbf{42.79\%} of digits. Even the clustering-only arm flipped on 39.51\%.
+\end{columns}
+\vspace{7mm}
+A next experiment would change reconstruction during pretraining and fine-tuning separately to isolate when orientation enters the partition.
+\notefoot{One dataset, a known synthetic nuisance, five model seeds and a fixed budget. The template removes one reconstruction penalty while leaving the encoder input intact.}

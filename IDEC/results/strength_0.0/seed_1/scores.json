@@ -1,0 +1,38 @@
+{
+  "initial": {
+    "train_acc": 0.7336666666666667,
+    "digit_acc": 0.7406,
+    "digit_nmi": 0.6551857220759935,
+    "digit_ari": 0.5634686184639013,
+    "stripe_nmi": 0.0004905495837228519,
+    "flip_rate": 0.0,
+    "seconds": 7.942875700071454
+  },
+  "idec": {
+    "train_acc": 0.7316666666666667,
+    "digit_acc": 0.7284,
+    "digit_nmi": 0.6645720185670766,
+    "digit_ari": 0.5478653513867277,
+    "stripe_nmi": 0.00040769759871506906,
+    "flip_rate": 0.0,
+    "seconds": 12.96631779987365
+  },
+  "projected": {
+    "train_acc": 0.73125,
+    "digit_acc": 0.7261,
+    "digit_nmi": 0.6673238450974561,
+    "digit_ari": 0.5504236973171527,
+    "stripe_nmi": 0.0005031033849117936,
+    "flip_rate": 0.0,
+    "seconds": 15.29754800000228
+  },
+  "cluster_only": {
+    "train_acc": 0.77725,
+    "digit_acc": 0.7768,
+    "digit_nmi": 0.6997340715588098,
+    "digit_ari": 0.6465070445300645,
+    "stripe_nmi": 0.0005901175673828224,
+    "flip_rate": 0.0,
+    "seconds": 17.581746599869803
+  }
+}

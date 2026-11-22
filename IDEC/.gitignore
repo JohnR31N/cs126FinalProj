@@ -1,0 +1,8 @@
+.cache/
+.venv/
+scratch/
+__pycache__/
+*.aux
+*.log
+*.pt
+IDEC_final.zip
