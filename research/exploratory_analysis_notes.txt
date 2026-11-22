@@ -1,9 +1,0 @@
-Exploratory analysis added after observing the 800-epoch results.
-
-Pixel-set Jaccard can be low when spatially correlated pixels substitute for each other.
-As a descriptive diagnostic only, pair the 50 selected pixels between two seeds
-using a Hungarian assignment that maximizes absolute Pearson correlation.
-Compute correlations on the fixed 12,000 training images, without labels or test data.
-Report all three seed pairs and their descriptive sample SD; pairs are not independent.
-This is not a prespecified primary endpoint, significance test, or causal explanation.
-The original baseline and penalty MSE results remain unchanged.

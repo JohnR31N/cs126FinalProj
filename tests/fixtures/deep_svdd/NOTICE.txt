@@ -1,7 +1,0 @@
-Unmodified test fixtures from lukasruff/Deep-SVDD-PyTorch.
-Repository: https://github.com/lukasruff/Deep-SVDD-PyTorch
-Commit: 1901612d595e23675fb75c4ebb563dd0ffebc21e
-Files: src/base/base_net.py and src/networks/mnist_LeNet.py
-License: MIT; see LICENSE in this directory.
-
-Used only for independent forward-parity checks against the local adaptation.

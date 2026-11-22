@@ -1,25 +1,7 @@
-/.venv/
+.venv/
 __pycache__/
 .pytest_cache/
-/data/
-/tmp/
-research/upstream/
 *.pyc
-
-# Local reference material and private handoff bundle
-docs/
-research/papers/
-research/assignment_requirements.txt
-scripts/fetch_sources.py
-scripts/package_research.py
-paper_reproduction_research.zip
-package_verification.json
-delivery_verification.json
-
-# Published separately as a GitHub Release asset
-*.pt
-artifacts/
-checkpoint_manifest.json
 *.log
 .env
 .env.*
