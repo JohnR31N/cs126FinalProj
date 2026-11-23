@@ -5,6 +5,7 @@ IDEC gives an error on a decorative shape the same reconstruction cost as an equ
 - [Research report (PDF)](report/report.pdf) and [editable LaTeX](report/report.tex)
 - [Presentation slides (PDF)](slides/slides.pdf) and [editable Beamer source](slides/slides.tex)
 - [Matched DEC and IDEC protocol](dec_background/design.md), [method means](dec_background/results/summary.csv), [five paired differences](dec_background/results/paired.csv), [contrasts and variability](dec_background/results/contrasts.json) and [individual runs](dec_background/results/runs.csv)
+- [Whole-image translation addendum](dec_background/translation/design.md), [combined comparison including DEC and IDEC with translation](dec_background/translation/results/summary.csv) and [per-seed augmentation effects](dec_background/translation/results/paired.csv)
 - [Random background protocol](varied/design.md), [45-model results](varied/results/summary.csv), [paired comparisons](varied/results/paired.json) and [paired image examples](figures/varied.png)
 - [Jitter protocol](photometric/design.md), [spatial protocol](photometric/spatial_design.md), [60-model results](photometric/analysis/summary.csv) and [within-seed effects](photometric/analysis/paired.json)
 - [Geometric experiment design](background/design.md), [paired digit examples](figures/geometry.png), [four-arm results](background/results/summary.csv), [paired differences](background/results/paired.json)
@@ -23,12 +24,16 @@ Standard DEC uses an autoencoder for initialization. We fork the same pretrained
 |---|---:|---:|---:|
 | DEC | 77.63% | 70.86% | 6.77 ± 5.40 |
 | IDEC | 73.23% | 65.14% | 8.09 ± 5.01 |
+| DEC with whole-image translation | 81.36% | 77.18% | 4.17 ± 4.04 |
+| IDEC with whole-image translation | 83.88% | 77.61% | 6.27 ± 2.74 |
 | Gaussian in both stages | 70.03% | 65.59% | 4.44 ± 3.98 |
 | Gaussian in pretraining only | 74.07% | 68.80% | 5.27 ± 4.64 |
 | Gaussian in fine-tuning only | 69.27% | 62.88% | 6.39 ± 5.18 |
 | KL only from random weights | 31.00% | 28.90% | 2.10 ± 1.75 |
 
 The IDEC-minus-DEC differences in loss were +2.78, −3.88, +1.77, +5.22 and +0.71 points (mean +1.32 ± 3.35). The shared uniform autoencoder already lost 5.20 points before either method fine-tuned it. On frozen clean-trained models, adding the symbols only at test time cost 2.01 points for DEC and 8.62 for IDEC.
+
+Translation is a general augmentation control. IDEC gained 10.65 points on clean digits and 12.47 on marked digits, both positive in all five seeds. Its clean-to-marked drop shrank by 1.82 ± 3.70 points, with three reductions and two increases. Its redraw flips fell from 2.99% to 1.78% and its decoder response fell from 0.00843 to 0.00671, both lower in all five seeds. DEC gained 3.73 points clean and 6.33 marked. Among translated methods, IDEC's background drop exceeded DEC's by 2.10 ± 1.47 points in the same direction in every seed. The frozen clean-trained models lost 2.65 points for translated DEC and 7.62 for translated IDEC when symbols were first added at test time.
 
 The primary two-stage Gaussian narrowed the clean-to-marked drop by 3.65 ± 5.43 points. It gained 0.45 points on marked digits (three of five seeds) but lost 3.20 points on clean digits (all five). Redraw flips fell from 2.99% to 2.63% and decoder response from 0.00843 to 0.00529, both down in every seed. The pretraining-only variant improved marked accuracy by 3.66 ± 4.74 points (four of five) and clean accuracy by 0.84 on average. The random-start KL control collapsed to a single cluster in both domains in seed 4.
 
@@ -97,6 +102,7 @@ For Linux/macOS use `.venv/bin/python`. A CPU-only PyTorch installation works wi
 .venv/Scripts/python.exe varied_analysis.py
 .venv/Scripts/python.exe varied_figure.py --effects figures/varied_effects.png
 .venv/Scripts/python.exe dec_background_analysis.py
+.venv/Scripts/python.exe translation_analysis.py
 .venv/Scripts/python.exe dec_background_figures.py --prior figures/gaussian_prior.png --effects figures/dec_background_drops.png
 ```
 
@@ -119,6 +125,8 @@ For Linux/macOS use `.venv/bin/python`. A CPU-only PyTorch installation works wi
 .venv/Scripts/python.exe varied_figure.py --input scratch/varied --examples scratch/figures/varied.png --effects scratch/figures/varied_effects.png
 .venv/Scripts/python.exe dec_background_study.py --output scratch/dec_background
 .venv/Scripts/python.exe dec_background_analysis.py --input scratch/dec_background
+.venv/Scripts/python.exe translation_control.py --output scratch/translation_control
+.venv/Scripts/python.exe translation_analysis.py --input scratch/translation_control
 .venv/Scripts/python.exe dec_background_figures.py --input scratch/dec_background --prior scratch/figures/gaussian_prior.png --effects scratch/figures/dec_background_drops.png
 ```
 
@@ -134,7 +142,9 @@ The random-background study stores all three test-background assignments per dig
 
 The DEC comparison saves training assignments and three marked plus one clean test view for all 60 final models and 30 initializations. Each set of forks records a shared SHA-256 of its starting parameters and centers. The analyzer verifies the source digests, experiment completeness, trace steps and paired starts. In `dec_background/results`, ACC and switch rates are percentages. Degradation and method differences are percentage points with the sample SD across seeds. Decoder response is dimensionless. Clean and Gaussian controls in the new comparison were refitted alongside DEC. The preceding study's independently fitted IDEC numbers belong to its own target comparisons.
 
-**Recompile documents.** The PDFs and editable sources are included. With Tectonic installed, run the following from `IDEC/`. The current documents use tables from `dec_background/results/` and `varied/results/` and images from `figures/`.
+The translation addendum reuses the released v1.8 controls at `aede90d` and checks their per-image prediction file digests. Its 20 additional fits and 10 shared initializations use the same images, seeds, optimizer and evaluation. Both shifted domains are fitted within the new experiment. The addendum records the legal offsets separately for each training domain. `runs.csv` contains the new rows, `summary.csv` compares all final methods, and `paired.csv` and `contrasts.json` give the five individual effects and their variability.
+
+**Recompile documents.** The PDFs and editable sources are included. With Tectonic installed, run the following from `IDEC/`. The current comparison table is in `dec_background/translation/results/`, the target ablation is in `varied/results/`, and the images are in `figures/`.
 
 ```powershell
 tectonic report/report.tex
@@ -146,6 +156,7 @@ tectonic slides/slides.tex
 | File | Responsibility |
 |---|---|
 | `dec_background_study.py`, `dec_background_analysis.py`, `dec_background_figures.py` | Fork the clustering objectives, score paired degradation and draw the loss prior and seed contrasts |
+| `translation_control.py`, `translation_analysis.py` | Fit and score the whole-image translation controls for both clustering objectives and domains |
 | `varied_backgrounds.py`, `varied_study.py` | Generate matched random backgrounds and cross the reconstruction targets during pretraining and clustering |
 | `varied_analysis.py`, `varied_figure.py` | Rescore every background redraw, verify the complete experiment and visualize seed effects |
 | `photometric_study.py`, `spatial_augmentation.py` | Whole-image augmentations and Gaussian weighting, matched fitting, eligibility checks, held-out shape probe |

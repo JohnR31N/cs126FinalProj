@@ -1,0 +1,95 @@
+{
+  "design_commit": "c22ae3d",
+  "control_commit": "aede90d",
+  "config": {
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "strengths": [
+      0.0,
+      0.3,
+      0.8
+    ],
+    "methods": [
+      "idec",
+      "projected",
+      "cluster_only"
+    ],
+    "split_seed": 126,
+    "train_size": 12000,
+    "train_orientation_seed": 1701,
+    "test_orientation_seed": 1702,
+    "dims": [
+      784,
+      500,
+      500,
+      2000,
+      10
+    ],
+    "clusters": 10,
+    "pretrain_epochs": 100,
+    "batch_size": 256,
+    "lr": 0.001,
+    "gamma": 0.1,
+    "target_interval": 140,
+    "updates": 5600,
+    "kmeans_restarts": 20
+  },
+  "domains": [
+    "clean",
+    "varied"
+  ],
+  "methods": {
+    "translate_dec": "kl",
+    "translate_idec": "uniform"
+  },
+  "torch": "2.11.0+cu128",
+  "device": "cuda",
+  "hardware": "NVIDIA GeForce RTX 5080",
+  "source_sha256": {
+    "dec_background/translation/design.md": "bd707a04064b5408e5092c5005051421c717cae0decb2e0f31ec6bf9ab9d2a32",
+    "translation_control.py": "522683edb4dbcf19b3954244c6a9b2fc67f9eec8cfa2537250b33adfac402084",
+    "protocol.json": "efc4df3e8be8228f317bfe788f5fc655fb26dd9487fce2d7a147280208ce62ad",
+    "dec_background_study.py": "910f45795dea24b7c314bc610dc04c44227805abb6afed8741dfa51adf42138c",
+    "dec_background/results/manifest.json": "2d8695f8b0b77588a8ae6baea7d1f0cd7e6c0bcfe2c32694a3e7541e8388afb9",
+    "varied/results/evaluation.npz": "bd18d87fa4b826ea8c70bede4c1534d516ca3ff3c294843d9b7ea1d09c29c24a",
+    "varied_study.py": "625746a47fca4ec8a9a26e90611fdfd6fe4d9e7a468d8828ee75d234b902150c",
+    "varied_backgrounds.py": "dfc7b81555b9ab123c38d8cf8fa605704d0630680ae708da732242bef2d8a50b",
+    "spatial_augmentation.py": "9342198fce5f28f0b7c75d06caeb8b2294eb46898dc08eee8859e1ffda3544b8",
+    "geometry_study.py": "dd0c04eba9ec57d9faaf534ecefe095bb51a15d46c7b9f05b0eba6fe01d35ee1",
+    "idec_final/model.py": "f2a55129d465de0b10236f515cacfe501456c69da922fa91375b60d5019b23ec",
+    "idec_final/utils.py": "70640cb18f08c7caf065c7c51f0a55603bc948ca2bf36c528dd22f217975e05e",
+    "idec_final/data.py": "778e4306d1bae0093a652ad850ac881760a1eb7b2cc8aa532c8b98b071817b01",
+    "idec_final/experiment.py": "619effc170e96a9335ff5dec15db841bb8dfd79f78e301b9fd2b95db9e43ef0c"
+  },
+  "control_predictions_sha256": {
+    "clean_0": "31a846239e2b55a06162270e99b30918153151923498c5fe7eff88446749b1a1",
+    "varied_0": "80614af8e089e6a502031a9d9e52f5ce2bed642e4d054f2b7ffee4e298b3b1fa",
+    "clean_1": "6c59ad15fe84683ed131dcea128bc4594cbca406f8d84d77ce0cc6f79c3c3222",
+    "varied_1": "533b3002223ca86bec1b7a91a02a3ec017cc519d956db0d4beac9a6c49c47a4d",
+    "clean_2": "478f452c03861a37c9de4ec775a3ef8dff3a65ccb03e823614cd87d1e080d26d",
+    "varied_2": "63509e2c417e765655ff994dedd869c4de241594eddb18131733e70705834f26",
+    "clean_3": "16fd8e3250afc9a62624ae9264bcabcbc3e63126652841f092286ff089c457a5",
+    "varied_3": "da7403c148cb6deb38c998b88cadd88215e8426429c06a303f1fc434ab9e4dbe",
+    "clean_4": "1111f8bc6ad0824c6ae56befcb75b67153bad48e95fc78b46cae9e0454b2303a",
+    "varied_4": "b66cdbe09516eaa0a7e23afb7c5cd29c5265da50515f8a0da0f70c031311f304"
+  },
+  "offsets": {
+    "clean": {
+      "mean_legal_offsets": 45.5004997253418,
+      "min_legal_offsets": 20,
+      "max_legal_offsets": 49,
+      "mean_identity_probability": 0.022366566583514214
+    },
+    "varied": {
+      "mean_legal_offsets": 23.916584014892578,
+      "min_legal_offsets": 1,
+      "max_legal_offsets": 49,
+      "mean_identity_probability": 0.054061345756053925
+    }
+  }
+}

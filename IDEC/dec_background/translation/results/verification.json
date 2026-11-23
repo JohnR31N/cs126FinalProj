@@ -1,0 +1,14 @@
+{
+  "translated_models": 20,
+  "shared_initializations": 10,
+  "fixed_control_archive": "aede90d",
+  "verified_control_prediction_files": 10,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "all_start_digests_and_input_metadata_verified": true
+}

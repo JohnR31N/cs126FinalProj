@@ -44,10 +44,10 @@ Repeat on clean and marked versions of the same digits. For each method and seed
 \notefoot{Dots are individual seeds. Diamonds are means. Positive values in the right panel mean ordinary IDEC lost more accuracy.}
 \end{frame}
 
-\begin{frame}{What changes when reconstruction uses the Gaussian?}
-\centering\small\setlength{\tabcolsep}{4pt}\input{../dec_background/results/table.tex}
+\begin{frame}{How do Gaussian weighting and translation compare?}
+\centering\small\setlength{\tabcolsep}{4pt}\input{../dec_background/translation/results/table.tex}
 \par\medskip\normalsize\input{comparison_gaussian_slide.tex}
-\notefoot{Clean and marked ACC use separately fitted models. The drop is the mean within-seed difference, with its sample SD. Flips measure cluster changes after a redraw of the marked test image.}
+\notefoot{Translation moves the digit and both symbols together during pretraining. The drop is clean minus marked ACC, with the paired seed SD. Flips measure changes after a background redraw.}
 \end{frame}
 
 \begin{frame}{What the experiment tells us about relevance}

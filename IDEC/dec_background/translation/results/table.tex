@@ -1,0 +1,14 @@
+\begin{tabular}{lrrrr}
+\toprule
+Method & Clean ACC & Marked ACC & Drop (pp) & Redraw flips\\
+\midrule
+DEC & 77.63 & 70.86 & 6.77 $\pm$ 5.40 & 3.19\\
+IDEC & 73.23 & 65.14 & 8.09 $\pm$ 5.01 & 2.99\\
+DEC + translation & 81.36 & 77.18 & 4.17 $\pm$ 4.04 & 2.34\\
+IDEC + translation & 83.88 & 77.61 & 6.27 $\pm$ 2.74 & 1.78\\
+Gaussian, both stages & 70.03 & 65.59 & 4.44 $\pm$ 3.98 & 2.63\\
+Gaussian, pretraining only & 74.07 & 68.80 & 5.27 $\pm$ 4.64 & 2.62\\
+Gaussian, fine-tuning only & 69.27 & 62.88 & 6.39 $\pm$ 5.18 & 3.20\\
+KL only, random start & 31.00 & 28.90 & 2.10 $\pm$ 1.75 & 11.42\\
+\bottomrule
+\end{tabular}

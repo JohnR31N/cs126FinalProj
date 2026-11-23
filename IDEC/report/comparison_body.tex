@@ -34,8 +34,8 @@ Using clean targets in both stages gained $6.04\pm4.37$ points of marked ACC. Al
 
 \newpage
 \sect{7 \quad Results of the matched DEC and IDEC comparison}
-\begin{center}\small\setlength{\tabcolsep}{5pt}\input{../dec_background/results/table.tex}\end{center}
-\smallcap{\textbf{Table 3.} Each method was fitted in both domains. Accuracy and redraw flips are percentages. The drop is clean minus marked accuracy (mean $\pm$ paired seed SD in percentage points). Redraw flips use marked-trained models. The KL-only random-start row skips autoencoder initialization.}
+\begin{center}\small\setlength{\tabcolsep}{5pt}\input{../dec_background/translation/results/table.tex}\end{center}
+\smallcap{\textbf{Table 3.} Clean and marked ACC use matching training and test domains. The drop is clean minus marked ACC, computed before rounding (mean $\pm$ paired seed SD in points). Flips use marked-trained models. The two translation rows add 20 fits to the 60 fixed control fits. The translated DEC and IDEC branches share a pretrained encoder and centers within each seed and domain.}
 \input{comparison_findings.tex}
 
 \begin{center}\includegraphics[width=.98\linewidth]{../figures/dec_background_drops.png}\end{center}
@@ -47,4 +47,4 @@ Using clean targets in both stages gained $6.04\pm4.37$ points of marked ACC. Al
 
 The prior assumes that central pixels generally matter more to digit identity. A symbol near the center gets a high reconstruction weight, and an off-center stroke gets a low one. On MNIST the available sites depend on the digit silhouette. The two small grayscale marks, a single image split and five model seeds limit transfer to other backgrounds and data distributions. A decoder response measures only the information used to render the changed pixels. It leaves open how much background information the encoder retains for other purposes.
 
-\textbf{Augmentation control.} Whole-image translation keeps the image and reconstruction target aligned. Omitting the translated symbol incurs the same uniform squared error as before. In a single-symbol experiment, translation improved clustering even on entirely clean digits (73.53\% to 83.87\%). With marked training, it also reduced assignment flips. Those comparisons measure an augmentation benefit. The Gaussian directly changes the reconstruction cost of a given pixel.
+\textbf{Augmentation control.} The \href{https://github.com/JohnR31N/cs126FinalProj/blob/c22ae3d/IDEC/dec_background/translation/design.md}{translation addendum} moves the entire image within three pixels on each axis during pretraining. The input and reconstruction target undergo the same shift. Omitting a symbol incurs the same uniform squared error at its new position. Fine-tuning uses the unshifted images. Keeping every stroke and symbol in frame permits an average of 45.5 legal offsets on clean training images and 23.9 on marked images, out of 49 possible. This changes the strength of augmentation across domains. Redraw flips measure the final decision's sensitivity to the background. A lower rate leaves open what the encoder remembers about the symbols.
