@@ -6,7 +6,8 @@ from pathlib import Path
 import numpy as np
 
 from analyze import csv_write
-from idec_final.utils import ROOT, save_json, sha256
+from analyze_stages import matches_training_digest
+from idec_final.utils import ROOT, save_json
 from photometric_analysis import digit_mapping
 from varied_study import ARMS
 
@@ -65,7 +66,7 @@ def analyze(out):
     manifest = json.loads((out/"run.json").read_text())
     assert manifest["config"] == cfg and manifest["arms"] == ARMS
     for name, digest in manifest["source_sha256"].items():
-        assert sha256(ROOT/name) == digest, name
+        assert matches_training_digest(ROOT/name, digest), name
     expected = {f"{a}_{s}" for a in ARMS for s in cfg["seeds"]}
     assert {p.stem for p in out.glob("*.npz")} == expected | {"evaluation"}
     rows = []
