@@ -27,6 +27,12 @@ ARMS = {
     "clean_jitter": ("clean", True, False),
 }
 
+SPATIAL_ARMS = {
+    "translate": ("marked", "translate", False), "translate_gaussian": ("marked", "translate", True),
+    "rotate": ("marked", "rotate", False), "rotate_gaussian": ("marked", "rotate", True),
+    "clean_translate": ("clean", "translate", False), "clean_rotate": ("clean", "rotate", False),
+}
+
 
 def jitter_images(images, draws):
     """Apply per-image brightness/contrast to pixels in the model's [0, SCALE] range."""
@@ -53,7 +59,7 @@ def shifted_test(clean):
     return shifted[valid].reshape(-1, 784), np.flatnonzero(valid)
 
 
-def fit(images, jitter, gaussian, cfg, seed):
+def fit(images, jitter, gaussian, cfg, seed, spatial_transform=None):
     device = images.device
     seed_all(seed)
     model = Autoencoder(cfg["dims"]).to(device)
@@ -65,6 +71,8 @@ def fit(images, jitter, gaussian, cfg, seed):
         if jitter:
             draws = torch.rand((len(images), 3), device=device, generator=generator)
             epoch = jitter_images(images, draws)
+        elif spatial_transform is not None:
+            epoch = spatial_transform(generator)
         for ids in batches(len(images), cfg["batch_size"], device):
             batch = epoch[ids]
             error = (model(batch) - batch).square()
@@ -88,7 +96,7 @@ def shape_probe(model, training_views, testing_views, train_shape):
     return probe.predict(encode(testing_views)).astype(np.uint8)
 
 
-def run(out, device):
+def run(out, device, spatial=False):
     cfg, (training, testing) = data()
     shifted, eligible = shifted_test(testing[0])
 
@@ -100,10 +108,20 @@ def run(out, device):
         ("clean", "marked", "shape", "moved", "shifted"),
         (testing[0], *testing[-1][:3], shifted))}
     probe_train = (train["marked"], tensor(training[-1][1]))
-    manifest = {"design_commit": "715521a", "design_sha256": sha256(ROOT/"photometric/design.md"),
-                "code_sha256": sha256(Path(__file__)), "config": cfg, "arms": list(ARMS),
+    arms = SPATIAL_ARMS if spatial else ARMS
+    design = "spatial_design.md" if spatial else "design.md"
+    manifest = {"design_commit": "8e66ad4" if spatial else "715521a", "design_sha256": sha256(ROOT/"photometric"/design),
+                "code_sha256": sha256(Path(__file__)), "config": cfg, "arms": list(arms),
                 "torch": str(torch.__version__), "device": str(device),
                 "hardware": torch.cuda.get_device_name(device) if device.type == "cuda" else "CPU"}
+    transforms = {}
+    if spatial:
+        from spatial_augmentation import Rotation, Translation
+        manifest["spatial_code_sha256"] = sha256(ROOT/"spatial_augmentation.py")
+        for domain, images in train.items():
+            transforms[domain, "translate"] = Translation(images)
+            transforms[domain, "rotate"] = Rotation(images, SCALE)
+        manifest["eligibility"] = {f"{d}_{a}": t.audit for (d, a), t in transforms.items()}
     out.mkdir(parents=True, exist_ok=True)
     metadata = out/"run.json"
     if any(out.iterdir()) and (not metadata.exists() or json.loads(metadata.read_text()) != manifest):
@@ -112,12 +130,13 @@ def run(out, device):
     np.savez_compressed(out/"evaluation.npz", train_digit=training[1], test_digit=testing[1],
                         train_shape=training[3], test_shape=testing[3], shifted_indices=eligible)
     for seed in cfg["seeds"]:
-        for arm, (domain, jitter, gaussian) in ARMS.items():
+        for arm, (domain, augmentation, gaussian) in arms.items():
             dest = out/f"{arm}_{seed}.npz"
             if dest.exists():
                 continue
             images = train[domain]
-            model, centers, trace = fit(images, jitter, gaussian, cfg, seed)
+            model, centers, trace = fit(images, augmentation is True, gaussian, cfg, seed,
+                                        transforms.get((domain, augmentation)))
             pred = {name: assignments(model, centers, x).astype(np.uint8) for name, x in test.items()}
             pred["train"] = assignments(model, centers, images).astype(np.uint8)
             pred["shape_probe"] = shape_probe(model, probe_train, (test["marked"], test["shape"]), training[3])
@@ -132,6 +151,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=ROOT/"scratch/photometric")
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
+    parser.add_argument("--spatial", action="store_true", help="Run the rotation and translation extension.")
     args = parser.parse_args()
     with threadpool_limits(4):
-        run(args.output, torch.device(args.device))
+        run(args.output, torch.device(args.device), args.spatial)
