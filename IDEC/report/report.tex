@@ -12,9 +12,9 @@
 \newcommand{\smallcap}[1]{\par{\small\color{ink}#1}\par}
 \begin{document}
 {\sffamily\bfseries\color{ink}\fontsize{26}{30}\selectfont What does IDEC preserve?}\par
-{\large Reproducing deep embedded clustering and testing its response to irrelevant stripes}\par
+{\large Reconstructing digit identity in the presence of irrelevant background features}\par
 {\sffamily\color{ink}John Zhang and Ryan Jian}\par
-\input{abstract.tex}
+\input{geometry_abstract.tex}
 
 \sect{1 \quad The original IDEC paper and our research question}
 \textbf{Original research question.} In \href{https://ijcai.org/proceedings/2017/0243.pdf}{\emph{Improved Deep Embedded Clustering with Local Structure Preservation}}, Guo et al.\ (2017) investigate the effect of preserving local structure on clustering performance when a model jointly learns an embedding and cluster assignments from unlabeled data [1, Sec.~1].
@@ -25,7 +25,7 @@
 
 \textbf{Solution.} The authors pretrain a stacked denoising autoencoder and initialize cluster centers by running K-means on its codes. During fine-tuning, IDEC keeps the decoder and minimizes $L_{\rm recon}+\gamma\,\mathrm{KL}(P\Vert Q)$. Reconstruction penalizes loss of input detail, while the clustering term sharpens assignments. The authors report 86.55\% MNIST accuracy for DEC and 88.06\% for IDEC [1, Eqs.~6--8 and Table~2].
 
-\textbf{Our research question.} We investigate the effect of reconstructing background stripes on IDEC's ability to group MNIST images by digit identity. We compare reconstruction losses by measuring digit clustering accuracy and the fraction of images that change cluster when only the stripe direction changes.
+\textbf{Our research question.} We investigate the effect of rewarding task-irrelevant features in reconstruction on digit clustering. We compare background augmentation, a reconstruction target derived from paired views, and a spatial prior that favors the image center.
 
 \sect{2 \quad Reproducing the original method on MNIST}
 For image $x_i$ with code $z_i=f(x_i)$, the Student-$t$ assignment $q_{ij}$ measures affinity to center $\mu_j$. Squaring the assignments and adjusting for each cluster's total soft mass $f_j$ gives the target $p_{ij}$ [2].
@@ -45,71 +45,9 @@ This reproduction, seed 0 & 81.85 & .7474 & 88.10 & .8650\\\bottomrule
 \end{tabular}
 \end{center}
 \smallcap{\textbf{Table 1.} Transductive MNIST clustering. All 70,000 images participate in model fitting and scoring, as in the original paper.}
-We loaded the authors' published pretrained weights [3] into PyTorch and verified eight encoder/decoder layers against an independent NumPy forward pass. Images were scaled by $1/50$ from raw bytes. We used 20 K-means restarts, Adam at $10^{-3}$, batches of 256, and target refreshes every 140 steps. Final ACC differed by $+0.04$ percentage points from the published value. The run reached 20,000 updates. At the final check, $0.51\%$ of assignments differed from the preceding check, above the $0.1\%$ stopping threshold. The modern framework and fixed random seed are differences from the original run.
+We loaded the authors' pretrained weights [3] into PyTorch and checked eight layers against an independent NumPy forward pass. We scaled raw pixels by $1/50$ and used 20 K-means restarts, Adam at $10^{-3}$, batches of 256 and target refreshes every 140 updates. Final ACC was 0.04 percentage points above the paper. The run reached the 20,000-update cap with $0.51\%$ of assignments still changing, above the $0.1\%$ stopping threshold.
 
-\newpage
-\sect{3 \quad Limitation and hypothesis}
-\textbf{Assumption.} Guo et al.\ keep the decoder during clustering so that sharpening assignments does not destroy useful local structure [1, Sec.~3.2, Eqs.~6 and 8]. Applying that idea to digit identity assumes that the details worth reconstructing also help distinguish digits. DynAE [4] addresses competing objectives by gradually replacing reconstruction with a clustering target. We keep the reconstruction task and isolate one background feature.
-
-\textbf{Potential failure case.} Consider the handwritten 7 in Figure~1. Horizontal and vertical stripes change hundreds of pixels without changing a single pen stroke. A decoder pays for predicting the wrong background. An encoder that preserves orientation can help its decoder even if it puts two views of the same 7 in different clusters.
-
-\begin{center}
-\includegraphics[width=.67\linewidth]{../figures/intervention.png}
-\end{center}
-\smallcap{\textbf{Figure 1.} One held-out digit shown twice at each amplitude on a shared grayscale scale. At zero amplitude the two rows are identical. At 0.8 the stripe moves while the digit stays fixed.}
-
-\textbf{Testable question.} We measure how often a frozen IDEC model assigns the same digit to different clusters under horizontal and vertical stripes. We compare standard and projected fine-tuning on this flip rate and on digit clustering accuracy.
-
-\textbf{Hypothesis recorded before the main experiment.} Compared with clean digits, strong stripes should reduce standard IDEC's digit accuracy and increase the association between cluster and orientation. At amplitude 0.8 we predicted that projected reconstruction would raise digit accuracy and reduce orientation dependence relative to standard IDEC. On clean images we expected little change in accuracy. These predictions preceded training (\href{https://github.com/JohnR31N/cs126FinalProj/blob/4088b03/IDEC/design.md}{design at 4088b03}).
-
-\sect{4 \quad Proposed modification to the reconstruction loss}
-Let $s_H$ alternate between $-0.5$ and $+0.5$ every two rows, and let $s_V=s_H^\top$. We add $a s_o$ to a digit $x$ on the $[0,1]$ scale, without clipping. The two views differ by $a(s_H-s_V)$. If the decoder gives them the same reconstruction, their lowest possible average pixel MSE occurs at their midpoint and equals $a^2\|s_H-s_V\|^2/(4\cdot784)=a^2/8$. At $a=0.8$ this is 0.08 on the unscaled image. This calculation explains why full-pixel reconstruction rewards distinguishing the views even when digit identity is fixed.
-
-Write $d=(s_H-s_V)/\lVert s_H-s_V\rVert_2$ for the unit contrast. For residual $r_i=g(f(x'_i))-x'_i$ in model input units and a batch of $B$ images, we minimize
-\[
- L_{\rm projected}=\frac{1}{784B}\sum_i\lVert r_i-(r_i^\top d)d\rVert_2^2
-       +0.1\,\mathrm{KL}(P\Vert Q).
-\]
-The projection removes exactly the component along $d$ and retains the other 783 reconstruction directions. The encoder still sees each complete striped image, scaled by $255/50$. Training uses the two known templates. It needs neither a clean target nor an orientation label for the loss. A model remains free to encode orientation through another part of its objective.
-
-\newpage
-\sect{5 \quad Experimental setup}
-\textbf{Data and controls.} We sampled 12,000 MNIST training digits without replacement (split seed 126) and held out the original 10,000 test digits. We assigned an equal number of horizontal and vertical stripes by random permutation within each split, independently of the labels (seeds 1701 and 1702). At amplitudes 0, 0.3 and 0.8, every method received the same digits and orientations. We trained fresh autoencoders in this study. The 70,000-image reproduction in Table~1 uses a different evaluation protocol.
-
-\textbf{Matched training.} For each amplitude and seed (0--4), a plain autoencoder trained for 100 epochs. Its encoder has widths $784,500,500,2000,10$, ReLU hidden layers, a linear bottleneck and a mirrored decoder with a linear output. K-means initialized 10 centers with 20 restarts. From each initialization we ran standard IDEC, projected reconstruction, and a clustering-only ablation. The last arm drops the whole pixel loss and retains the same clustering coefficient. All three use the same batches, Adam settings and target refresh interval as each other, for exactly 5,600 updates. We evaluated 15 initializations and 45 fine-tuned models.
-
-\textbf{What the comparisons measure.} The main study's primary outcome is held-out digit accuracy (ACC). We learn the cluster-to-digit mapping by Hungarian matching on training labels after fitting and freeze it for the test set. Digit NMI and ARI score agreement without matching. Cluster--orientation NMI measures an association across images. Flip rate counts how often the same frozen model assigns $x+a s_H$ and $x+a s_V$ to different clusters. This catches switches that cancel in aggregate. The init-to-final comparison tests how much sensitivity was already present. The matched final arms isolate the effect of changing the loss. We report means and sample standard deviations over the five seeds on this fixed split.
-
-\sect{6 \quad Results and analysis}
-\begin{center}
-\includegraphics[width=\linewidth]{../figures/outcomes.png}
-\end{center}
-\smallcap{\textbf{Figure 2.} Shared AE + K-means initializations and the three final-stage objectives. Higher digit ACC and lower orientation NMI and flip rate indicate closer agreement with the intended grouping. Horizontal offsets separate methods at identical amplitudes.}
-\begin{center}\scriptsize
-\setlength{\tabcolsep}{3.2pt}
-\input{../results/table.tex}
-\end{center}
-\smallcap{\textbf{Table 2.} Held-out mean $\pm$ sample SD for every amplitude and method. Flip rate compares both views of each digit. Stripe NMI uses the assigned orientation.}
-
-\newpage
-\sect{6.1 \quad Paired effects}
-\input{outcomes.tex}
-\begin{center}
-\includegraphics[width=.90\linewidth]{../figures/paired.png}
-\end{center}
-\smallcap{\textbf{Figure 3.} Each line joins two models sharing the same pretrained weights, centroids, images, minibatches and update budget. Slopes show individual seed effects hidden by the overall mean.}
-\input{interpretation.tex}
-\begin{center}
-\includegraphics[width=.86\linewidth]{../figures/flip_cases.png}
-\end{center}
-\smallcap{\textbf{Figure 4.} Strong stripes, seed 0. Of 10,000 test digits, 376 switched clusters only under standard IDEC and 191 switched only under projected fine-tuning. Both models switched on 2,856. Each column shows the first image in one category under both orientations. A stable prediction can still have the wrong digit label.}
-
-\newpage
-\sect{6.2 \quad Follow-up experiment on the training stage}
-\input{stages.tex}
-
-\sect{7 \quad Limitations and conclusion}
-\input{conclusion.tex}
+\input{geometry_body.tex}
 
 \sect{8 \quad References}
 \small
@@ -118,5 +56,6 @@ The projection removes exactly the component along $d$ and retains the other 783
 [3] X. Guo. \href{https://github.com/XifengGuo/IDEC/tree/4a661c211f082022249758ab3312f7db21e2aa99}{Official IDEC implementation} and \href{https://github.com/XifengGuo/data-and-models/tree/d361bfe06686c0762df58624ef95a8c0fc9162be}{pretrained MNIST weights}. See README for file digest.\par
 [4] N. Mrabah et al. \href{https://arxiv.org/abs/1901.07752}{Deep Clustering with a Dynamic Autoencoder: From Reconstruction towards Centroids Construction}. Neural Networks, 2020.\par
 [5] Y. LeCun, C. Cortes and C. Burges. \href{https://www.tensorflow.org/datasets/catalog/mnist}{MNIST handwritten digits}. IDX files via the torchvision mirror.\par
+[6] P. Vincent et al. \href{https://www.jmlr.org/papers/v11/vincent10a.html}{Stacked Denoising Autoencoders}. JMLR, 2010.\par
 \textbf{Data and code.} \href{https://github.com/JohnR31N/cs126FinalProj/tree/main/IDEC}{Designs, training commands, per-image predictions and independent metric checks.}
 \end{document}

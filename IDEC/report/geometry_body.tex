@@ -1,0 +1,37 @@
+\newpage
+\sect{3 \quad Our challenge, philosophy and hypothesis}
+\textbf{Assumption and failure case.} IDEC uses reconstruction to keep the embedding informative. The details that reduce pixel error can include information irrelevant to a chosen clustering task [1,4]. Consider a handwritten 7 with a small cross in the margin. Remembering where the cross sits helps a decoder draw it. Moving it has no bearing on which digit was written. A model could encode that information and still cluster digits correctly, so we measure both what its decoder reproduces and what changes its final assignments.
+
+\textbf{Our philosophy.} Define relevance relative to the intended grouping. For digit identity, the same handwriting should retain its cluster across a change in decoration. Two aligned views of the same digit let us identify pixels that persist under a controlled change. This supplies a training target for reconstruction without using a digit label. A Gaussian prior assumes that central pixels tend to be more informative because MNIST digits are usually centered.
+
+\textbf{Prior evidence and prediction.} Our earlier stripe experiment changed pixel values over the entire image, including the strokes. Under strong stripes, projecting a known contrast out of the pretraining loss reduced final flips from 39.53\% to 2.61\% with projected fine-tuning held fixed. That motivated intervening during pretraining. For the present experiment we predicted fewer switches under movement of a detached mark, then tested shape changes and digit accuracy separately (\href{https://github.com/JohnR31N/cs126FinalProj/blob/62b24eb/IDEC/background/design.md}{design before fitting}).
+
+\begin{center}\includegraphics[width=.92\linewidth]{../figures/geometry.png}\end{center}
+\smallcap{\textbf{Figure 1.} The first two test digits. Changing shape keeps the site fixed. Moving the mark keeps its shape fixed. The final column is computed from the marked input and moved view. Every ink pixel, including faint edges, retains its original value.}
+
+\sect{4 \quad Proposed modification and controls}
+\textbf{Paired reconstruction target.} Let $u$ and $v$ contain the same digit with a mark at disjoint sites. For pixel $j$, set $t_j=u_j$ if $u_j=v_j$, and $t_j=0$ otherwise. A decoder trained on an augmented view minimizes its MSE to $t$. This is a denoising objective [6]. The controlled pair supplies the target. Under this construction $t$ exactly recovers the digit on black, as we verified on every image. The network receives one image at inference.
+
+\textbf{Competing explanations.} Standard pretraining reconstructs one fixed marked image per digit. Augmentation alone resamples the shape and site each epoch and reconstructs the current view. Paired-target training uses the same augmented inputs with target $t$. The fourth arm uses those inputs with the full target, but weights each squared pixel error by $w_j\propto\exp[-\|j-(13.5,13.5)\|^2/(2\cdot7^2)]$, normalized to mean one. This fixed Gaussian supplies a location preference without learning attention weights.
+
+\newpage
+\sect{5 \quad Experimental setup}
+We used the same 12,000 training and 10,000 held-out MNIST digits across all four arms. A plus and a diagonal cross each occupy nine white pixels in a $5\times5$ box. For each digit we chose two disjoint boxes with at least one blank pixel of clearance from every nonzero stroke pixel. Location depends on available blank space. Shape assignment was balanced and randomized independently of digit labels. The three augmented arms sample the same sequence of four shape/site combinations for each seed. Only paired-target training uses the alignment between views to build its target.
+
+For each seed (0--4) all arms used the same random initial weights and minibatch order, 100 pretraining epochs and the architecture in our code ($784,500,500,2000,10$ encoder, mirrored decoder). K-means with 20 restarts initialized ten centers for each resulting embedding. All arms then ran ordinary full-image IDEC on the fixed marked training views for 5,600 Adam updates (learning rate $10^{-3}$, batch size 256, target refresh every 140 updates).
+
+\textbf{Readouts.} We learn cluster names from training labels after optimization and freeze that mapping. Each model sees the same test digits clean, marked, with the shape swapped, and with the mark moved. The primary measure is the fraction of cluster IDs that change when the mark moves. Clean and marked accuracy use the same frozen model. We also record accuracy for the quarter of test digits whose ink centroids lie farthest from the image center.
+
+An exploratory decoder check replays pretraining and compares two reconstructions of the same digit with the mark at two sites. For decoder outputs $\hat u,\hat v$ the score is $(\hat u-\hat v)^\top(u-v)/\|u-v\|^2$. A score of one reproduces the full signed change along the displacement. Zero indicates no response along that direction. This reads information used by the decoder; other information may remain in the embedding.
+
+\sect{6 \quad Results and analysis}
+\begin{center}\small
+\setlength{\tabcolsep}{3pt}
+\input{../background/results/table.tex}
+\end{center}
+\smallcap{\textbf{Table 2.} Five-seed means. Accuracy and flip rates are percentages. The decoder response is dimensionless and is measured just after pretraining. The other four columns evaluate final clusters. All individual runs and paired differences are included with the report.}
+\input{geometry_results.tex}
+
+\newpage
+\sect{7 \quad Limitations and conclusion}
+\input{geometry_conclusion.tex}

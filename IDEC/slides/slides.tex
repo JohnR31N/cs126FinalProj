@@ -51,55 +51,17 @@ Our transductive run & 81.85\% & \textcolor{blue}{\bfseries 88.10\%}\\ \bottomru
 \end{center}
 \medskip
 All 70,000 MNIST images participated in fitting and scoring. Our PyTorch port starts from the authors' released weights. Final NMI was 0.8650, compared with 0.8672 in the paper.
-\notefoot{One seeded run reached the 20,000-update cap. The stripe study uses a separate training subset, fresh weights and a held-out test set.}
+\notefoot{One seeded run reached the 20,000-update cap. Our background experiments use fresh weights and a held-out test set.}
 \end{frame}
 
-\begin{frame}{Would changing only the stripes change the cluster?}
-\begin{columns}[c,onlytextwidth]
-\column{.52\textwidth}
-\includegraphics[width=\linewidth]{../figures/intervention.png}
-\column{.45\textwidth}
-\key{Assumption for digit clustering}\par
-Details worth reconstructing also help preserve digit structure.
-\par\medskip
-\key{A possible failure}\par
-The pen strokes stay fixed, but the decoder pays for getting the stripes wrong. An encoder can help reconstruction by remembering their direction.
-\end{columns}
-\notefoot{Each column shows the same test digit twice. Stripe direction was assigned independently of digit identity.}
-\end{frame}
-
-\begin{frame}{Our hypothesis and the change to IDEC}
-\key{Prediction recorded before training}\par
-With strong stripes, ignoring the orientation difference during fine-tuning should yield fewer cluster switches and higher digit accuracy. On clean digits we expect little change in accuracy.
-\par\bigskip
-The two views differ along one known direction $d$. We remove that component of the decoder error $r$ before computing pixel loss.
-\[
- r_{\perp}=r-(r^\top d)d
-\]
-The model still sees the stripes and learns to reconstruct the other 783 directions.
-\notefoot{Both methods use the same clustering loss. The correction uses the two templates and requires no individual orientation label or clean target.}
-\end{frame}
-
-\begin{frame}{Five paired seeds compare three training objectives}
-\begin{columns}[T,onlytextwidth]
-\column{.48\textwidth}
-\key{One shared starting point}\par\medskip
-For each seed and amplitude (0, 0.3, 0.8), train one autoencoder on 12,000 digits. Run standard IDEC, projected loss and clustering only from its weights and centers for 5,600 updates each.
-\column{.46\textwidth}
-\key{Two tests on 10,000 digits}\par\medskip
-Does the cluster match the digit? Learn the digit mapping on training labels after fitting.\par\smallskip
-Does the cluster survive a background change? Show the same model each digit with both stripe directions.
-\end{columns}
-\notefoot{Cluster--orientation NMI also measures association across images. Each arm receives the same batches and optimizer settings.}
-\end{frame}
-
-\input{findings.tex}
+\input{geometry_slides.tex}
 
 \begin{frame}{Sources and reproducibility}
 \small
 Guo et al. \href{https://ijcai.org/proceedings/2017/243}{\textit{Improved Deep Embedded Clustering with Local Structure Preservation}}. IJCAI, 2017. The anchor paper and comparison in Table 2.\par\medskip
 Xie et al. \href{https://proceedings.mlr.press/v48/xieb16.html}{\textit{Unsupervised Deep Embedding for Clustering Analysis}}. ICML, 2016. The soft clustering target.\par\medskip
 Mrabah et al. \href{https://arxiv.org/abs/1901.07752}{\textit{Deep Clustering with a Dynamic Autoencoder}}. Neural Networks, 2020. Competing clustering and reconstruction objectives.\par\medskip
+Vincent et al. \href{https://www.jmlr.org/papers/v11/vincent10a.html}{\textit{Stacked Denoising Autoencoders}}. JMLR, 2010. Learning from corrupted inputs and clean reconstruction targets.\par\medskip
 MNIST (LeCun, Cortes and Burges). Author initialization from \href{https://github.com/XifengGuo/data-and-models}{XifengGuo/data-and-models}.\par\medskip
 \key{\href{https://github.com/JohnR31N/cs126FinalProj/tree/main/IDEC}{Code, fixed protocol, predictions, checks and editable sources}}
 \end{frame}

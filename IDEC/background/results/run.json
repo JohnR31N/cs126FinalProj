@@ -1,0 +1,50 @@
+{
+  "config": {
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "strengths": [
+      0.0,
+      0.3,
+      0.8
+    ],
+    "methods": [
+      "idec",
+      "projected",
+      "cluster_only"
+    ],
+    "split_seed": 126,
+    "train_size": 12000,
+    "train_orientation_seed": 1701,
+    "test_orientation_seed": 1702,
+    "dims": [
+      784,
+      500,
+      500,
+      2000,
+      10
+    ],
+    "clusters": 10,
+    "pretrain_epochs": 100,
+    "batch_size": 256,
+    "lr": 0.001,
+    "gamma": 0.1,
+    "target_interval": 140,
+    "updates": 5600,
+    "kmeans_restarts": 20
+  },
+  "arms": [
+    "fixed",
+    "augmented",
+    "paired",
+    "gaussian"
+  ],
+  "torch": "2.11.0+cu128",
+  "device": "cuda",
+  "hardware": "NVIDIA GeForce RTX 5080",
+  "design_commit": "62b24eb"
+}

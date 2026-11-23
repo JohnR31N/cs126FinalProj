@@ -1,0 +1,31 @@
+{
+  "scored_models": 20,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "training_images": 12000,
+  "test_images": 10000,
+  "views_verified_per_image": 4,
+  "changed_pixels_per_view": 9,
+  "changed_pixels_on_ink_or_one_pixel_guard": 0,
+  "paired_target_equals_clean": true,
+  "min_occupied_test_clusters": 10,
+  "outer_quartile_size": 2500,
+  "outer_quartile_min_centroid_radius_px": 0.9781617863410016,
+  "rendering_metadata_sha256_int64le": {
+    "train": {
+      "digits": "c3e0b69b1c491414ececeecc744e9bc44f80adcc4851bc92c9217c73421d17b1",
+      "boxes": "717f5b12e118745e9c7b6c2b7b4caa0c7c93d40ebf78903c4d8f95c9e10724ea",
+      "shapes": "fb385477d15a7ba1a99f2277b98a6913c1085f245ab941efdcc15cb8f888aad5"
+    },
+    "test": {
+      "digits": "2fd8de6bdb8d11780b4b96dc57847bcfe6953f7c32aa48bfcd8237c3b7847243",
+      "boxes": "aa8b1db37d570d78ca89612f0ffec340934fd35b1fa354349827f14461876725",
+      "shapes": "58b6aaf700531237deb9d77576969b813813387a8c974ea1502bf858cbd53dd5"
+    }
+  }
+}
