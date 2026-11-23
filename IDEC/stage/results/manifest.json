@@ -1,0 +1,61 @@
+{
+  "protocol": {
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "strengths": [
+      0.0,
+      0.3,
+      0.8
+    ],
+    "methods": [
+      "idec",
+      "projected",
+      "cluster_only"
+    ],
+    "split_seed": 126,
+    "train_size": 12000,
+    "train_orientation_seed": 1701,
+    "test_orientation_seed": 1702,
+    "dims": [
+      784,
+      500,
+      500,
+      2000,
+      10
+    ],
+    "clusters": 10,
+    "pretrain_epochs": 100,
+    "batch_size": 256,
+    "lr": 0.001,
+    "gamma": 0.1,
+    "target_interval": 140,
+    "updates": 5600,
+    "kmeans_restarts": 20
+  },
+  "strength": 0.8,
+  "torch": "2.11.0+cu128",
+  "numpy": "2.5.4",
+  "sklearn": "1.9.1",
+  "scipy": "1.18.1",
+  "python": "3.12.15",
+  "device": "cuda",
+  "hardware": "NVIDIA GeForce RTX 5080",
+  "sha256": {
+    "protocol.json": "efc4df3e8be8228f317bfe788f5fc655fb26dd9487fce2d7a147280208ce62ad",
+    "stage/design.md": "4ae7f97405dfd8baab829502fb69e16c899921435dbece7b97c8f6b1a629adf8",
+    "train_stages.py": "0128459bfffd4b7519e58ebc70093d31e65bcb7615b049edffebbd20d04f8ca7",
+    "results/evaluation.npz": "d47e54c6075ba9e61b28fcfe5f06d08852432dae388e499c82dfb4bd6e19ae9d",
+    "idec_final/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "idec_final/data.py": "778e4306d1bae0093a652ad850ac881760a1eb7b2cc8aa532c8b98b071817b01",
+    "idec_final/experiment.py": "619effc170e96a9335ff5dec15db841bb8dfd79f78e301b9fd2b95db9e43ef0c",
+    "idec_final/metrics.py": "534836e1e3970d08c28eaaf04c5e62c3ca81bde8c911bc90ffc36167823ed6e6",
+    "idec_final/model.py": "f2a55129d465de0b10236f515cacfe501456c69da922fa91375b60d5019b23ec",
+    "idec_final/stripes.py": "c5f66c621f65a573d55f96b8eaf6126383846a1495e2a4f104fff48951022f4d",
+    "idec_final/utils.py": "70640cb18f08c7caf065c7c51f0a55603bc948ca2bf36c528dd22f217975e05e"
+  }
+}

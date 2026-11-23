@@ -1,0 +1,13 @@
+\begin{tabular}{llrrr}
+\toprule
+Pretraining & Fine-tuning & Digit ACC (\%) & Flip rate (\%) & Stripe NMI\\
+\midrule
+Full pixel & AE + K-means & 56.96 $\pm$ 5.46 & 42.79 $\pm$ 12.20 & 0.1823 $\pm$ 0.0600\\
+Full pixel & Full pixel & 58.98 $\pm$ 5.35 & 42.22 $\pm$ 12.73 & 0.1815 $\pm$ 0.0639\\
+Full pixel & Projected & 59.96 $\pm$ 5.31 & 39.53 $\pm$ 12.68 & 0.1661 $\pm$ 0.0618\\
+\addlinespace
+Projected & AE + K-means & 67.43 $\pm$ 4.76 & 1.83 $\pm$ 0.31 & 0.0004 $\pm$ 0.0001\\
+Projected & Full pixel & 69.97 $\pm$ 5.46 & 4.73 $\pm$ 0.91 & 0.0007 $\pm$ 0.0003\\
+Projected & Projected & 69.61 $\pm$ 5.33 & 2.61 $\pm$ 0.54 & 0.0003 $\pm$ 0.0001\\
+\bottomrule
+\end{tabular}

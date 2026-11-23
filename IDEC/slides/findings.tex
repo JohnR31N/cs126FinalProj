@@ -8,6 +8,16 @@
 \notefoot{\input{paired_caption.tex}}
 \end{frame}
 
-\begin{frame}{What can one reconstruction direction explain?}
+\begin{frame}{At which training stage do the clusters become sensitive?}
+Before any IDEC updates, 42.79\% of digits changed cluster when the stripes switched. We tested this observation by changing pretraining and fine-tuning independently.
+\par\medskip
+\key{Share of test digits that switch clusters under strong stripes}
+\begin{center}\small
+\input{../stage/results/flip_table.tex}
+\end{center}
+\notefoot{Follow-up designed after the main experiment. All four combinations were trained again on the same data with five paired seeds. Each row forks one initialization per seed.}
+\end{frame}
+
+\begin{frame}{What the stripe experiment tells us about IDEC}
 \input{takeaway.tex}
 \end{frame}

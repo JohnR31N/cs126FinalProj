@@ -58,41 +58,39 @@ All 70,000 MNIST images participated in fitting and scoring. Our PyTorch port st
 \begin{columns}[c,onlytextwidth]
 \column{.52\textwidth}
 \includegraphics[width=\linewidth]{../figures/intervention.png}
-\column{.44\textwidth}
-The digit stays fixed. Horizontal or vertical stripes are assigned at random.
+\column{.45\textwidth}
+\key{Assumption for digit clustering}\par
+Details worth reconstructing also help preserve digit structure.
 \par\medskip
-\key{Hypothesis}\par
-If reconstruction rewards the nuisance, increasing stripe amplitude should make the clusters more responsive to orientation.
+\key{A possible failure}\par
+The pen strokes stay fixed, but the decoder pays for getting the stripes wrong. An encoder can help reconstruction by remembering their direction.
 \end{columns}
-\notefoot{All examples show the first MNIST test digit on the same grayscale scale.}
+\notefoot{Each column shows the same test digit twice. Stripe direction was assigned independently of digit identity.}
 \end{frame}
 
-\begin{frame}{The modification removes one reconstruction direction}
-The difference between the two stripe orientations lies along a known unit vector $d$. For decoder residual $r$, train on the part perpendicular to $d$:
+\begin{frame}{Our hypothesis and the change to IDEC}
+\key{Prediction recorded before training}\par
+With strong stripes, ignoring the orientation difference during fine-tuning should yield fewer cluster switches and higher digit accuracy. On clean digits we expect little change in accuracy.
+\par\bigskip
+The two views differ along one known direction $d$. We remove that component of the decoder error $r$ before computing pixel loss.
 \[
- r_{\perp}=r-(r^\top d)d.
+ r_{\perp}=r-(r^\top d)d
 \]
-\begin{columns}[T,onlytextwidth]
-\column{.46\textwidth}
-\key{What changes}\par
-The decoder can make an error along the stripe contrast without paying for it.
-\column{.47\textwidth}
-\key{What stays common}\par
-The encoder sees the striped image. Initialization, the other 783 directions and the clustering objective are shared with IDEC.
-\end{columns}
-\notefoot{The analytic template is supplied to the projected-loss arm. No clean target image or per-image orientation label enters training.}
+The model still sees the stripes and learns to reconstruct the other 783 directions.
+\notefoot{Both methods use the same clustering loss. The correction uses the two templates and requires no individual orientation label or clean target.}
 \end{frame}
 
 \begin{frame}{Five paired seeds compare three training objectives}
 \begin{columns}[T,onlytextwidth]
 \column{.48\textwidth}
-\key{Training}\par\medskip
-12,000 training digits; three stripe amplitudes. Each seed and amplitude has one AE + K-means initialization. Standard IDEC, projected loss and clustering only branch from this point for 5,600 updates.
+\key{One shared starting point}\par\medskip
+For each seed and amplitude (0, 0.3, 0.8), train one autoencoder on 12,000 digits. Run standard IDEC, projected loss and clustering only from its weights and centers for 5,600 updates each.
 \column{.46\textwidth}
-\key{Held-out scoring}\par\medskip
-10,000 test digits. Fit cluster names on training labels after optimization. Measure digit accuracy, association with orientation, and how often a cluster changes when the stripe direction flips.
+\key{Two tests on 10,000 digits}\par\medskip
+Does the cluster match the digit? Learn the digit mapping on training labels after fitting.\par\smallskip
+Does the cluster survive a background change? Show the same model each digit with both stripe directions.
 \end{columns}
-\notefoot{The study design was committed before training. Each method receives the same inputs, minibatches, optimizer and update budget.}
+\notefoot{Cluster--orientation NMI also measures association across images. Each arm receives the same batches and optimizer settings.}
 \end{frame}
 
 \input{findings.tex}

@@ -1,0 +1,12 @@
+The 42.79\% initial flip rate suggested that pretraining could already separate digits by orientation. Would full-pixel fine-tuning recreate this sensitivity from a less sensitive start? After the main study, we \href{https://github.com/JohnR31N/cs126FinalProj/blob/98aa8e4/IDEC/stage/design.md}{recorded a new prediction (98aa8e4)}. With projected fine-tuning fixed, projecting during pretraining should lower the final flip rate.
+
+At $a=0.8$ we trained both pretraining losses from the same random weights and batches for each seed. We fitted K-means to each resulting embedding and forked it into both fine-tuning arms. All four combinations were trained anew for 100 pretraining epochs and 5,600 updates. Changing pretraining also changes the starting centroids.
+
+\begin{center}\small
+\input{../stage/results/table.tex}
+\end{center}
+\smallcap{\textbf{Table 3.} Strong-stripe follow-up, mean $\pm$ sample SD across five seeds. The AE + K-means rows score the two initializations before fine-tuning.}
+
+\textbf{Result.} Holding projected fine-tuning fixed, projected pretraining reduced flips from 39.53\% to 2.61\%. The paired reduction was $36.92\pm12.54$ percentage points and ranged from 21.41 to 53.22 points across seeds. Digit ACC rose from 59.96\% to 69.61\% ($+9.65\pm8.44$ points). One seed lost 1.88 points of accuracy. Every model assigned test digits to all ten clusters.
+
+The difference was already visible immediately after pretraining (42.79\% versus 1.83\% flips). Even after full-pixel fine-tuning, projected pretraining reduced flips by 37.49 points. The two final estimates of the pretraining effect differed by $0.57\pm2.72$ points. Projecting during fine-tuning also helped stability, by 2.69 points after ordinary pretraining and 2.12 after projected pretraining. The ordinary initializations reproduced the archived assignments exactly. Their fine-tuned predictions varied on rerun, so all these contrasts use the four cells of Table~3.

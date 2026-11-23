@@ -1,0 +1,24 @@
+{
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "strength": 0.8,
+  "initializations": 10,
+  "fine_tuned_models": 20,
+  "evaluations": 30,
+  "metrics_checked": [
+    "digit_acc",
+    "digit_nmi",
+    "digit_ari",
+    "stripe_nmi",
+    "flip_rate",
+    "train_acc"
+  ],
+  "identical_ordinary_pretrain_evaluations_to_original": 5,
+  "ordinary_pretrain_evaluations_compared": 15,
+  "min_occupied_test_clusters": 10
+}

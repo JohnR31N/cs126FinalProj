@@ -48,3 +48,24 @@ def test_test_labels_cannot_reassign_cluster_names():
     # If test labels were allowed to rematch cluster IDs, this score would be one.
     r=evaluate(yy,train,yy,(train+1)%10,train,yy%2)
     assert r["train_acc"]==1 and r["digit_acc"]==0 and r["flip_rate"]==1
+
+
+def test_stage_pretraining_matches_the_original_recipe_except_for_the_projected_error():
+    from idec_final.experiment import pretrain
+    from train_stages import pretrain_projected
+
+    samples = torch.randn(16, 4, generator=torch.Generator().manual_seed(126))
+    samples[:, 0] += 1
+    cfg = dict(dims=[4, 5, 2], lr=0.01, pretrain_epochs=3, batch_size=3, clusters=2, kmeans_restarts=2)
+    baseline, centers = pretrain(samples, cfg, seed=3, device=samples.device)
+    # A zero vector makes the residual transformation the identity.
+    replay, replay_centers = pretrain_projected(samples, torch.zeros(4), cfg, seed=3)
+    for left, right in zip(baseline.parameters(), replay.parameters()):
+        torch.testing.assert_close(left, right, rtol=0, atol=0)
+    torch.testing.assert_close(centers, replay_centers, rtol=0, atol=0)
+    assert torch.unique(centers, dim=0).size(0) == cfg["clusters"]
+
+    # Removing the first pixel error gives its output bias exactly zero gradient.
+    projected, _ = pretrain_projected(samples, torch.tensor([1.0, 0.0, 0.0, 0.0]), cfg, seed=3)
+    assert projected.decoder[-1].bias[0].item() == 0
+    assert abs(baseline.decoder[-1].bias[0].item()) > 0.001

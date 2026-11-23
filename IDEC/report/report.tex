@@ -42,47 +42,64 @@ We loaded the authors' published pretrained weights [3] into PyTorch and verifie
 
 \newpage
 \sect{3 \quad Limitation and hypothesis}
-The model is asked to reconstruct nuisance structure whenever that structure contributes to pixel error. In related work, DynAE studies conflicts between the reconstruction and clustering objectives [4]. We test the conflict with a known, controllable source of pixel variation. Here the semantic target is digit identity. Stripe orientation is assigned independently of the image labels and remains observable to the encoder.
+\textbf{Assumption.} Guo et al.\ keep the decoder during clustering so that sharpening assignments does not destroy useful local structure [1, Sec.~3.2, Eqs.~6 and 8]. Applying that idea to digit identity assumes that the details worth reconstructing also help distinguish digits. DynAE [4] addresses competing objectives by gradually replacing reconstruction with a clustering target. We keep the reconstruction task and isolate one background feature.
+
+\textbf{Potential failure case.} Consider the handwritten 7 in Figure~1. Horizontal and vertical stripes change hundreds of pixels without changing a single pen stroke. A decoder pays for predicting the wrong background. An encoder that preserves orientation can help its decoder even if it puts two views of the same 7 in different clusters.
 
 \begin{center}
-\includegraphics[width=.78\linewidth]{../figures/intervention.png}
+\includegraphics[width=.67\linewidth]{../figures/intervention.png}
 \end{center}
-\smallcap{\textbf{Figure 1.} The same held-out digit under both stripe orientations. The display uses a common grayscale range across panels. Both clean panels contain identical pixel values.}
+\smallcap{\textbf{Figure 1.} One held-out digit shown twice at each amplitude on a shared grayscale scale. At zero amplitude the two rows are identical. At 0.8 the stripe moves while the digit stays fixed.}
 
-Let $s_H$ be a horizontal square-wave template with the values $-0.5$ and $+0.5$ alternating every two rows, and $s_V$ its transpose. On the $[0,1]$ MNIST scale, the observation is $x'=x+a s_o$ with $o\in\{H,V\}$ and amplitude $a\in\{0,0.3,0.8\}$. No clipping is applied. Both the digit and stripe are subsequently scaled to the IDEC input scale. For any digit, switching orientation changes the observation along the same vector $s_H-s_V$.
+\textbf{Testable question.} How often does a frozen IDEC model change a digit's cluster when only the stripe direction switches? Does removing the cost of reconstructing that difference during fine-tuning reduce the switches and improve digit accuracy?
 
-\textbf{Predictions recorded before training.} Strong stripes should lower standard IDEC digit ACC and raise cluster--orientation NMI. Under strong stripes, removing the orientation contrast from the reconstruction objective should improve digit ACC and lower dependence on orientation. With no stripes, we expected a small difference. The fixed design and hypotheses are recorded in \texttt{design.md} at commit \texttt{4088b03}.
+\textbf{Hypothesis recorded before the main experiment.} Compared with clean digits, strong stripes should reduce standard IDEC's digit accuracy and increase the association between cluster and orientation. At amplitude 0.8 we predicted that projected reconstruction would raise digit accuracy and reduce orientation dependence relative to standard IDEC. On clean images we expected little change in accuracy. These predictions preceded training (\href{https://github.com/JohnR31N/cs126FinalProj/blob/4088b03/IDEC/design.md}{design at 4088b03}).
 
-\sect{4 \quad Proposed modification}
-Define the unit direction $d=(s_H-s_V)/\lVert s_H-s_V\rVert_2$. For reconstruction residual $r=g(f(x'))-x'$ in model input units, use
+\sect{4 \quad Proposed modification to the reconstruction loss}
+Let $s_H$ alternate between $-0.5$ and $+0.5$ every two rows, and let $s_V=s_H^\top$. We add $a s_o$ to a digit $x$ on the $[0,1]$ scale, without clipping. The two views differ by $a(s_H-s_V)$. If the decoder gives them the same reconstruction, their lowest possible average pixel MSE occurs at their midpoint and equals $a^2\|s_H-s_V\|^2/(4\cdot784)=a^2/8$. At $a=0.8$ this is 0.08 on the unscaled image. This calculation explains why full-pixel reconstruction rewards distinguishing the views even when digit identity is fixed.
+
+Write $d=(s_H-s_V)/\lVert s_H-s_V\rVert_2$ for the unit contrast. For residual $r_i=g(f(x'_i))-x'_i$ in model input units and a batch of $B$ images, we minimize
 \[
- L_{\rm projected}=\frac{1}{784}\lVert r-(r^\top d)d\rVert_2^2
+ L_{\rm projected}=\frac{1}{784B}\sum_i\lVert r_i-(r_i^\top d)d\rVert_2^2
        +0.1\,\mathrm{KL}(P\Vert Q).
 \]
-Subtracting the component parallel to $d$ removes one of 784 reconstruction penalties. The network still sees the complete image and reconstructs its components in the other 783 directions. Only the final-stage reconstruction objective changes. All arms share standard AE pretraining, and the clustering loss can preserve orientation learned at initialization. The intervention requires a known contrast template but uses no per-image orientation labels or paired clean targets in training.
+The projection removes exactly the component along $d$ and retains the other 783 reconstruction directions. The encoder still sees each complete striped image, scaled by $255/50$. Training uses the two known templates. It needs neither a clean target nor an orientation label for the loss. A model remains free to encode orientation through another part of its objective.
 
 \newpage
 \sect{5 \quad Experimental setup}
-We sampled 12,000 images without replacement from the original MNIST training split (split seed 126) and evaluated on the full 10,000-image test split. Each split received its own balanced random permutation of orientations, independent of digit labels (seeds 1701 and 1702). All conditions and all model seeds share those images and orientations. The author-provided weights trained on the transductive dataset were used only for Table 1. All extension models start from scratch.
+\textbf{Data and controls.} We sampled 12,000 MNIST training digits without replacement (split seed 126) and held out the original 10,000 test digits. We assigned an equal number of horizontal and vertical stripes by random permutation within each split, independently of the labels (seeds 1701 and 1702). At amplitudes 0, 0.3 and 0.8, every method received the same digits and orientations. We trained fresh autoencoders in this study. The 70,000-image reproduction in Table~1 uses a different evaluation protocol.
 
-For each amplitude and seed (0 through 4), a plain AE trained for 100 epochs on the observed images. The encoder widths are $784,500,500,2000,10$ with a mirrored decoder, ReLU hidden layers and linear bottleneck/output. K-means with $K=10$ and 20 restarts initializes the centroids. Three arms then share this initialization and the same sequence of minibatches: standard IDEC, the projected loss, and a clustering-only ablation. The latter retains the same KL multiplier and optimizer. Each arm runs 5,600 Adam updates with the batch size, learning rate and target refresh interval of Table 1. Fixed budgets make update counts comparable. There are 15 shared initializations and 45 fine-tuned models.
+\textbf{Matched training.} For each amplitude and seed (0--4), a plain autoencoder trained for 100 epochs. Its encoder has widths $784,500,500,2000,10$, ReLU hidden layers, a linear bottleneck and a mirrored decoder with a linear output. K-means initialized 10 centers with 20 restarts. From each initialization we ran standard IDEC, projected reconstruction, and a clustering-only ablation. The last arm drops the whole pixel loss and retains the same clustering coefficient. All three use the same batches, Adam settings and target refresh interval as each other, for exactly 5,600 updates. We evaluated 15 initializations and 45 fine-tuned models.
 
-The primary outcome is digit ACC. A Hungarian assignment maps cluster IDs to digits using training labels after fitting. This map is frozen for the held-out images. Digit NMI and ARI require no matching. Cluster--orientation NMI measures the association across different test images. The flip rate measures a within-image effect: the proportion of the same 10,000 digits that change their predicted cluster when shown with the opposite orientation. The latter comparison fixes both digit and network. All summary error bars are sample standard deviations across five model seeds with the split fixed.
+\textbf{What the comparisons measure.} The main study's primary outcome is held-out digit accuracy (ACC). We learn the cluster-to-digit mapping by Hungarian matching on training labels after fitting and freeze it for the test set. Digit NMI and ARI score agreement without matching. Cluster--orientation NMI measures an association across images. Flip rate counts how often the same frozen model assigns $x+a s_H$ and $x+a s_V$ to different clusters. This catches switches that cancel in aggregate. The init-to-final comparison tests how much sensitivity was already present. The matched final arms isolate the effect of changing the loss. We report means and sample standard deviations over the five seeds on this fixed split.
 
 \sect{6 \quad Results and analysis}
 \begin{center}
 \includegraphics[width=\linewidth]{../figures/outcomes.png}
 \end{center}
 \smallcap{\textbf{Figure 2.} Shared AE + K-means initializations and the three final-stage objectives. Higher digit ACC and lower orientation NMI and flip rate indicate closer agreement with the intended grouping. Horizontal offsets separate methods at identical amplitudes.}
-\input{outcomes.tex}
+\begin{center}\scriptsize
+\setlength{\tabcolsep}{3.2pt}
+\input{../results/table.tex}
+\end{center}
+\smallcap{\textbf{Table 2.} Held-out mean $\pm$ sample SD for every amplitude and method. Flip rate compares both views of each digit. Stripe NMI uses the assigned orientation.}
 
 \newpage
 \sect{6.1 \quad Paired effects}
+\input{outcomes.tex}
 \begin{center}
-\includegraphics[width=.94\linewidth]{../figures/paired.png}
+\includegraphics[width=.90\linewidth]{../figures/paired.png}
 \end{center}
 \smallcap{\textbf{Figure 3.} Each line joins two models sharing the same pretrained weights, centroids, images, minibatches and update budget. Slopes show individual seed effects hidden by the overall mean.}
 \input{interpretation.tex}
+\begin{center}
+\includegraphics[width=.86\linewidth]{../figures/flip_cases.png}
+\end{center}
+\smallcap{\textbf{Figure 4.} Strong stripes, seed 0. Of 10,000 test digits, 376 switched clusters only under standard IDEC and 191 switched only under projected fine-tuning. Both models switched on 2,856. Each column shows the first image in one category under both orientations. A stable prediction can still have the wrong digit label.}
+
+\newpage
+\sect{6.2 \quad Follow-up experiment on the training stage}
+\input{stages.tex}
 
 \sect{7 \quad Limitations and conclusion}
 \input{conclusion.tex}
@@ -93,20 +110,6 @@ The primary outcome is digit ACC. A Hungarian assignment maps cluster IDs to dig
 [2] J. Xie, R. Girshick and A. Farhadi. \href{https://proceedings.mlr.press/v48/xieb16.html}{Unsupervised Deep Embedding for Clustering Analysis}. ICML, 2016.\par
 [3] X. Guo. \href{https://github.com/XifengGuo/IDEC/tree/4a661c211f082022249758ab3312f7db21e2aa99}{Official IDEC implementation} and \href{https://github.com/XifengGuo/data-and-models/tree/d361bfe06686c0762df58624ef95a8c0fc9162be}{pretrained MNIST weights}. See README for file digest.\par
 [4] N. Mrabah et al. \href{https://arxiv.org/abs/1901.07752}{Deep Clustering with a Dynamic Autoencoder: From Reconstruction towards Centroids Construction}. Neural Networks, 2020.\par
-[5] Y. LeCun, C. Cortes and C. Burges. \href{https://www.tensorflow.org/datasets/catalog/mnist}{MNIST handwritten digits}. Original IDX files via the torchvision mirror, verified by digest.\par
-\newpage
-\normalsize
-\sect{Appendix \quad All conditions and a paired image check}
-\begin{center}\scriptsize
-\setlength{\tabcolsep}{3.2pt}
-\input{../results/table.tex}
-\end{center}
-\smallcap{\textbf{Table 2.} Held-out performance, mean $\pm$ sample standard deviation across five seeds. Stripe NMI uses the evaluation orientation assigned independently to each image. Flip rate uses two observations of each image. Zero-amplitude flips must vanish exactly. Full precision and the 60 individual model evaluations are in \texttt{results/runs.csv}.}
-\vspace{2mm}
-\begin{center}
-\includegraphics[width=.94\linewidth]{../figures/flip_cases.png}
-\end{center}
-\smallcap{\textbf{Figure 4.} Which predictions change when orientation flips? The counts partition all 10,000 test digits at amplitude 0.8 and seed 0 by the two models' paired decisions. Each column displays the first available test image in its category twice with opposite orientations. Stable predictions can still be wrong about digit identity. The cases describe the recorded predictions and were inspected after the experiment.}
-\par\medskip
-\textbf{Reproduction record.} The repository includes the protocol, source, both sets of per-image predictions, the change in training assignments at every target refresh, the author-weight digest, and the numerical verification commands. Regenerating the tables uses the saved predictions and the original MNIST labels. The checks also match digit identities and data partitions against the verified IDX files.
+[5] Y. LeCun, C. Cortes and C. Burges. \href{https://www.tensorflow.org/datasets/catalog/mnist}{MNIST handwritten digits}. IDX files via the torchvision mirror.\par
+\textbf{Data and code.} \href{https://github.com/JohnR31N/cs126FinalProj/tree/main/IDEC}{Designs, training commands, per-image predictions and independent metric checks.}
 \end{document}
