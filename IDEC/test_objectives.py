@@ -69,3 +69,18 @@ def test_stage_pretraining_matches_the_original_recipe_except_for_the_projected_
     projected, _ = pretrain_projected(samples, torch.tensor([1.0, 0.0, 0.0, 0.0]), cfg, seed=3)
     assert projected.decoder[-1].bias[0].item() == 0
     assert abs(baseline.decoder[-1].bias[0].item()) > 0.001
+
+
+def test_stage_digest_accepts_only_line_endings_in_text_files(tmp_path):
+    import hashlib
+    from analyze_stages import matches_training_digest
+
+    recorded = hashlib.sha256(b"x = 1\r\n").hexdigest()
+    source = tmp_path / "model.py"
+    source.write_bytes(b"x = 1\n")
+    assert matches_training_digest(source, recorded)
+    source.write_bytes(b"x = 2\n")
+    assert not matches_training_digest(source, recorded)
+    binary = tmp_path / "evaluation.npz"
+    binary.write_bytes(b"x = 1\n")
+    assert not matches_training_digest(binary, recorded)

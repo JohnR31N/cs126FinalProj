@@ -1,5 +1,6 @@
 """Verify the stage study from image-level assignments and calculate paired contrasts."""
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from statistics import mean, stdev
@@ -8,7 +9,7 @@ import numpy as np
 
 from analyze import csv_write, verify
 from idec_final.data import load_mnist
-from idec_final.utils import ROOT, save_json, sha256
+from idec_final.utils import ROOT, save_json
 from train_stages import FINETUNING, PRETRAINING, STRENGTH
 
 
@@ -21,6 +22,17 @@ CONTRASTS = {
     "late_after_projected_pretraining": {"projected_projected": 1, "projected_full": -1},
     "interaction": {"projected_projected": 1, "full_projected": -1, "projected_full": -1, "full_full": 1},
 }
+
+
+def matches_training_digest(path, recorded):
+    content = path.read_bytes()
+    if hashlib.sha256(content).hexdigest() == recorded:
+        return True
+    # Git can export LF for a source that the training machine read with CRLF.
+    if path.suffix not in {".py", ".md", ".json"}:
+        return False
+    lf = content.replace(b"\r\n", b"\n")
+    return any(hashlib.sha256(form).hexdigest() == recorded for form in (lf, lf.replace(b"\n", b"\r\n")))
 
 
 def collect(out, cfg, meta):
@@ -116,7 +128,12 @@ def audit(out):
     assert manifest["protocol"] == cfg and manifest["strength"] == STRENGTH
     sources = [ROOT / "protocol.json", ROOT / "stage/design.md", ROOT / "train_stages.py",
                ROOT / "results/evaluation.npz", *sorted((ROOT / "idec_final").glob("*.py"))]
-    assert manifest["sha256"] == {p.relative_to(ROOT).as_posix(): sha256(p) for p in sources}
+    expected = manifest["sha256"]
+    assert set(expected) == {p.relative_to(ROOT).as_posix() for p in sources}
+    for path in sources:
+        name = path.relative_to(ROOT).as_posix()
+        if not matches_training_digest(path, expected[name]):
+            raise ValueError(f"Training manifest digest mismatch for {name}")
     _, train_y, _, test_y = load_mnist()
     ids = np.random.default_rng(cfg["split_seed"]).permutation(len(train_y))[:cfg["train_size"]]
     with np.load(ROOT / "results/evaluation.npz") as meta:
