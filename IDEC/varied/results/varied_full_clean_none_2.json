@@ -1,0 +1,207 @@
+[
+  {
+    "step": 0,
+    "assignment_change": null,
+    "occupied": 10
+  },
+  {
+    "step": 140,
+    "assignment_change": 0.02566666714847088,
+    "occupied": 10
+  },
+  {
+    "step": 280,
+    "assignment_change": 0.03474999964237213,
+    "occupied": 10
+  },
+  {
+    "step": 420,
+    "assignment_change": 0.03133333474397659,
+    "occupied": 10
+  },
+  {
+    "step": 560,
+    "assignment_change": 0.041333332657814026,
+    "occupied": 10
+  },
+  {
+    "step": 700,
+    "assignment_change": 0.029749998822808266,
+    "occupied": 10
+  },
+  {
+    "step": 840,
+    "assignment_change": 0.028166666626930237,
+    "occupied": 10
+  },
+  {
+    "step": 980,
+    "assignment_change": 0.03966666758060455,
+    "occupied": 10
+  },
+  {
+    "step": 1120,
+    "assignment_change": 0.03191666677594185,
+    "occupied": 10
+  },
+  {
+    "step": 1260,
+    "assignment_change": 0.04366666451096535,
+    "occupied": 10
+  },
+  {
+    "step": 1400,
+    "assignment_change": 0.03866666555404663,
+    "occupied": 10
+  },
+  {
+    "step": 1540,
+    "assignment_change": 0.03175000101327896,
+    "occupied": 10
+  },
+  {
+    "step": 1680,
+    "assignment_change": 0.03616666793823242,
+    "occupied": 10
+  },
+  {
+    "step": 1820,
+    "assignment_change": 0.04991666600108147,
+    "occupied": 10
+  },
+  {
+    "step": 1960,
+    "assignment_change": 0.042249999940395355,
+    "occupied": 10
+  },
+  {
+    "step": 2100,
+    "assignment_change": 0.03099999949336052,
+    "occupied": 10
+  },
+  {
+    "step": 2240,
+    "assignment_change": 0.023000000044703484,
+    "occupied": 10
+  },
+  {
+    "step": 2380,
+    "assignment_change": 0.03033333271741867,
+    "occupied": 10
+  },
+  {
+    "step": 2520,
+    "assignment_change": 0.03849999979138374,
+    "occupied": 10
+  },
+  {
+    "step": 2660,
+    "assignment_change": 0.042249999940395355,
+    "occupied": 10
+  },
+  {
+    "step": 2800,
+    "assignment_change": 0.04724999889731407,
+    "occupied": 10
+  },
+  {
+    "step": 2940,
+    "assignment_change": 0.03474999964237213,
+    "occupied": 10
+  },
+  {
+    "step": 3080,
+    "assignment_change": 0.03216666728258133,
+    "occupied": 10
+  },
+  {
+    "step": 3220,
+    "assignment_change": 0.034416668117046356,
+    "occupied": 10
+  },
+  {
+    "step": 3360,
+    "assignment_change": 0.028833333402872086,
+    "occupied": 10
+  },
+  {
+    "step": 3500,
+    "assignment_change": 0.03633333370089531,
+    "occupied": 10
+  },
+  {
+    "step": 3640,
+    "assignment_change": 0.04383333399891853,
+    "occupied": 10
+  },
+  {
+    "step": 3780,
+    "assignment_change": 0.03966666758060455,
+    "occupied": 10
+  },
+  {
+    "step": 3920,
+    "assignment_change": 0.029583333060145378,
+    "occupied": 10
+  },
+  {
+    "step": 4060,
+    "assignment_change": 0.033666666597127914,
+    "occupied": 10
+  },
+  {
+    "step": 4200,
+    "assignment_change": 0.039000000804662704,
+    "occupied": 10
+  },
+  {
+    "step": 4340,
+    "assignment_change": 0.036666665226221085,
+    "occupied": 10
+  },
+  {
+    "step": 4480,
+    "assignment_change": 0.029999999329447746,
+    "occupied": 10
+  },
+  {
+    "step": 4620,
+    "assignment_change": 0.0404166653752327,
+    "occupied": 10
+  },
+  {
+    "step": 4760,
+    "assignment_change": 0.029916666448116302,
+    "occupied": 10
+  },
+  {
+    "step": 4900,
+    "assignment_change": 0.02983333356678486,
+    "occupied": 10
+  },
+  {
+    "step": 5040,
+    "assignment_change": 0.03099999949336052,
+    "occupied": 10
+  },
+  {
+    "step": 5180,
+    "assignment_change": 0.02524999901652336,
+    "occupied": 10
+  },
+  {
+    "step": 5320,
+    "assignment_change": 0.026333333924412727,
+    "occupied": 10
+  },
+  {
+    "step": 5460,
+    "assignment_change": 0.0404166653752327,
+    "occupied": 10
+  },
+  {
+    "step": 5600,
+    "assignment_change": 0.03891666606068611,
+    "occupied": 10
+  }
+]

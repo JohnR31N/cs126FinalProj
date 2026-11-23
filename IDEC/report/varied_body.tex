@@ -1,0 +1,21 @@
+\newpage
+\sect{8 \quad Random attributes and a direct target ablation}
+\textbf{Question and controls.} A new experiment tests variation in the decorations themselves. Every image receives two symbols, placed in legal $5\times5$ boxes with the same one-pixel ink clearance. A bank of 96 templates crosses four geometries (square, diamond, triangle and L), two radii, four angles and three brightness levels. Templates are assigned through balanced shuffles independent of digit labels. Each training image keeps its assigned background. Test digits use the same generation rules with independent seeds, plus two additional redraws at the same sites. These are grayscale intensities.
+
+\begin{center}\includegraphics[width=.92\linewidth]{../figures/varied.png}\end{center}
+\smallcap{\textbf{Figure 2.} The first three held-out digits. Every stroke and its clearance stay unchanged across columns. Each circular mark in the fixed-form control has the same sum of squared intensities as its corresponding varied symbol. Thus count, location and per-symbol energy match, while occupied area and shape may differ.}
+
+\textbf{Changing the incentive to reconstruct the background.} Hold the marked input fixed and compare reconstruction of the complete image with reconstruction of the original clean digit. The latter is an oracle diagnostic that uses information supplied by the generator [6]. It directly removes the reward for reproducing the added symbols. Cross these targets in pretraining and fine-tuning on varied inputs. Each pair of fine-tuning runs starts from identical weights and cluster centers. Also train ordinary IDEC on clean and fixed-form inputs, the clean-target diagnostic on fixed-form inputs, and the translation and Gaussian interventions on varied inputs.
+
+This gives nine conditions with five seeds each, using the same split, architecture and budgets as Section 5. The \href{https://github.com/JohnR31N/cs126FinalProj/blob/e1cf43f/IDEC/varied/design.md}{protocol was committed before fitting}. We measure accuracy with a frozen training-label map, the fraction of changed cluster assignments across the two redraws, and the decoder's response after each training stage. The response is the reconstruction difference projected onto the actual pixel change, divided by that change's squared norm. One corresponds to fully tracking the changed background. Each image has the same handwriting in every redraw.
+
+\textbf{Limits of the comparison.} The clean target supplies a known clean view and changes both the reconstruction task and its optimization. The attributes are sampled independently of digit labels, while legal site locations depend on the digit silhouette. The experiment covers two small grayscale symbols and one MNIST split. Decoder response measures information used in reconstruction, and leaves other information in the code unmeasured.
+
+\newpage
+\sect{9 \quad Random-background results and interpretation}
+\begin{center}\small\setlength{\tabcolsep}{4pt}\input{../varied/results/table.tex}\end{center}
+\smallcap{\textbf{Table 4.} Five-seed means, in percent. In-domain ACC uses the training domain. Clean ACC removes the symbols at test time with the model and mapping fixed. Flips average two redraws of each digit's background.}
+\input{varied_results.tex}
+\begin{center}\small\setlength{\tabcolsep}{4pt}\input{../varied/results/stages.tex}\end{center}
+\smallcap{\textbf{Table 5.} Varied-input stage ablation. ACC and flips are percentages. Decoder response measures tracking of a changed background on a scale where one means a full response.}
+\input{varied_conclusion.tex}

@@ -4,12 +4,21 @@ IDEC reconstructs every pixel while learning a representation for clustering. A 
 
 - [Research report (PDF)](report/report.pdf) and [editable LaTeX](report/report.tex)
 - [Presentation slides (PDF)](slides/slides.pdf) and [editable Beamer source](slides/slides.tex)
+- [Random background protocol](varied/design.md), [45-model results](varied/results/summary.csv), [paired comparisons](varied/results/paired.json) and [paired image examples](figures/varied.png)
 - [Jitter protocol](photometric/design.md), [spatial protocol](photometric/spatial_design.md), [60-model results](photometric/analysis/summary.csv) and [within-seed effects](photometric/analysis/paired.json)
 - [Geometric experiment design](background/design.md), [paired digit examples](figures/geometry.png), [four-arm results](background/results/summary.csv), [paired differences](background/results/paired.json)
 - [Historical stripe report source](report/stripe_study.tex) and [the previous published PDF](https://github.com/JohnR31N/cs126FinalProj/blob/idec-final-v1.4/IDEC/report/report.pdf)
 - [Prespecified design](design.md), [hyperparameters](protocol.json), [paper reproduction](reference/result.json), [all model results](results/runs.csv), [paired seed effects](results/paired.json)
 - [Analysis and verification](analyze.py), [result checks](results/verification.json)
 - [Training-stage follow-up design](stage/design.md), [the four final conditions and two initializations](stage/results/summary.csv), [within-seed effects](stage/results/paired.json)
+
+## Random attributes and reconstruction targets
+
+The 45-run follow-up uses two symbols per image drawn from 96 shape, size, angle and brightness combinations. It keeps all handwriting and a one-pixel guard band intact. A fixed-form circular control has the same per-symbol squared energy as each varied symbol. Training and test inputs follow the same background distribution, and every model sees two independently redrawn backgrounds on each held-out digit.
+
+Ordinary IDEC reached 73.96% with clean training and testing, 65.74% on fixed-form backgrounds and 65.40% on varied backgrounds. The varied-minus-clean decline was 8.57 +/- 3.93 percentage points, and occurred in all five seeds. Reconstructing the known clean digit from the identical marked inputs raised accuracy to 71.44%, a paired gain of 6.04 +/- 4.37 points in all five seeds. Redraw flips fell from 2.98% to 2.35%, and the decoder response to the changed background fell from 0.00828 to 0.00145.
+
+Changing just the pretraining target reached 70.62% accuracy, compared with 66.85% when changing only the fine-tuning target. Translation with ordinary reconstruction reached 77.63%, compared with 69.16% for Gaussian pretraining. The clean-target comparison uses privileged clean images as a diagnostic. The matched-energy fixed-form versus varied contrast was small and inconsistent across seeds. These results support a drawback of reconstructing irrelevant backgrounds in this setting, with the larger target effect entering during pretraining.
 
 ## Whole-image augmentation versus Gaussian weighting
 
@@ -53,7 +62,7 @@ Run from **this folder**. For the tested Windows setup use Python 3.12, PyTorch 
 uv venv .venv --python 3.12
 uv pip install --python .venv/Scripts/python.exe -r requirements.txt
 uv pip install --python .venv/Scripts/python.exe torch==2.11.0 --index-url https://download.pytorch.org/whl/cu128
-.venv/Scripts/python.exe -m pytest -q test_objectives.py test_geometry.py test_photometric.py
+.venv/Scripts/python.exe -m pytest -q test_objectives.py test_geometry.py test_photometric.py test_varied.py
 ```
 
 For Linux/macOS use `.venv/bin/python`. A CPU-only PyTorch installation works with `--device cpu`. When working inside the original parent repository, its configured Python can also be used. MNIST's four original IDX gzip files are downloaded from the torchvision mirror, verified against their expected MD5 digests, and recorded with SHA-256 in the cache manifest. Set `MNIST_CACHE` to an existing folder of verified IDX files to reuse it. Author AE weights (about 13 MB) are fetched from the pinned revision below and checked before conversion.
@@ -65,6 +74,8 @@ For Linux/macOS use `.venv/bin/python`. A CPU-only PyTorch installation works wi
 .venv/Scripts/python.exe analyze_stages.py
 .venv/Scripts/python.exe geometry_analysis.py
 .venv/Scripts/python.exe photometric_analysis.py --figure figures/photometric.png --effects-figure figures/augmentation_effects.png
+.venv/Scripts/python.exe varied_analysis.py
+.venv/Scripts/python.exe varied_figure.py --effects figures/varied_effects.png
 ```
 
 **Rerun training** into new directories, then rebuild that run's tables and figures:
@@ -81,6 +92,9 @@ For Linux/macOS use `.venv/bin/python`. A CPU-only PyTorch installation works wi
 .venv/Scripts/python.exe photometric_study.py --output scratch/photometric
 .venv/Scripts/python.exe photometric_study.py --spatial --output scratch/spatial
 .venv/Scripts/python.exe photometric_analysis.py --input scratch/photometric --spatial-input scratch/spatial --output scratch/analysis --figure scratch/figures/photometric.png --effects-figure scratch/figures/augmentation_effects.png
+.venv/Scripts/python.exe varied_study.py --output scratch/varied
+.venv/Scripts/python.exe varied_analysis.py --input scratch/varied
+.venv/Scripts/python.exe varied_figure.py --input scratch/varied --examples scratch/figures/varied.png --effects scratch/figures/varied_effects.png
 ```
 
 The study checks the source/environment manifest before resuming an output folder and marks a seed/amplitude pair complete only after writing all predictions and traces. Published metrics, predictions and trace files are small enough to ship with the project. The original input images and author weights remain in the local cache. The reference script checks its HDF5 conversion against forward passes in NumPy. The analysis independently rebuilds the Hungarian mapping, digit ACC/NMI/ARI, orientation NMI and flip rate from the stored predictions and checks the full grid against the locked protocol.
@@ -91,7 +105,9 @@ The geometry analysis regenerates the marks, verifies exact pixel preservation, 
 
 The whole-image study saves predictions for each digit, including the 20,000 binary shape-probe decisions per run. The main accuracy and flip-rate calculations require no refit. Supplying `--figure` also uses the original MNIST files. The two source manifests record the training version and device. The first six arms were trained with [this revision](https://github.com/JohnR31N/cs126FinalProj/blob/a51d896/IDEC/photometric_study.py) before spatial augmentation support was added. The spatial manifest records legal angle counts and translation ranges. In `photometric/analysis/`, CSV and JSON values are fractions. Paired differences are computed within each of the five seeds, and SD uses four degrees of freedom.
 
-**Recompile documents.** The PDFs and editable sources are included. With Tectonic installed, run the following from `IDEC/`. The current documents use the figures and tables in `photometric/analysis/`. Earlier studies retain their original tables and figures.
+The random-background study stores all three test-background assignments per digit and decoder diagnostics after pretraining and fine-tuning. Its metadata includes the 96 rasterized templates, their matched circular controls, all template assignments and all placement coordinates. The source digest check prevents analysis against a different renderer or training implementation. The clean-target arms use the original digit image as extra training information. They provide a diagnostic of the reconstruction objective. Reported effects are within this synthetic generator.
+
+**Recompile documents.** The PDFs and editable sources are included. With Tectonic installed, run the following from `IDEC/`. The current documents use figures and tables in `photometric/analysis/` and `varied/results/`.
 
 ```powershell
 tectonic report/report.tex
@@ -102,6 +118,8 @@ tectonic slides/slides.tex
 
 | File | Responsibility |
 |---|---|
+| `varied_backgrounds.py`, `varied_study.py` | Generate matched random backgrounds and cross the reconstruction targets during pretraining and clustering |
+| `varied_analysis.py`, `varied_figure.py` | Rescore every background redraw, verify the complete experiment and visualize seed effects |
 | `photometric_study.py`, `spatial_augmentation.py` | Whole-image augmentations and Gaussian weighting, matched fitting, eligibility checks, held-out shape probe |
 | `photometric_analysis.py`, `photometric_figure.py` | Audit predictions, score clean controls and factorial comparisons, render the data and loss examples |
 | `reproduce_paper.py` | Checked conversion of the published HDF5 weights, full transductive fitting, stop rule and paper metrics |

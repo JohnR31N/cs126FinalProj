@@ -1,0 +1,19 @@
+\begin{frame}{Random shapes, sizes, angles and brightness}
+\centering\includegraphics[height=.72\textheight,width=.95\linewidth,keepaspectratio]{../figures/varied.png}
+\notefoot{Two symbols per image. All digit pixels stay fixed. The fixed-form control matches every varied symbol's squared pixel energy. There are 96 attribute combinations in the varied bank.}
+\end{frame}
+
+\begin{frame}{Does rewarding the background change the outcome?}
+\key{Same inputs, two reconstruction targets}\par
+Show both models the digit with its random symbols. Reward one for recreating the complete image. Reward the other for recreating the original clean digit.
+\par\bigskip
+\key{Identify the training stage}\par
+Cross the targets during pretraining and clustering. Within each pretrained model, both fine-tuning targets start from exactly the same weights and centers. Also test translation and Gaussian weighting on the varied backgrounds.
+\notefoot{Nine conditions, five seeds each. The clean target is privileged information from the synthetic generator and provides a mechanism diagnostic.}
+\end{frame}
+
+\begin{frame}{What happens on varied backgrounds?}
+\centering\small\setlength{\tabcolsep}{4pt}\input{../varied/results/table.tex}
+\par\bigskip\normalsize\input{varied_finding.tex}
+\notefoot{Means over five seeds. Background redraws preserve the handwriting. In-domain accuracy uses the test domain matching each row's training inputs.}
+\end{frame}

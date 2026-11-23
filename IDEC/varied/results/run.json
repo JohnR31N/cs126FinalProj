@@ -1,0 +1,63 @@
+{
+  "design_commit": "e1cf43f",
+  "config": {
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "strengths": [
+      0.0,
+      0.3,
+      0.8
+    ],
+    "methods": [
+      "idec",
+      "projected",
+      "cluster_only"
+    ],
+    "split_seed": 126,
+    "train_size": 12000,
+    "train_orientation_seed": 1701,
+    "test_orientation_seed": 1702,
+    "dims": [
+      784,
+      500,
+      500,
+      2000,
+      10
+    ],
+    "clusters": 10,
+    "pretrain_epochs": 100,
+    "batch_size": 256,
+    "lr": 0.001,
+    "gamma": 0.1,
+    "target_interval": 140,
+    "updates": 5600,
+    "kmeans_restarts": 20
+  },
+  "arms": [
+    "clean_full_full_none",
+    "fixed_full_full_none",
+    "fixed_clean_clean_none",
+    "varied_full_full_none",
+    "varied_full_clean_none",
+    "varied_clean_full_none",
+    "varied_clean_clean_none",
+    "varied_full_full_translate",
+    "varied_full_full_gaussian"
+  ],
+  "source_sha256": {
+    "varied/design.md": "99209607eecf6ea7384850d9035514382b687d092cd7fdfca3c7357c95dade65",
+    "varied_study.py": "625746a47fca4ec8a9a26e90611fdfd6fe4d9e7a468d8828ee75d234b902150c",
+    "varied_backgrounds.py": "dfc7b81555b9ab123c38d8cf8fa605704d0630680ae708da732242bef2d8a50b",
+    "spatial_augmentation.py": "9342198fce5f28f0b7c75d06caeb8b2294eb46898dc08eee8859e1ffda3544b8",
+    "geometry_study.py": "dd0c04eba9ec57d9faaf534ecefe095bb51a15d46c7b9f05b0eba6fe01d35ee1",
+    "idec_final/model.py": "f2a55129d465de0b10236f515cacfe501456c69da922fa91375b60d5019b23ec"
+  },
+  "torch": "2.11.0+cu128",
+  "device": "cuda",
+  "hardware": "NVIDIA GeForce RTX 5080"
+}
