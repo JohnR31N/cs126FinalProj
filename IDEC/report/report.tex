@@ -17,7 +17,7 @@
 \input{abstract.tex}
 
 \sect{1 \quad The original IDEC paper and our research question}
-\textbf{Original research question.} In \href{https://ijcai.org/proceedings/2017/0243.pdf}{\emph{Improved Deep Embedded Clustering with Local Structure Preservation}}, Guo et al.\ (2017) ask whether preserving local relationships among observations helps a model find better clusters as it jointly learns the embedding and cluster assignments from unlabeled data [1, Sec.~1].
+\textbf{Original research question.} In \href{https://ijcai.org/proceedings/2017/0243.pdf}{\emph{Improved Deep Embedded Clustering with Local Structure Preservation}}, Guo et al.\ (2017) investigate the effect of preserving local structure on clustering performance when a model jointly learns an embedding and cluster assignments from unlabeled data [1, Sec.~1].
 
 \textbf{Challenge.} In high-dimensional inputs, distance can be a poor guide to similarity. Deep Embedded Clustering (DEC) learns an embedding using targets derived from its own predictions [2]. Without labels to correct an early mistake, the model can grow more confident in a wrong assignment. The loss can fall even as similar observations move apart [1, Secs.~1 and~3.2].
 
@@ -25,7 +25,7 @@
 
 \textbf{Solution.} The authors pretrain a stacked denoising autoencoder and initialize cluster centers by running K-means on its codes. During fine-tuning, IDEC keeps the decoder and minimizes $L_{\rm recon}+\gamma\,\mathrm{KL}(P\Vert Q)$. Reconstruction penalizes loss of input detail, while the clustering term sharpens assignments. The authors report 86.55\% MNIST accuracy for DEC and 88.06\% for IDEC [1, Eqs.~6--8 and Table~2].
 
-\textbf{Our research question.} What happens when the decoder is rewarded for reproducing a background stripe unrelated to digit identity? After reproducing IDEC on MNIST, we test whether the same digit changes cluster when its stripe direction switches and whether changing the reconstruction loss reduces those switches.
+\textbf{Our research question.} We investigate the effect of reconstructing background stripes on IDEC's ability to group MNIST images by digit identity. We compare reconstruction losses by measuring digit clustering accuracy and the fraction of images that change cluster when only the stripe direction changes.
 
 \sect{2 \quad Reproducing the original method on MNIST}
 For image $x_i$ with code $z_i=f(x_i)$, the Student-$t$ assignment $q_{ij}$ measures affinity to center $\mu_j$. Squaring the assignments and adjusting for each cluster's total soft mass $f_j$ gives the target $p_{ij}$ [2].
@@ -58,7 +58,7 @@ We loaded the authors' published pretrained weights [3] into PyTorch and verifie
 \end{center}
 \smallcap{\textbf{Figure 1.} One held-out digit shown twice at each amplitude on a shared grayscale scale. At zero amplitude the two rows are identical. At 0.8 the stripe moves while the digit stays fixed.}
 
-\textbf{Testable question.} How often does a frozen IDEC model change a digit's cluster when only the stripe direction switches? Does removing the cost of reconstructing that difference during fine-tuning reduce the switches and improve digit accuracy?
+\textbf{Testable question.} We measure how often a frozen IDEC model assigns the same digit to different clusters under horizontal and vertical stripes. We compare standard and projected fine-tuning on this flip rate and on digit clustering accuracy.
 
 \textbf{Hypothesis recorded before the main experiment.} Compared with clean digits, strong stripes should reduce standard IDEC's digit accuracy and increase the association between cluster and orientation. At amplitude 0.8 we predicted that projected reconstruction would raise digit accuracy and reduce orientation dependence relative to standard IDEC. On clean images we expected little change in accuracy. These predictions preceded training (\href{https://github.com/JohnR31N/cs126FinalProj/blob/4088b03/IDEC/design.md}{design at 4088b03}).
 
