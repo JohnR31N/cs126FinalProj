@@ -10,23 +10,30 @@
 \setlength{\headheight}{14pt}\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
 \newcommand{\sect}[1]{\vspace{3pt}{\large\bfseries\color{ink}#1}\par}
 \newcommand{\smallcap}[1]{\par{\small\color{ink}#1}\par}
-\newcommand{\refpaper}{\href{https://ijcai.org/proceedings/2017/0243.pdf}{Guo et al.\ (2017)}}
 \begin{document}
 {\sffamily\bfseries\color{ink}\fontsize{26}{30}\selectfont What does IDEC preserve?}\par
 {\large Reproducing deep embedded clustering and testing its response to irrelevant stripes}\par
 {\sffamily\color{ink}John Zhang and Ryan Jian}\par
 \input{abstract.tex}
 
-\sect{1 \quad Introduction and research question}
-Two images of the same handwritten digit can differ in background pattern. A clustering method intended to group digit identities should give those images similar assignments. A decoder trained to reconstruct every pixel has an additional reason to retain the background. Does retaining all pixel variation help digit clustering under a structured nuisance? If the nuisance direction is known, can removing its reconstruction cost reduce sensitivity to it?
+\sect{1 \quad The original IDEC paper and our research question}
+\textbf{Original research question.} In \href{https://ijcai.org/proceedings/2017/0243.pdf}{\emph{Improved Deep Embedded Clustering with Local Structure Preservation}}, Guo et al.\ (2017) ask whether preserving local relationships among observations helps a model find better clusters as it jointly learns the embedding and cluster assignments from unlabeled data [1, Sec.~1].
 
-\sect{2 \quad Original method and numerical reproduction}
-IDEC trains a low-dimensional encoder $z_i=f(x_i)$, decoder $g$, and centroids $\mu_j$ for a specified number of clusters. An autoencoder initialization provides features for K-means. The model then forms Student-$t$ assignments $q_{ij}$ and a sharpened target $p_{ij}$, where $f_j$ denotes the total soft mass of cluster $j$:
+\textbf{Challenge.} In high-dimensional inputs, distance can be a poor guide to similarity. Deep Embedded Clustering (DEC) learns an embedding using targets derived from its own predictions [2]. Without labels to correct an early mistake, the model can grow more confident in a wrong assignment. The loss can fall even as similar observations move apart [1, Secs.~1 and~3.2].
+
+\textbf{Philosophy.} Clustering should shape the representation, but the code for each observation should still contain enough information to reconstruct it. Guo et al.\ assume that requiring reconstruction through a low-dimensional code helps preserve useful local structure as the clusters change [1, Sec.~3.2].
+
+\textbf{Solution.} The authors pretrain a stacked denoising autoencoder and initialize cluster centers by running K-means on its codes. During fine-tuning, IDEC keeps the decoder and minimizes $L_{\rm recon}+\gamma\,\mathrm{KL}(P\Vert Q)$. Reconstruction penalizes loss of input detail, while the clustering term sharpens assignments. The authors report 86.55\% MNIST accuracy for DEC and 88.06\% for IDEC [1, Eqs.~6--8 and Table~2].
+
+\textbf{Our research question.} What happens when the decoder is rewarded for reproducing a background stripe unrelated to digit identity? After reproducing IDEC on MNIST, we test whether the same digit changes cluster when its stripe direction switches and whether changing the reconstruction loss reduces those switches.
+
+\sect{2 \quad Reproducing the original method on MNIST}
+For image $x_i$ with code $z_i=f(x_i)$, the Student-$t$ assignment $q_{ij}$ measures affinity to center $\mu_j$. Squaring the assignments and adjusting for each cluster's total soft mass $f_j$ gives the target $p_{ij}$ [2].
 \[
  q_{ij}=\frac{(1+\lVert z_i-\mu_j\rVert^2)^{-1}}{\sum_k(1+\lVert z_i-\mu_k\rVert^2)^{-1}},
  \qquad p_{ij}=\frac{q_{ij}^2/f_j}{\sum_k q_{ik}^2/f_k},\qquad f_j=\sum_i q_{ij}.
 \]
-Between target refreshes, $P$ is fixed. The encoder minimizes reconstruction MSE plus $0.1\,\mathrm{KL}(P\Vert Q)$ (batch mean). The clustering gradient sharpens assignments while the decoder encourages the embedding to retain input information. Reconstruction is an indirect constraint on local structure. It provides no guarantee about which visual differences define meaningful classes. DEC introduced the self-training objective; IDEC retained the reconstruction term during clustering [1,2].
+Between target refreshes we hold $P$ fixed and use pixel MSE for reconstruction, with $\gamma=0.1$ and a batch-mean KL loss.
 
 \begin{center}\small
 \begin{tabular}{lrrrr}
