@@ -19,8 +19,8 @@
 \vfill
 {\small\color{rust}Unsupervised Learning and Data Mining}\par\vspace{5mm}
 {\fontsize{30}{34}\selectfont\bfseries What does IDEC preserve?}\par\vspace{3mm}
-{\Large Augmentation or a spatial prior for digit clustering?}\par\vspace{7mm}
-{\normalsize An MNIST reproduction and a controlled test of reconstruction loss}\par\vspace{4mm}
+{\Large The cost of reconstructing irrelevant backgrounds}\par\vspace{7mm}
+{\normalsize A matched comparison of DEC, IDEC and a Gaussian reconstruction prior}\par\vspace{4mm}
 {\normalsize\bfseries\insertauthor}
 \vfill
 \end{frame}
@@ -54,8 +54,7 @@ All 70,000 MNIST images participated in fitting and scoring. Our PyTorch port st
 \notefoot{One seeded run reached the 20,000-update cap. Our background experiments use fresh weights and a held-out test set.}
 \end{frame}
 
-\input{photometric_slides.tex}
-\input{varied_slides.tex}
+\input{comparison_slides.tex}
 
 \begin{frame}{Sources and reproducibility}
 \small

@@ -1,9 +1,10 @@
 # IDEC final project
 
-IDEC reconstructs every pixel while learning a representation for clustering. A plus or cross beside a digit matters for reconstruction but carries no intended digit identity. We compare three whole-image augmentations (brightness/contrast, translation and rotation) with a fixed Gaussian reconstruction weight. For each augmentation we test it alone, with the Gaussian, and on a mark-free training set. The held-out paired tests move or change the symbol while preserving every ink pixel and its one-pixel guard band.
+IDEC gives an error on a decorative shape the same reconstruction cost as an equal error on a digit stroke. We add two random geometric symbols to the background of each MNIST digit and measure the accuracy loss for DEC and IDEC. Our proposed modification gives central pixels more reconstruction weight using a fixed Gaussian prior. In the marked domain these models see a single composite image per digit. A separate diagnostic supplies a clean target from the generator.
 
 - [Research report (PDF)](report/report.pdf) and [editable LaTeX](report/report.tex)
 - [Presentation slides (PDF)](slides/slides.pdf) and [editable Beamer source](slides/slides.tex)
+- [Matched DEC and IDEC protocol](dec_background/design.md), [method means](dec_background/results/summary.csv), [five paired differences](dec_background/results/paired.csv), [contrasts and variability](dec_background/results/contrasts.json) and [individual runs](dec_background/results/runs.csv)
 - [Random background protocol](varied/design.md), [45-model results](varied/results/summary.csv), [paired comparisons](varied/results/paired.json) and [paired image examples](figures/varied.png)
 - [Jitter protocol](photometric/design.md), [spatial protocol](photometric/spatial_design.md), [60-model results](photometric/analysis/summary.csv) and [within-seed effects](photometric/analysis/paired.json)
 - [Geometric experiment design](background/design.md), [paired digit examples](figures/geometry.png), [four-arm results](background/results/summary.csv), [paired differences](background/results/paired.json)
@@ -11,6 +12,25 @@ IDEC reconstructs every pixel while learning a representation for clustering. A 
 - [Prespecified design](design.md), [hyperparameters](protocol.json), [paper reproduction](reference/result.json), [all model results](results/runs.csv), [paired seed effects](results/paired.json)
 - [Analysis and verification](analyze.py), [result checks](results/verification.json)
 - [Training-stage follow-up design](stage/design.md), [the four final conditions and two initializations](stage/results/summary.csv), [within-seed effects](stage/results/paired.json)
+
+## Matched DEC and IDEC experiment
+
+Each method trains on clean digits and on the same digits with two fixed background symbols. Both domains use the same five seeds and the same train/test indices. The drop for a seed is clean-trained/clean-tested ACC minus marked-trained/marked-tested ACC, in percentage points. Subtracting DEC's drop from IDEC's drop compares sensitivity to these backgrounds. The files also include the result of adding symbols only at evaluation time to a frozen model.
+
+Standard DEC uses an autoencoder for initialization. We fork the same pretrained weights and K-means centers in each domain, then compare a clustering KL loss alone (DEC) with the same KL plus uniform pixel MSE (IDEC). The Gaussian variant uses a fixed map centered at (13.5, 13.5), with a width of seven pixels and mean weight one. Test it in both stages, in pretraining only, and in fine-tuning only. The separate KL-only random-start control skips all reconstruction, including the pretraining updates. See the [method and loss table](dec_background/results/table.tex) and [seed plot](figures/dec_background_drops.png).
+
+| Method | Clean ACC | Marked ACC | Mean drop ± seed SD (points) |
+|---|---:|---:|---:|
+| DEC | 77.63% | 70.86% | 6.77 ± 5.40 |
+| IDEC | 73.23% | 65.14% | 8.09 ± 5.01 |
+| Gaussian in both stages | 70.03% | 65.59% | 4.44 ± 3.98 |
+| Gaussian in pretraining only | 74.07% | 68.80% | 5.27 ± 4.64 |
+| Gaussian in fine-tuning only | 69.27% | 62.88% | 6.39 ± 5.18 |
+| KL only from random weights | 31.00% | 28.90% | 2.10 ± 1.75 |
+
+The IDEC-minus-DEC differences in loss were +2.78, −3.88, +1.77, +5.22 and +0.71 points (mean +1.32 ± 3.35). The shared uniform autoencoder already lost 5.20 points before either method fine-tuned it. On frozen clean-trained models, adding the symbols only at test time cost 2.01 points for DEC and 8.62 for IDEC.
+
+The primary two-stage Gaussian narrowed the clean-to-marked drop by 3.65 ± 5.43 points. It gained 0.45 points on marked digits (three of five seeds) but lost 3.20 points on clean digits (all five). Redraw flips fell from 2.99% to 2.63% and decoder response from 0.00843 to 0.00529, both down in every seed. The pretraining-only variant improved marked accuracy by 3.66 ± 4.74 points (four of five) and clean accuracy by 0.84 on average. The random-start KL control collapsed to a single cluster in both domains in seed 4.
 
 ## Random attributes and reconstruction targets
 
@@ -62,7 +82,7 @@ Run from **this folder**. For the tested Windows setup use Python 3.12, PyTorch 
 uv venv .venv --python 3.12
 uv pip install --python .venv/Scripts/python.exe -r requirements.txt
 uv pip install --python .venv/Scripts/python.exe torch==2.11.0 --index-url https://download.pytorch.org/whl/cu128
-.venv/Scripts/python.exe -m pytest -q test_objectives.py test_geometry.py test_photometric.py test_varied.py
+.venv/Scripts/python.exe -m pytest -q test_objectives.py test_geometry.py test_photometric.py test_varied.py test_dec_background.py
 ```
 
 For Linux/macOS use `.venv/bin/python`. A CPU-only PyTorch installation works with `--device cpu`. When working inside the original parent repository, its configured Python can also be used. MNIST's four original IDX gzip files are downloaded from the torchvision mirror, verified against their expected MD5 digests, and recorded with SHA-256 in the cache manifest. Set `MNIST_CACHE` to an existing folder of verified IDX files to reuse it. Author AE weights (about 13 MB) are fetched from the pinned revision below and checked before conversion.
@@ -76,6 +96,8 @@ For Linux/macOS use `.venv/bin/python`. A CPU-only PyTorch installation works wi
 .venv/Scripts/python.exe photometric_analysis.py --figure figures/photometric.png --effects-figure figures/augmentation_effects.png
 .venv/Scripts/python.exe varied_analysis.py
 .venv/Scripts/python.exe varied_figure.py --effects figures/varied_effects.png
+.venv/Scripts/python.exe dec_background_analysis.py
+.venv/Scripts/python.exe dec_background_figures.py --prior figures/gaussian_prior.png --effects figures/dec_background_drops.png
 ```
 
 **Rerun training** into new directories, then rebuild that run's tables and figures:
@@ -95,6 +117,9 @@ For Linux/macOS use `.venv/bin/python`. A CPU-only PyTorch installation works wi
 .venv/Scripts/python.exe varied_study.py --output scratch/varied
 .venv/Scripts/python.exe varied_analysis.py --input scratch/varied
 .venv/Scripts/python.exe varied_figure.py --input scratch/varied --examples scratch/figures/varied.png --effects scratch/figures/varied_effects.png
+.venv/Scripts/python.exe dec_background_study.py --output scratch/dec_background
+.venv/Scripts/python.exe dec_background_analysis.py --input scratch/dec_background
+.venv/Scripts/python.exe dec_background_figures.py --input scratch/dec_background --prior scratch/figures/gaussian_prior.png --effects scratch/figures/dec_background_drops.png
 ```
 
 The study checks the source/environment manifest before resuming an output folder and marks a seed/amplitude pair complete only after writing all predictions and traces. Published metrics, predictions and trace files are small enough to ship with the project. The original input images and author weights remain in the local cache. The reference script checks its HDF5 conversion against forward passes in NumPy. The analysis independently rebuilds the Hungarian mapping, digit ACC/NMI/ARI, orientation NMI and flip rate from the stored predictions and checks the full grid against the locked protocol.
@@ -107,7 +132,9 @@ The whole-image study saves predictions for each digit, including the 20,000 bin
 
 The random-background study stores all three test-background assignments per digit and decoder diagnostics after pretraining and fine-tuning. Its metadata includes the 96 rasterized templates, their matched circular controls, all template assignments and all placement coordinates. The source digest check prevents analysis against a different renderer or training implementation. The clean-target arms use the original digit image as extra training information. They provide a diagnostic of the reconstruction objective. Reported effects are within this synthetic generator.
 
-**Recompile documents.** The PDFs and editable sources are included. With Tectonic installed, run the following from `IDEC/`. The current documents use figures and tables in `photometric/analysis/` and `varied/results/`.
+The DEC comparison saves training assignments and three marked plus one clean test view for all 60 final models and 30 initializations. Each set of forks records a shared SHA-256 of its starting parameters and centers. The analyzer verifies the source digests, experiment completeness, trace steps and paired starts. In `dec_background/results`, ACC and switch rates are percentages. Degradation and method differences are percentage points with the sample SD across seeds. Decoder response is dimensionless. Clean and Gaussian controls in the new comparison were refitted alongside DEC. The preceding study's independently fitted IDEC numbers belong to its own target comparisons.
+
+**Recompile documents.** The PDFs and editable sources are included. With Tectonic installed, run the following from `IDEC/`. The current documents use tables from `dec_background/results/` and `varied/results/` and images from `figures/`.
 
 ```powershell
 tectonic report/report.tex
@@ -118,6 +145,7 @@ tectonic slides/slides.tex
 
 | File | Responsibility |
 |---|---|
+| `dec_background_study.py`, `dec_background_analysis.py`, `dec_background_figures.py` | Fork the clustering objectives, score paired degradation and draw the loss prior and seed contrasts |
 | `varied_backgrounds.py`, `varied_study.py` | Generate matched random backgrounds and cross the reconstruction targets during pretraining and clustering |
 | `varied_analysis.py`, `varied_figure.py` | Rescore every background redraw, verify the complete experiment and visualize seed effects |
 | `photometric_study.py`, `spatial_augmentation.py` | Whole-image augmentations and Gaussian weighting, matched fitting, eligibility checks, held-out shape probe |

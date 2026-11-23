@@ -1,5 +1,5 @@
 \textbf{Where the effect enters.} Changing only the fine-tuning target raised ACC by $1.45\pm1.02$ points. Changing only the pretraining target raised it by $5.23\pm4.88$ points. Both increases occurred in every seed. The larger mean effect of changing pretraining suggests that the initialization matters, even when ordinary full-image reconstruction returns during clustering.
 
-\textbf{Practical modification.} Whole-image translation reached 77.63\% marked ACC and 1.89\% redraw flips, compared with 69.16\% and 2.58\% for Gaussian weighting. Translation won both comparisons in every seed. Its mean decoder response was 0.00659, above the clean-target arm's 0.00145. Better cluster stability can coexist with a decoder that still responds to decoration.
+\textbf{Augmentation control.} Whole-image translation reached 77.63\% marked ACC and 1.89\% redraw flips, compared with 69.16\% and 2.58\% for Gaussian pretraining. Translation won both comparisons in every seed. Its mean decoder response was 0.00659, above the clean-target arm's 0.00145. Better cluster stability can coexist with a decoder that still responds to decoration.
 
 The target and stage comparisons support a limitation of rewarding these backgrounds during reconstruction. The clean target recovers part of the accuracy gap, while all ten clusters remain occupied.

@@ -1,0 +1,50 @@
+\newpage
+\sect{3 \quad Identified limitation and hypothesis}
+\textbf{Challenge.} To cluster by digit identity, the embedding should distinguish a 7 from a 2. A decoder can also reduce its pixel error by drawing a triangle in the margin [1,4]. Uniform reconstruction gives one unit of squared error on that triangle the same cost as one unit on a digit stroke. We hypothesize that this incentive can impair digit clustering. Random geometry alone could also make clustering harder.
+
+\begin{center}\includegraphics[width=.67\linewidth]{../figures/varied.png}\end{center}
+\smallcap{\textbf{Figure 1.} The same MNIST handwriting across each row. The generator places two symbols in disjoint $5\times5$ boxes and preserves each nonzero stroke pixel plus a one-pixel clearance. The last three columns redraw symbol attributes at the same two positions.}
+
+\textbf{Philosophy.} Give the decoder a stronger reason to preserve features that determine the intended grouping. MNIST digits are centered, so we use location as an imperfect estimate of relevance. It is available from a single observed image, including at training time.
+
+\sect{4 \quad Proposed modification to the reconstruction loss}
+For pixel $j$ at position $p_j$, let $v_j=\exp(-\|p_j-(13.5,13.5)\|^2/(2\cdot7^2))$ and $w_j=v_j/\bar v$. Replace uniform MSE with
+\[
+L_G(x,\hat x)=\frac{1}{784}\sum_{j=1}^{784}w_j(\hat x_j-x_j)^2 .
+\]
+The map has mean one. A central and a peripheral error of the same magnitude now have different costs. Our proposed IDEC applies $L_G$ in both autoencoder pretraining and clustering. A stage ablation applies it in each stage alone. Training uses the observed image as the target and the same fixed weights for every image.
+
+\begin{center}\includegraphics[width=.87\linewidth]{../figures/gaussian_prior.png}\end{center}
+\smallcap{\textbf{Figure 2.} The model sees the marked image. We used the generator only to audit where the weights fall. Across training pixels the mean was 1.78 on ink and 0.66 on symbols. A central symbol still receives a large weight.}
+
+\newpage
+\sect{5 \quad Experimental setup}
+Use the same 12,000 training digits and 10,000 held-out digits in both domains [5]. The marked domain contains two symbols from 96 combinations of shape, radius, angle and grayscale brightness. Attributes are assigned by a balanced shuffle independent of digit labels. Each training digit keeps its background. Held-out digits receive independently generated symbols under the same rules.
+
+\textbf{Matched models.} Within each domain and seed (0--4), train a $784$--$500$--$500$--$2000$--$10$ autoencoder for 100 epochs and run K-means with 20 restarts. Fork the very same weights and centers. DEC minimizes only $0.1\,\mathrm{KL}(P\Vert Q)$ during clustering [2]. Ordinary IDEC adds uniform MSE. A third fork adds $L_G$. Gaussian pretraining provides another shared starting point for uniform or Gaussian fine-tuning. The fixed KL multiplier, Adam learning rate $10^{-3}$, batch size 256, target refresh every 140 updates and 5,600 updates match across all forks. Our controlled implementation uses a plain autoencoder for initialization. A separate KL-only control skips pretraining entirely and starts from a random encoder. This control spends fewer training updates.
+
+\textbf{Primary comparison.} For method $m$ and seed $s$, compute $D_{m,s}=\mathrm{ACC}_{m,s}^{\rm clean}-\mathrm{ACC}_{m,s}^{\rm marked}$ in percentage points. Both scores use matching training and test domains and the same digit identities. A positive $D_{\rm IDEC,s}-D_{\rm DEC,s}$ means IDEC lost more. $D_{\rm IDEC,s}-D_{\rm Gaussian,s}$ measures whether weighting reduced IDEC's background penalty after accounting for its effect on clean digits. Fit the cluster-to-digit map on training predictions after fitting and freeze it for every test view. The quantity after $\pm$ is the sample SD across five paired seeds. The \href{https://github.com/JohnR31N/cs126FinalProj/blob/7e753dd/IDEC/dec_background/design.md}{follow-up protocol} predates the DEC fits.
+
+\sect{6 \quad Testing the incentive to reproduce background symbols}
+An earlier experiment held the marked inputs fixed and supplied either the marked image or the original clean digit as the reconstruction target [6]. With the clean target, copying a symbol incurs an error because its target pixels are zero. This changes the reconstruction task using privileged information from the generator. Separately, circles matched to the varied symbols in number, position and squared intensity gave 65.74\% ACC, close to the 65.40\% with varied geometry. Extra harm from geometric diversity itself was inconsistent across seeds.
+
+\begin{center}\small\input{../varied/results/stages.tex}\end{center}
+\smallcap{\textbf{Table 2.} Earlier target ablation on identical marked inputs. ACC and flips are percentages. Flips count cluster changes when only the symbol attributes are redrawn. Decoder response projects the change in reconstruction onto the change in input, with one denoting full tracking.}
+Using clean targets in both stages gained $6.04\pm4.37$ points of marked ACC. All five seeds gained accuracy and showed lower decoder response. Changing only the pretraining target gained 5.23 points on average, compared with 1.45 for changing only the fine-tuning target. This supports an effect of what the decoder must reproduce and motivates measuring the initialization as well as the final clusters.
+
+\newpage
+\sect{7 \quad Results of the matched DEC and IDEC comparison}
+\begin{center}\small\setlength{\tabcolsep}{5pt}\input{../dec_background/results/table.tex}\end{center}
+\smallcap{\textbf{Table 3.} Each method was fitted in both domains. Accuracy and redraw flips are percentages. The drop is clean minus marked accuracy (mean $\pm$ paired seed SD in percentage points). Redraw flips use marked-trained models. The KL-only random-start row skips autoencoder initialization.}
+\input{comparison_findings.tex}
+
+\begin{center}\includegraphics[width=.98\linewidth]{../figures/dec_background_drops.png}\end{center}
+\smallcap{\textbf{Figure 3.} Blue dots represent the five seeds and orange diamonds their means. On the right, a positive difference means ordinary IDEC lost more accuracy than the named comparison method. Subtracting within each seed preserves the pairing.}
+
+\newpage
+\sect{8 \quad Limitations and conclusion}
+\input{comparison_conclusion.tex}
+
+The prior assumes that central pixels generally matter more to digit identity. A symbol near the center gets a high reconstruction weight, and an off-center stroke gets a low one. On MNIST the available sites depend on the digit silhouette. The two small grayscale marks, a single image split and five model seeds limit transfer to other backgrounds and data distributions. A decoder response measures only the information used to render the changed pixels. It leaves open how much background information the encoder retains for other purposes.
+
+\textbf{Augmentation control.} Whole-image translation keeps the image and reconstruction target aligned. Omitting the translated symbol incurs the same uniform squared error as before. In a single-symbol experiment, translation improved clustering even on entirely clean digits (73.53\% to 83.87\%). With marked training, it also reduced assignment flips. Those comparisons measure an augmentation benefit. The Gaussian directly changes the reconstruction cost of a given pixel.

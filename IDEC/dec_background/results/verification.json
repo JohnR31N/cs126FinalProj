@@ -1,0 +1,16 @@
+{
+  "final_models": 60,
+  "initializations": 30,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "test_images_per_model": 10000,
+  "background_views": 3,
+  "training_digests_checked": true,
+  "paired_fork_digests_checked": true,
+  "min_occupied_primary": 10
+}
