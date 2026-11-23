@@ -1,16 +1,25 @@
 # IDEC final project
 
-IDEC reconstructs every pixel while learning a representation for clustering. We study background features that matter for reconstruction but carry no intended digit information. The geometric experiment places a plus or diagonal cross in blank space and checks that every stroke pixel and a one-pixel clearance ring are preserved. We compare ordinary full-image reconstruction, background augmentation, reconstruction of stable content from paired views, and a fixed Gaussian prior on the reconstruction loss.
+IDEC reconstructs every pixel while learning a representation for clustering. A plus or cross beside a digit matters for reconstruction but carries no intended digit identity. We compare three whole-image augmentations (brightness/contrast, translation and rotation) with a fixed Gaussian reconstruction weight. For each augmentation we test it alone, with the Gaussian, and on a mark-free training set. The held-out paired tests move or change the symbol while preserving every ink pixel and its one-pixel guard band.
 
 - [Research report (PDF)](report/report.pdf) and [editable LaTeX](report/report.tex)
 - [Presentation slides (PDF)](slides/slides.pdf) and [editable Beamer source](slides/slides.tex)
+- [Jitter protocol](photometric/design.md), [spatial protocol](photometric/spatial_design.md), [60-model results](photometric/analysis/summary.csv) and [within-seed effects](photometric/analysis/paired.json)
 - [Geometric experiment design](background/design.md), [paired digit examples](figures/geometry.png), [four-arm results](background/results/summary.csv), [paired differences](background/results/paired.json)
 - [Historical stripe report source](report/stripe_study.tex) and [the previous published PDF](https://github.com/JohnR31N/cs126FinalProj/blob/idec-final-v1.4/IDEC/report/report.pdf)
 - [Prespecified design](design.md), [hyperparameters](protocol.json), [paper reproduction](reference/result.json), [all model results](results/runs.csv), [paired seed effects](results/paired.json)
 - [Analysis and verification](analyze.py), [result checks](results/verification.json)
 - [Training-stage follow-up design](stage/design.md), [the four final conditions and two initializations](stage/results/summary.csv), [within-seed effects](stage/results/paired.json)
 
-## Detached geometric backgrounds
+## Whole-image augmentation versus Gaussian weighting
+
+Random whole-image translation gave the best standalone result on the fixed marked training set. Marked accuracy reached 80.63% and movement flips fell to 3.41%, compared with 67.51% and 6.23% for ordinary IDEC. The Gaussian-only arm reached 71.42% and 5.19%. All five paired seeds favored translation over Gaussian on marked accuracy and movement and shape flips. Adding the Gaussian to translation gave 79.93% accuracy and 3.66% movement flips.
+
+With no mark anywhere in training or testing, translation also raised clean accuracy from 73.53% to 83.87%. When these clean-trained models first saw the marks at test time, movement flips were 11.69% with translation and 10.50% for the baseline. Among methods trained on marked images, the standalone linear shape probes scored between 50.13% and 50.26% (chance 50%). The controlled comparisons distinguish accuracy gains from assignment stability. They do not establish that the embedding discards all background information.
+
+![Paired changes in clean-domain accuracy and marked-domain cluster stability](figures/augmentation_effects.png)
+
+## Earlier targeted background augmentation
 
 Moving a nine-pixel mark changed 6.20% of cluster assignments under ordinary IDEC, even though all handwriting stayed identical. Background augmentation reduced this to 4.34%, with a reduction in each of the five seeds. The paired reconstruction target reduced the decoder's mean response to the movement from 0.00313 under augmentation alone to 0.00085 (one represents perfect tracking). It brought movement flips to 4.18% but increased shape flips from 3.43% to 3.59%. The Gaussian-weighted arm yielded the highest mean marked-image accuracy, 72.91% compared with 71.02% under augmentation alone. All four arms retained ten occupied test clusters.
 
@@ -44,7 +53,7 @@ Run from **this folder**. For the tested Windows setup use Python 3.12, PyTorch 
 uv venv .venv --python 3.12
 uv pip install --python .venv/Scripts/python.exe -r requirements.txt
 uv pip install --python .venv/Scripts/python.exe torch==2.11.0 --index-url https://download.pytorch.org/whl/cu128
-.venv/Scripts/python.exe -m pytest -q test_objectives.py test_geometry.py
+.venv/Scripts/python.exe -m pytest -q test_objectives.py test_geometry.py test_photometric.py
 ```
 
 For Linux/macOS use `.venv/bin/python`. A CPU-only PyTorch installation works with `--device cpu`. When working inside the original parent repository, its configured Python can also be used. MNIST's four original IDX gzip files are downloaded from the torchvision mirror, verified against their expected MD5 digests, and recorded with SHA-256 in the cache manifest. Set `MNIST_CACHE` to an existing folder of verified IDX files to reuse it. Author AE weights (about 13 MB) are fetched from the pinned revision below and checked before conversion.
@@ -55,6 +64,7 @@ For Linux/macOS use `.venv/bin/python`. A CPU-only PyTorch installation works wi
 .venv/Scripts/python.exe analyze.py
 .venv/Scripts/python.exe analyze_stages.py
 .venv/Scripts/python.exe geometry_analysis.py
+.venv/Scripts/python.exe photometric_analysis.py --figure figures/photometric.png --effects-figure figures/augmentation_effects.png
 ```
 
 **Rerun training** into new directories, then rebuild that run's tables and figures:
@@ -68,6 +78,9 @@ For Linux/macOS use `.venv/bin/python`. A CPU-only PyTorch installation works wi
 .venv/Scripts/python.exe geometry_study.py --output scratch/geometry
 .venv/Scripts/python.exe geometry_readout.py --output scratch/geometry/decoder.npz
 .venv/Scripts/python.exe geometry_analysis.py --input scratch/geometry --figure scratch/figures/geometry.png
+.venv/Scripts/python.exe photometric_study.py --output scratch/photometric
+.venv/Scripts/python.exe photometric_study.py --spatial --output scratch/spatial
+.venv/Scripts/python.exe photometric_analysis.py --input scratch/photometric --spatial-input scratch/spatial --output scratch/analysis --figure scratch/figures/photometric.png --effects-figure scratch/figures/augmentation_effects.png
 ```
 
 The study checks the source/environment manifest before resuming an output folder and marks a seed/amplitude pair complete only after writing all predictions and traces. Published metrics, predictions and trace files are small enough to ship with the project. The original input images and author weights remain in the local cache. The reference script checks its HDF5 conversion against forward passes in NumPy. The analysis independently rebuilds the Hungarian mapping, digit ACC/NMI/ARI, orientation NMI and flip rate from the stored predictions and checks the full grid against the locked protocol.
@@ -76,7 +89,9 @@ The stage audit recomputes each model's six metrics from its stored assignments,
 
 The geometry analysis regenerates the marks, verifies exact pixel preservation, fits the post-training digit map and checks all 20 model records. Site availability depends on the digit silhouette. The three augmented arms share the four-view schedule. The paired target uses aligned same-digit pairs during training. The Gaussian weights are fixed with sigma 7 pixels. Decoding the signed motion of a mark is a separate exploratory readout from replayed pretraining. In the result CSVs, ACC and flips are fractions. In the report table, those measures are percentages. The decoder response is dimensionless. Standard deviations and within-seed differences are in the CSV and JSON outputs.
 
-**Recompile documents.** The PDFs and editable sources are included. With Tectonic installed, run the following from `IDEC/`. The documents use the figures and the tables generated in `background/results/` (the historical stripe study also uses `results/` and `stage/results/`).
+The whole-image study saves predictions for each digit, including the 20,000 binary shape-probe decisions per run. The main accuracy and flip-rate calculations require no refit. Supplying `--figure` also uses the original MNIST files. The two source manifests record the training version and device. The first six arms were trained with [this revision](https://github.com/JohnR31N/cs126FinalProj/blob/a51d896/IDEC/photometric_study.py) before spatial augmentation support was added. The spatial manifest records legal angle counts and translation ranges. In `photometric/analysis/`, CSV and JSON values are fractions. Paired differences are computed within each of the five seeds, and SD uses four degrees of freedom.
+
+**Recompile documents.** The PDFs and editable sources are included. With Tectonic installed, run the following from `IDEC/`. The current documents use the figures and tables in `photometric/analysis/`. Earlier studies retain their original tables and figures.
 
 ```powershell
 tectonic report/report.tex
@@ -87,6 +102,8 @@ tectonic slides/slides.tex
 
 | File | Responsibility |
 |---|---|
+| `photometric_study.py`, `spatial_augmentation.py` | Whole-image augmentations and Gaussian weighting, matched fitting, eligibility checks, held-out shape probe |
+| `photometric_analysis.py`, `photometric_figure.py` | Audit predictions, score clean controls and factorial comparisons, render the data and loss examples |
 | `reproduce_paper.py` | Checked conversion of the published HDF5 weights, full transductive fitting, stop rule and paper metrics |
 | `idec_final/data.py`, `stripes.py` | Verified MNIST loader, orientation assignment, image intervention and projected reconstruction loss |
 | `idec_final/model.py`, `experiment.py` | Mirrored autoencoder, Student-t assignments, target refresh, paired training and saved predictions |

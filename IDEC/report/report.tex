@@ -14,7 +14,7 @@
 {\sffamily\bfseries\color{ink}\fontsize{26}{30}\selectfont What does IDEC preserve?}\par
 {\large Reconstructing digit identity in the presence of irrelevant background features}\par
 {\sffamily\color{ink}John Zhang and Ryan Jian}\par
-\input{geometry_abstract.tex}
+\input{photometric_abstract.tex}
 
 \sect{1 \quad The original IDEC paper and our research question}
 \textbf{Original research question.} In \href{https://ijcai.org/proceedings/2017/0243.pdf}{\emph{Improved Deep Embedded Clustering with Local Structure Preservation}}, Guo et al.\ (2017) investigate the effect of preserving local structure on clustering performance when a model jointly learns an embedding and cluster assignments from unlabeled data [1, Sec.~1].
@@ -25,7 +25,7 @@
 
 \textbf{Solution.} The authors pretrain a stacked denoising autoencoder and initialize cluster centers by running K-means on its codes. During fine-tuning, IDEC keeps the decoder and minimizes $L_{\rm recon}+\gamma\,\mathrm{KL}(P\Vert Q)$. Reconstruction penalizes loss of input detail, while the clustering term sharpens assignments. The authors report 86.55\% MNIST accuracy for DEC and 88.06\% for IDEC [1, Eqs.~6--8 and Table~2].
 
-\textbf{Our research question.} We investigate the effect of rewarding task-irrelevant features in reconstruction on digit clustering. We compare background augmentation, a reconstruction target derived from paired views, and a spatial prior that favors the image center.
+\textbf{Our research question.} We investigate whether whole-image augmentation or spatially weighting reconstruction improves digit clustering and reduces its sensitivity to irrelevant background features.
 
 \sect{2 \quad Reproducing the original method on MNIST}
 For image $x_i$ with code $z_i=f(x_i)$, the Student-$t$ assignment $q_{ij}$ measures affinity to center $\mu_j$. Squaring the assignments and adjusting for each cluster's total soft mass $f_j$ gives the target $p_{ij}$ [2].
@@ -47,7 +47,7 @@ This reproduction, seed 0 & 81.85 & .7474 & 88.10 & .8650\\\bottomrule
 \smallcap{\textbf{Table 1.} Transductive MNIST clustering. All 70,000 images participate in model fitting and scoring, as in the original paper.}
 We loaded the authors' pretrained weights [3] into PyTorch and checked eight layers against an independent NumPy forward pass. We scaled raw pixels by $1/50$ and used 20 K-means restarts, Adam at $10^{-3}$, batches of 256 and target refreshes every 140 updates. Final ACC was 0.04 percentage points above the paper. The run reached the 20,000-update cap with $0.51\%$ of assignments still changing, above the $0.1\%$ stopping threshold.
 
-\input{geometry_body.tex}
+\input{photometric_body.tex}
 
 \sect{8 \quad References}
 \small
@@ -57,5 +57,6 @@ We loaded the authors' pretrained weights [3] into PyTorch and checked eight lay
 [4] N. Mrabah et al. \href{https://arxiv.org/abs/1901.07752}{Deep Clustering with a Dynamic Autoencoder: From Reconstruction towards Centroids Construction}. Neural Networks, 2020.\par
 [5] Y. LeCun, C. Cortes and C. Burges. \href{https://www.tensorflow.org/datasets/catalog/mnist}{MNIST handwritten digits}. IDX files via the torchvision mirror.\par
 [6] P. Vincent et al. \href{https://www.jmlr.org/papers/v11/vincent10a.html}{Stacked Denoising Autoencoders}. JMLR, 2010.\par
+[7] Torchvision. \href{https://docs.pytorch.org/vision/stable/generated/torchvision.transforms.ColorJitter.html}{ColorJitter}. Brightness and contrast parameterization.\par
 \textbf{Data and code.} \href{https://github.com/JohnR31N/cs126FinalProj/tree/main/IDEC}{Designs, training commands, per-image predictions and independent metric checks.}
 \end{document}

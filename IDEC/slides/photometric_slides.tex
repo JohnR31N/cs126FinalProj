@@ -1,0 +1,48 @@
+\begin{frame}{Our challenge and philosophy}
+\key{A reconstruction loss rewards every pixel}\par
+Drawing a cross beside a 7 lowers pixel error. The cross carries no intended information about which digit was written.
+\par\bigskip
+\key{A digit's cluster should survive a change of decoration}\par
+Give the decoder a stronger incentive to reproduce the central handwriting, or show it transformed versions of each image. Measure what happens when only the cross moves.
+\notefoot{Each symbol adds nine pixels to verified blank space. All handwriting stays intact, including faint edges.}
+\end{frame}
+
+\begin{frame}{What changes during training and testing?}
+\centering\includegraphics[width=.89\linewidth,height=.73\textheight,keepaspectratio]{../figures/photometric.png}
+\notefoot{Training transforms the entire marked image. The two background tests change the decoration while holding the handwriting fixed.}
+\end{frame}
+
+\begin{frame}{Separating digit accuracy from background sensitivity}
+\begin{columns}[T,onlytextwidth]
+\column{.47\textwidth}\key{Train on marked digits}\par\medskip
+Test brightness/contrast jitter, whole-image translation and small rotation. For each, turn the Gaussian loss weights on and off. Ordinary IDEC and Gaussian alone are shared controls.
+\column{.47\textwidth}\key{Train on clean digits}\par\medskip
+Repeat ordinary IDEC and each augmentation with no symbol present. A clean-test accuracy gain shows that the method can improve clustering even in the absence of the mark.
+\end{columns}
+\par\bigskip
+\notefoot{12 arms, five matched seeds, 12,000 training and 10,000 test digits. Only pretraining changes. Digit labels are used for evaluation after fitting.}
+\end{frame}
+
+\begin{frame}{Can we read the mark from the digit representation?}
+\key{Assignments}\par
+Move the symbol, or swap its shape at the same site. Count how often the frozen IDEC model changes its cluster.
+\par\bigskip
+\key{Representation}\par
+Show both a plus and a cross for every training digit at the same location. Fit a linear probe on the final embeddings. Test whether it can identify the symbol on unseen digits. Chance is 50\%.
+\notefoot{The probe uses synthetic shape labels only after IDEC training. A model can retain shape information even when its cluster assignment stays the same.}
+\end{frame}
+
+\begin{frame}{Which standalone intervention stabilizes the clusters?}
+\centering\small\setlength{\tabcolsep}{3pt}\input{../photometric/analysis/table.tex}
+\par\bigskip\normalsize\input{photometric_finding.tex}
+\notefoot{Five-seed means, in percent. Each row uses one marked training image per digit. The standalone Gaussian weights errors around the image center during reconstruction.}
+\end{frame}
+
+\begin{frame}{Does augmentation help when no mark is present?}
+\centering\includegraphics[width=.98\linewidth,height=.64\textheight,keepaspectratio]{../figures/augmentation_effects.png}
+\notefoot{Each blue point is one matched seed. The diamond is its five-seed mean. Positive values indicate improvement in each panel. Clean-only accuracy uses separate models trained and tested without geometric marks.}
+\end{frame}
+
+\begin{frame}{Choosing a solution for digit clustering}
+\input{photometric_choice.tex}
+\end{frame}

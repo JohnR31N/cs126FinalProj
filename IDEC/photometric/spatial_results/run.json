@@ -1,0 +1,113 @@
+{
+  "design_commit": "8e66ad4",
+  "design_sha256": "46273a8f3035af739ec8987f6ebf13796edc3481c7b7fc50da0cc34c6bac99dc",
+  "code_sha256": "730cf857639898ee65b3140002725ee6c40ccda88e399b05ac61746d3a2defe6",
+  "config": {
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "strengths": [
+      0.0,
+      0.3,
+      0.8
+    ],
+    "methods": [
+      "idec",
+      "projected",
+      "cluster_only"
+    ],
+    "split_seed": 126,
+    "train_size": 12000,
+    "train_orientation_seed": 1701,
+    "test_orientation_seed": 1702,
+    "dims": [
+      784,
+      500,
+      500,
+      2000,
+      10
+    ],
+    "clusters": 10,
+    "pretrain_epochs": 100,
+    "batch_size": 256,
+    "lr": 0.001,
+    "gamma": 0.1,
+    "target_interval": 140,
+    "updates": 5600,
+    "kmeans_restarts": 20
+  },
+  "arms": [
+    "translate",
+    "translate_gaussian",
+    "rotate",
+    "rotate_gaussian",
+    "clean_translate",
+    "clean_rotate"
+  ],
+  "torch": "2.11.0+cu128",
+  "device": "cuda",
+  "hardware": "NVIDIA GeForce RTX 5080",
+  "spatial_code_sha256": "9342198fce5f28f0b7c75d06caeb8b2294eb46898dc08eee8859e1ffda3544b8",
+  "eligibility": {
+    "clean_translate": {
+      "mean_legal_offsets": 45.5004997253418,
+      "min_legal_offsets": 20,
+      "max_legal_offsets": 49,
+      "mean_identity_probability": 0.022366566583514214
+    },
+    "clean_rotate": {
+      "angles_degrees": [
+        -12,
+        -8,
+        -4,
+        0,
+        4,
+        8,
+        12
+      ],
+      "legal_image_counts": [
+        11736,
+        11836,
+        11892,
+        12000,
+        11900,
+        11861,
+        11713
+      ],
+      "identity_only_images": 2,
+      "mean_identity_probability": 0.14587102830410004
+    },
+    "marked_translate": {
+      "mean_legal_offsets": 31.68033218383789,
+      "min_legal_offsets": 4,
+      "max_legal_offsets": 49,
+      "mean_identity_probability": 0.03507256880402565
+    },
+    "marked_rotate": {
+      "angles_degrees": [
+        -12,
+        -8,
+        -4,
+        0,
+        4,
+        8,
+        12
+      ],
+      "legal_image_counts": [
+        6774,
+        7765,
+        9012,
+        12000,
+        9264,
+        8026,
+        6937
+      ],
+      "identity_only_images": 529,
+      "mean_identity_probability": 0.2552216351032257
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "models": 60,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "seed_sd_ddof": 1,
+  "eligible_shift_pairs": 8920,
+  "min_occupied_marked_test_clusters": 10,
+  "test_digits": 10000,
+  "probe_test_views": 20000,
+  "metrics_from_saved_predictions": true
+}

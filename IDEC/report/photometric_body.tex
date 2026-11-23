@@ -1,0 +1,36 @@
+\newpage
+\sect{3 \quad Our challenge, philosophy and hypothesis}
+\textbf{Challenge.} A handwritten 7 and a small cross in the margin both contribute pixels to IDEC's reconstruction error [1,4]. Drawing the cross can reduce error even though its shape and location carry no intended digit identity. Adding an equally bright, nine-pixel plus or diagonal cross in blank space lets us vary this detail without touching any handwriting. Each original image admits two disjoint sites whose $5\times5$ boxes and one-pixel border contain no ink. We verified every nonzero pixel, including faint edges, on all 22,000 images.
+
+\textbf{Philosophy.} A useful digit representation should preserve distinctions among digits while yielding a stable cluster when only decoration changes. A Gaussian loss prior gives the decoder more incentive to reconstruct central pixels, where MNIST handwriting tends to lie. Standard whole-image augmentation supplies different views of the same digit without specifying which pixels matter. We test both routes. We hypothesize that spatial weighting can reduce dependence on peripheral marks. Augmentation could improve digit accuracy through its effect on handwriting alone.
+
+\begin{center}\includegraphics[width=.85\linewidth]{../figures/photometric.png}\end{center}
+\smallcap{\textbf{Figure 1.} The same test digit throughout. The top row shows whole-image transformations of a fixed marked input. The bottom row shows the clean reference, the loss weights and two tests that change only the mark. Brighter yellow denotes a higher reconstruction weight. The model receives the ordinary grayscale image in the Gaussian condition.}
+
+\sect{4 \quad Modifications to pretraining}
+\textbf{Three augmentation policies.} Brightness and contrast jitter independently sample factors in $[0.7,1.3]$ and apply them in random order to each grayscale image [7]. Translation samples legal integer offsets of up to three pixels on each axis. Rotation samples legal angles from $0,\pm4,\pm8,\pm12$ degrees with bilinear interpolation. Spatial transforms move the entire digit and mark together. We check the image boundary before sampling so that moving the mark outside the crop cannot explain a gain. Every augmented view serves as both input and reconstruction target.
+
+\textbf{Spatial prior.} For pixel $j$ at location $p_j$, the Gaussian replaces uniform MSE weights with $w_j\propto\exp[-\lVert p_j-(13.5,13.5)\rVert^2/(2\cdot7^2)]$, normalized to mean one. This fixed weighting uses the prior that the digit is centered. It adds no learned parameters. With ordinary augmentation the model still earns credit for reconstructing the transformed mark. Whether its clusters become less sensitive to that mark is an empirical question.
+
+\newpage
+\sect{5 \quad Ablation design and evaluation}
+The marked training set has one fixed symbol per digit, with balanced random shape assignment independent of digit labels. Each of the three augmentation policies is crossed separately with Gaussian weighting on/off, sharing the ordinary and Gaussian-only controls. Four other arms train entirely on clean digits (ordinary, brightness/contrast, translation, rotation). This gives 12 arms and five matched seeds per arm. Each seed shares random initial weights, minibatch order, 12,000 training images, 100 pretraining epochs, architecture and optimizer. K-means with 20 restarts initializes each learned embedding. All arms then use ordinary IDEC on their unaugmented training images for 5,600 updates. The \href{https://github.com/JohnR31N/cs126FinalProj/blob/715521a/IDEC/photometric/design.md}{jitter protocol} and \href{https://github.com/JohnR31N/cs126FinalProj/blob/8e66ad4/IDEC/photometric/spatial_design.md}{spatial extension} specify the settings before their respective fits.
+
+\textbf{Three distinct measurements.} Digit accuracy uses a cluster-to-digit mapping fitted on training labels after optimization and frozen for all 10,000 held-out digits. To measure sensitivity, move only the mark and count changes of cluster ID (primary). Then swap its shape at a fixed site. Finally fit a standardized logistic regression on the frozen final codes to read out plus versus cross. The probe sees both shapes on every training digit at the same site. Test it on both shapes for each unseen digit, with 50\% chance accuracy. Probe accuracy measures accessible shape information. A cluster can remain stable even when the representation retains that information.
+
+\sect{6 \quad Results}
+\begin{center}\small\setlength{\tabcolsep}{3pt}\input{../photometric/analysis/table.tex}\end{center}
+\smallcap{\textbf{Table 2.} Averages over five seeds, in percent. All rows train on marked images. Lower flip rates mean more stable assignments. The supplement includes all individual runs, joint arms, clean-training controls and paired differences.}
+\begin{center}\small\setlength{\tabcolsep}{3pt}\input{../photometric/analysis/controls.tex}\end{center}
+\smallcap{\textbf{Table 3.} The clean-only gain is the paired ACC difference in percentage points versus ordinary IDEC trained and tested without a mark (mean $\pm$ seed SD). Joint models train on marked images with that augmentation and Gaussian weighting.}
+\input{photometric_results.tex}
+
+\newpage
+\sect{7 \quad Choice of solution and limits}
+\input{photometric_conclusion.tex}
+
+\textbf{What the tests establish.} Moving only the background mark identifies its effect on that frozen model's cluster assignment for these image pairs. Mark-free training and testing can reveal a benefit even when no synthetic symbol is present. Both effects may coexist. These comparisons do not estimate what fraction of a change in ACC is mediated by suppressing the background. A linear readout covers one shape contrast. Nonlinear features, position information and other backgrounds may behave differently.
+
+Boundary checks also affect the amount of augmentation. On marked images an average of 31.7 of the 49 possible translations fit, versus 45.5 on clean images. Rotation kept the original orientation with expected probability 25.5\% on marked images and 14.6\% on clean images. These differences matter when comparing gains between the two domains.
+
+\textbf{Relation to the preceding study.} An earlier experiment explicitly moved or replaced the mark during pretraining. That targeted augmentation gave 4.34\% movement flips, versus 6.20\% for its fixed-input baseline. A paired reconstruction target [6] further reduced the decoder's response to mark movement but had mixed effects on assignment stability. The current augmentation comparison holds the assigned symbol fixed relative to the handwriting and tests conventional transforms. The earlier \href{https://github.com/JohnR31N/cs126FinalProj/tree/idec-final-v1.5/IDEC}{report, predictions and code} remain available with their own protocol.
