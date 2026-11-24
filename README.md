@@ -25,6 +25,8 @@ A follow-up changed the Gaussian center using only the observed image. Clean ACC
 
 We also used a label-free cluster saliency map to adjust the Gaussian during pretraining. When training used only clean digits, marked-test ACC reached 71.51% with each image's own map, 68.27% with shuffled maps and 68.92% with the fixed Gaussian. When training also contained background symbols, the same methods reached 70.52%, 71.05% and 68.80%, respectively. [Saliency maps, controls and results](IDEC/gaussian_saliency/README.md)
 
+Combining **per-image Gaussian centering with the same image's saliency** reached 71.59% on marked test digits after clean-only training. That compares with 70.28% for adaptive centering alone and 71.51% for fixed centering plus aligned saliency. The paired gain from moving the center while keeping saliency was 0.09 points, positive in two of five seeds. [Joint adaptive-center and saliency experiment](IDEC/adaptive_saliency/README.md)
+
 In the reconstruction-target diagnostic, changing the target from the complete marked image to the known clean digit raised marked accuracy from **65.40% to 71.44%**. All five seeds improved. The clean target uses privileged generator information. The Gaussian method needs only the observed image and its pixel coordinates. On the training data, it assigned mean weight **1.78** to digit ink and **0.66** to the added symbols, against a uniform weight of one.
 
 In the matched comparison, both methods lost accuracy in every seed. **DEC fell from 77.63% to 70.86%, a 6.77-point drop. IDEC fell from 73.23% to 65.14%, an 8.09-point drop.** IDEC lost more in four of five seeds (paired excess loss **1.32 ± 3.35** points). They started from identical weights and centers within each domain.
