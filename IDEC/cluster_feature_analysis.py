@@ -10,7 +10,7 @@ from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
 from threadpoolctl import threadpool_limits
 
 from clean_neighborhood_study import normalized_digest
-from cluster_feature_probes import fit_probes, score_probes
+from cluster_feature_probes import STYLE_NAMES, assignment_style_scores, fit_probes, score_probes
 from cluster_feature_selection import FEATURE_NAMES
 from cluster_feature_study import ARMS, DEC_FORKS, SOURCES, SPLITS
 from idec_final.utils import ROOT, save_json
@@ -78,12 +78,15 @@ def analyze(out):
         assert set(frozen_file.files) == {f"{n}_{s}" for n in names for s in SPLITS}
         np.testing.assert_array_equal(frozen_file["graph_train"], cross_fold)
         frozen = {name: score_assignments(frozen_file, name, labels) for name in names}
-    rows, scores = [], {}
+    with np.load(out / "probes.npz") as p:
+        residuals = {s: p[s+"_style"].astype(np.float64) for s in SPLITS}
+    rows, scores, decision_styles = [], {}, {}
     for arm in ARMS:
         stages = ("initial", "idec", "dec") if arm in DEC_FORKS else ("initial", "idec")
         for seed in range(5):
             with np.load(out / f"{arm}_{seed}.npz") as saved:
                 assert set(saved.files) == {f"{stage}_{s}" for stage in stages for s in SPLITS}
+                decision_styles.setdefault(arm, []).append(assignment_style_scores(saved, labels, residuals))
                 for stage in stages:
                     by_split = score_assignments(saved, stage, labels)
                     for s, values in by_split.items():
@@ -107,8 +110,10 @@ def analyze(out):
             paired[s][f"selected_idec_minus_{arm}_{stage}"] = {
                 "mean_pp": float(diff.mean()), "sd_pp": float(diff.std(ddof=1)),
                 "wins": int((diff > 0).sum()), "by_seed_pp": diff.tolist()}
-    return {"selection": selection, "means": means, "paired": paired, "frozen": frozen,
-            "probes": probes, "training_tail_digit_counts": tails}, rows
+    style_by_split = {s: {arm: dict(zip(STYLE_NAMES, np.mean([r[s] for r in trials], axis=0).tolist()))
+                          for arm, trials in decision_styles.items()} for s in ("test", "extra")}
+    return {"selection": selection, "means": means, "paired": paired, "frozen": frozen, "probes": probes,
+            "assignment_style_r2": style_by_split, "training_tail_digit_counts": tails}, rows
 
 
 def compare(current, stored):

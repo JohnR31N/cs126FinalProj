@@ -44,7 +44,7 @@ def fit_probes(out, device):
     style = {s: style_values(images[s]) for s in SPLITS}
     style_means = np.stack([style["train"][y["train"] == k].mean(0) for k in range(10)])
     style = {s: style[s] - style_means[y[s]] for s in SPLITS}
-    saved = {s+"_style": style[s].astype(np.float32) for s in ("test", "extra")}
+    saved = {s+"_style": style[s].astype(np.float32) for s in SPLITS}
     one_hot = np.eye(10)[y["train"]]
     digit_mean = one_hot.mean(0)
     for name in FEATURE_NAMES:
@@ -72,7 +72,7 @@ def score_probes(out, labels):
     results = {}
     with np.load(out / "probes.npz") as p:
         expected = {f"{n}_{s}_{kind}" for n in FEATURE_NAMES for s in ("test", "extra")
-                    for kind in ("digit", "style")} | {"test_style", "extra_style", "tail_ids", "tail_images"}
+                    for kind in ("digit", "style")} | {s+"_style" for s in SPLITS} | {"tail_ids", "tail_images"}
         assert set(p.files) == expected
         for s in ("test", "extra"):
             actual = p[s+"_style"].astype(np.float64)
@@ -94,3 +94,19 @@ def score_probes(out, labels):
         tails = [{end: np.bincount(labels["train"][ix], minlength=10).tolist()
                   for end, ix in zip(("low", "high"), pair)} for pair in ids]
     return results, tails
+
+
+def assignment_style_scores(predictions, labels, residuals):
+    """Held-out style variance explained by a cluster ID in addition to the true digit."""
+    cells = labels["train"] * 10 + predictions["idec_train"]
+    count = np.bincount(cells, minlength=100)
+    sums = np.zeros((100, len(STYLE_NAMES)), dtype=np.float64)
+    np.add.at(sums, cells, residuals["train"])
+    # Regularize small digit/cluster cells towards the training digit's mean.
+    predicted_residual = sums / (count[:, None] + 10)
+    scores = {}
+    for s in ("test", "extra"):
+        actual = residuals[s]
+        pred = predicted_residual[labels[s]*10 + predictions[f"idec_{s}"]]
+        scores[s] = 1 - np.square(actual-pred).sum(0) / np.square(actual).sum(0)
+    return scores

@@ -1,0 +1,31 @@
+{
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "trained": [
+    "top",
+    "bottom",
+    "location_matched"
+  ],
+  "frozen": [
+    "top",
+    "bottom",
+    "location_matched",
+    "random"
+  ],
+  "parent_selector_sha256": "094bd74cd44ac068dea7f50ca93891bde44ceed6aae69129a9dac4125923cfe1",
+  "parent_evaluation_sha256": "fa9bdc771aa148820a135631338b43b28cfe34e554b8624dfd379cd1b32a80ee",
+  "source_sha256_lf": {
+    "cluster_coordinate_study.py": "4522e57bf9f0ac2f866857cc53ef4529e6a3be73487b38223a5611042fbc70c3",
+    "cluster_features/coordinate_design.md": "0b4bcef0733c439c0b0e782e862fcc593219bf150d5474e5479f17d0ea98cdef",
+    "cluster_feature_selection.py": "b9ea2026782c0bd112380c208f5e389b1c594d9fcf2cbad96564302fc6f27cac",
+    "cluster_feature_study.py": "4225bf22afee59773a95f98a33fe323f041658f93c1a7d9adb07a00ac28dea70",
+    "varied_study.py": "625746a47fca4ec8a9a26e90611fdfd6fe4d9e7a468d8828ee75d234b902150c"
+  },
+  "torch": "2.11.0+cu128",
+  "device": "cuda"
+}

@@ -2,7 +2,7 @@ import numpy as np
 from threadpoolctl import threadpool_limits
 
 from cluster_coordinate_study import select_bins
-from cluster_feature_probes import style_values
+from cluster_feature_probes import assignment_style_scores, style_values
 from cluster_feature_selection import (coordinates, fisher_basis, nearest, reconstruction_target,
                                        stroke_features, target_embedding)
 
@@ -78,3 +78,17 @@ def test_literal_selection_requires_separation_in_both_halves_and_matches_locati
     assert chosen["half_a"][98] == 1 and chosen["score"][98] == 0
     np.testing.assert_array_equal(np.bincount(chosen["top"]//8, minlength=49),
                                   np.bincount(chosen["location_matched"]//8, minlength=49))
+
+
+def test_cluster_style_readout_uses_training_cells_and_falls_back_to_digit_mean():
+    y_train = np.repeat([0, 1], 40)
+    cluster = np.tile(np.repeat([0, 1], 20), 2)
+    y_test = np.array([0, 0, 1, 1])
+    test_cluster = np.array([0, 1, 0, 1])
+    labels = {"train": y_train, "test": y_test, "extra": y_test}
+    residual = np.tile((2*test_cluster-1)[:, None], (1, 4))
+    styles = {"train": np.tile((2*cluster-1)[:, None], (1, 4)), "test": residual, "extra": residual}
+    pred = {"idec_train": cluster, "idec_test": test_cluster, "idec_extra": np.full(4, 9)}
+    actual = assignment_style_scores(pred, labels, styles)
+    np.testing.assert_allclose(actual["test"], 8/9)
+    np.testing.assert_allclose(actual["extra"], 0)

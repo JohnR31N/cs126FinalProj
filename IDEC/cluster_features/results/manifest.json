@@ -1,0 +1,66 @@
+{
+  "arms": [
+    "pixels",
+    "all_strokes",
+    "selected",
+    "complement",
+    "pca",
+    "permuted"
+  ],
+  "dec_forks": [
+    "pixels",
+    "selected"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "protocol": {
+    "split_seed": 126,
+    "train_size": 12000,
+    "dims": [
+      784,
+      500,
+      500,
+      2000,
+      10
+    ],
+    "clusters": 10,
+    "pretrain_epochs": 100,
+    "batch_size": 256,
+    "lr": 0.001,
+    "gamma": 0.1,
+    "target_interval": 140,
+    "updates": 5600,
+    "kmeans_restarts": 20
+  },
+  "source_sha256_lf": {
+    "cluster_feature_selection.py": "25640c4cddecb047c0028a277dc954f1a322e02740e9c2c8a287df7fad74cd1b",
+    "cluster_feature_study.py": "4225bf22afee59773a95f98a33fe323f041658f93c1a7d9adb07a00ac28dea70",
+    "cluster_features/design.md": "7843c6b5ca43e71468a47dfdf83561836c19f3ef68ba4f6e0163f6a780421995",
+    "clean_neighborhood_study.py": "09999584b503ec05b67cff9ff0dc71af6ea4fd0dc63be150668b2a5fcb3547fe",
+    "varied_study.py": "625746a47fca4ec8a9a26e90611fdfd6fe4d9e7a468d8828ee75d234b902150c",
+    "dec_background_study.py": "910f45795dea24b7c314bc610dc04c44227805abb6afed8741dfa51adf42138c",
+    "idec_final/data.py": "390bf8bbb4d20d0124378a84facb765807e6d028892b3e5321ab3bb4dcd6bba0",
+    "idec_final/experiment.py": "619effc170e96a9335ff5dec15db841bb8dfd79f78e301b9fd2b95db9e43ef0c",
+    "idec_final/model.py": "1a7ac08dacba913ec2056a16fdc23b605310e39fc615daa06d76a5c77a38a20b",
+    "idec_final/utils.py": "6a6a2430e51723864c8f1820268da80ab0bd7d84bc89a8d536d2109eb3b7777e"
+  },
+  "mnist_md5": {
+    "train-images-idx3-ubyte.gz": "f68b3c2dcbeaaa9fbdd348bbdeb94873",
+    "train-labels-idx1-ubyte.gz": "d53e105ee54ea40749a09fcbcd1e9432",
+    "t10k-images-idx3-ubyte.gz": "9fb629c4189551a2d022fa330f9573f3",
+    "t10k-labels-idx1-ubyte.gz": "ec29112dd5afa0611ce80d1b7f02629c"
+  },
+  "versions": {
+    "torch": "2.11.0+cu128",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "sklearn": "1.9.1"
+  },
+  "device": "cuda",
+  "hardware": "NVIDIA GeForce RTX 5080"
+}
