@@ -1,0 +1,14 @@
+\begin{tabular}{lrrr}
+\toprule
+& \multicolumn{2}{c}{Clean fit} & Marked fit\\
+\cmidrule(lr){2-3}Pretraining weights & Clean test & Marked test & Marked test\\\midrule
+Ordinary IDEC & 73.23 & 64.62 & 65.14\\
+Fixed Gaussian & 74.07 & 68.92 & 68.80\\
+Saliency only & 71.83 & 64.33 & 67.51\\
+Adaptive Gaussian & 76.20 & 70.28 & 69.71\\
+Fixed Gaussian $\times$ saliency & 75.95 & 71.51 & 70.52\\
+Adaptive $\times$ shuffled saliency & 73.80 & 68.47 & 68.63\\
+\midrule
+\textbf{Adaptive $\times$ aligned saliency} & \textbf{76.10} & \textbf{71.59} & \textbf{71.06}\\
+\bottomrule
+\end{tabular}

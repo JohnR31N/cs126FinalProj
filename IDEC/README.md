@@ -1,6 +1,9 @@
 # IDEC final project
 
-Our project tests a Gaussian center prior for IDEC on centered MNIST digits. The prior weights reconstruction errors by pixel location. We use two background symbols to measure its effect, compare three placements of the prior, and report the strongest marked accuracy among those placements when weighting only pretraining. The feature-selection studies are supplementary experiments.
+Our final model weights IDEC pretraining by an **adaptive-center Gaussian multiplied by each image's own cluster saliency**. Clean-trained students reach 71.59% on marked test digits, compared with 64.62% for ordinary IDEC and 71.51% for a fixed Gaussian with the same saliency. The five paired seed results and the three single-component ablations are collected in the [final experiment guide](final/README.md).
+
+- [Run a fresh clean-only fit or regenerate the final tables](final/README.md)
+- [Component means](final/ablation.csv), [paired differences](final/paired.csv) and [per-seed scores](final/per_seed.csv)
 
 - [Research report (PDF)](report/report.pdf) and [editable LaTeX](report/report.tex)
 - [Presentation slides (PDF)](slides/slides.pdf) and [editable Beamer source](slides/slides.tex)
@@ -17,7 +20,7 @@ Our project tests a Gaussian center prior for IDEC on centered MNIST digits. The
 - [Analysis and verification](analyze.py), [result checks](results/verification.json)
 - [Training-stage follow-up design](stage/design.md), [the four final conditions and two initializations](stage/results/summary.csv), [within-seed effects](stage/results/paired.json)
 
-## Matched DEC and IDEC experiment
+## Earlier matched DEC and IDEC experiment
 
 Each method trains on clean digits and on the same digits with two fixed background symbols. The 73.23% clean IDEC control uses fresh 100-epoch pretraining on 12,000 digits, 5,600 updates and scoring on 10,000 held-out digits, averaged over five seeds. The 88.10% reference starts from author weights and fits and scores all 70,000 digits, with 20,000 updates at seed 0. Both background conditions use the same five seeds and train/test indices. The drop for a seed is clean-trained/clean-tested ACC minus marked-trained/marked-tested ACC, in percentage points. Subtracting DEC's drop from IDEC's drop compares sensitivity to these backgrounds.
 

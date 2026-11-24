@@ -15,7 +15,7 @@ The fitting set contains 12,000 digits and the official test set contains 10,000
 
 The adaptive center gained 0.91 points on marked accuracy against the fixed Gaussian (3 of 5 seeds, paired SD 4.52). It gained 2.13 points on clean digits. The clean-to-marked gap therefore widened from 5.27 to 6.49 points. Its average weight on handwriting moved from 1.78 to 1.79, and its weight on added symbols rose from 0.66 to 0.69. The result favors the adaptive center on mean accuracy, with little change in redraw sensitivity and substantial seed variation. It provides no evidence of stronger downweighting of the added symbols.
 
-The uniform floor gained 0.16 points on marked accuracy (2 of 5 seeds, paired SD 3.57) and lost 0.68 points on clean digits. Its mean weight on added symbols rose to 0.83. The original fixed prior remains the primary project method; the image-dependent center is an exploratory extension on this previously studied split.
+The uniform floor gained 0.16 points on marked accuracy (2 of 5 seeds, paired SD 3.57) and lost 0.68 points on clean digits. Its mean weight on added symbols rose to 0.83. This intermediate study used the fixed prior as its reference. The [final project](../final/README.md) combines the image-dependent center with aligned cluster saliency on the same previously studied split.
 
 ## Reproduce
 

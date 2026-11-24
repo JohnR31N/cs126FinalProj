@@ -1,54 +1,41 @@
-# What Does IDEC Preserve?
+# Selective reconstruction in IDEC
 
-**John Zhang and Ryan Jian** · COSI 126A final project
+**John Zhang and Ryan Jian · COSI 126A final project**
 
-Our proposed modification to IDEC is a **Gaussian center prior for reconstruction**. A pixel error near a centered MNIST digit receives more weight than an equal error near the margin. Two detached background symbols let us measure how this choice affects digit clustering. Training uses pixel coordinates and the observed image.
+Uniform reconstruction rewards an IDEC decoder for copying both digit strokes and unrelated marks. Our proposed method gives each pixel a reconstruction weight during autoencoder pretraining. An adaptive Gaussian estimates where the digit lies, and a frozen teacher estimates which pixels distinguish its two closest clusters. The product favors pixels supported by both cues. The model learns these weights from unlabeled images. No synthetic background is required to train the primary model.
 
-[Read the report](IDEC/report/report.pdf) · [View the slides](IDEC/slides/slides.pdf) · [Download the current project](https://github.com/JohnR31N/cs126FinalProj/archive/refs/heads/main.zip) · [Archived v1.9 background study](https://github.com/JohnR31N/cs126FinalProj/releases/download/idec-final-v1.9/IDEC_final.zip)
+[Research report (PDF)](IDEC/report/report.pdf) · [Presentation (PDF)](IDEC/slides/slides.pdf) · [Complete project ZIP](https://github.com/JohnR31N/cs126FinalProj/releases/download/idec-final-v2.0/IDEC_final.zip) · [Reproduction commands and sources](IDEC/final/README.md)
 
-## Where to apply the Gaussian prior
+## Evidence for the drawback
 
-The prespecified experiment applied Gaussian weights in both training stages. Weighting only autoencoder pretraining gave the highest marked accuracy among the three Gaussian placements. This variant returns to ordinary IDEC after K-means initialization.
+On matching clean and marked domains, DEC fell from 77.63% to 70.86% and IDEC from 73.23% to 65.14%. Adding two detached geometric symbols made clustering harder for both methods. In a separate experiment we kept every marked input identical and changed the decoder target. When the target omitted the symbols, digit accuracy rose from **65.40% to 71.44%**, with a gain in all five seeds. That intervention isolates a cost of rewarding background reconstruction. The clean target is available only for this diagnostic. [Target intervention and per-seed effects](IDEC/varied/results/paired.json) · [Matched DEC and IDEC results](IDEC/dec_background/results/summary.csv)
 
-| Reconstruction weighting | Clean ACC | Marked ACC |
-|---|---:|---:|
-| Ordinary pixel IDEC | 73.23% | 65.14% |
-| Gaussian in both stages | 70.03% | 65.59% |
-| **Gaussian in pretraining only** | **74.07%** | **68.80%** |
-| Gaussian in fine-tuning only | 69.27% | 62.88% |
+## Final ablation
 
-Pretraining-only weighting improved marked accuracy by 3.66 percentage points on average (four of five paired seeds, sample SD 4.74). Weighting both stages narrowed the clean-to-marked drop to 4.44 points, partly because clean accuracy fell by 3.20 points. These are held-out results from 12,000 fitting images. The separate paper reproduction reached 88.10% on all 70,000 clean images. [Experiment design](IDEC/dec_background/design.md) · [Per-seed results](IDEC/dec_background/results/runs.csv)
+The primary evaluation fits on 12,000 clean MNIST digits and adds symbols only at test time. The digit identity and every original stroke pixel stay fixed. Scores are mean clustering accuracy on 10,000 held-out digits across five paired student seeds.
 
-![Identical handwriting with fixed-form and varied background symbols](IDEC/figures/varied.png)
+| Pretraining weights | Clean fit / clean test | Clean fit / marked test | Marked fit / marked test |
+|---|---:|---:|---:|
+| Ordinary IDEC | 73.23% | 64.62% | 65.14% |
+| Fixed Gaussian | 74.07% | 68.92% | 68.80% |
+| Saliency only | 71.83% | 64.33% | 67.51% |
+| Adaptive Gaussian | 76.20% | 70.28% | 69.71% |
+| Fixed Gaussian × aligned saliency | 75.95% | 71.51% | 70.52% |
+| Adaptive Gaussian × shuffled saliency | 73.80% | 68.47% | 68.63% |
+| **Adaptive Gaussian × aligned saliency** | **76.10%** | **71.59%** | **71.06%** |
 
-A follow-up changed the Gaussian center using only the observed image. Clean ACC rose from 74.07% to 76.20% and marked ACC from 68.80% to 69.71% (three of five paired seeds improved on marked digits). The clean-to-marked gap widened and the mean weight on symbols rose slightly. Giving every pixel a weight floor of 0.5 yielded 68.96% marked ACC. [Gaussian refinement methods and results](IDEC/gaussian_refinement/README.md)
+On the primary endpoint, the final model gained **6.98 percentage points** over ordinary IDEC (all five seeds) and **3.12 points** over shuffled saliency with the same adaptive center (four of five). Moving the Gaussian center while keeping aligned saliency added only **0.09 points** (two of five). Background-induced accuracy loss fell from 8.62 to 4.50 points. These comparisons use unrounded within-seed differences. [Per-seed scores](IDEC/final/per_seed.csv) · [Paired contrasts](IDEC/final/paired.csv)
 
-We also used a label-free cluster saliency map to adjust the Gaussian during pretraining. When training used only clean digits, marked-test ACC reached 71.51% with each image's own map, 68.27% with shuffled maps and 68.92% with the fixed Gaussian. When training also contained background symbols, the same methods reached 70.52%, 71.05% and 68.80%, respectively. [Saliency maps, controls and results](IDEC/gaussian_saliency/README.md)
+![Clean and marked versions of one training digit with its adaptive Gaussian, cluster saliency and final pretraining weights](IDEC/final/weights.png)
 
-Combining **per-image Gaussian centering with the same image's saliency** reached 71.59% on marked test digits after clean-only training. That compares with 70.28% for adaptive centering alone and 71.51% for fixed centering plus aligned saliency. The paired gain from moving the center while keeping saliency was 0.09 points, positive in two of five seeds. [Joint adaptive-center and saliency experiment](IDEC/adaptive_saliency/README.md)
+For context, clean-trained **DEC reached 75.62% on the same marked test**, above the final IDEC variant in each of the five seeds. DEC uses reconstruction for initialization and clustering loss alone during fine-tuning. [Matched DEC runs](IDEC/dec_background/results/runs.csv)
 
-In the reconstruction-target diagnostic, changing the target from the complete marked image to the known clean digit raised marked accuracy from **65.40% to 71.44%**. All five seeds improved. The clean target uses privileged generator information. The Gaussian method needs only the observed image and its pixel coordinates. On the training data, it assigned mean weight **1.78** to digit ink and **0.66** to the added symbols, against a uniform weight of one.
+## Original paper reproduction
 
-In the matched comparison, both methods lost accuracy in every seed. **DEC fell from 77.63% to 70.86%, a 6.77-point drop. IDEC fell from 73.23% to 65.14%, an 8.09-point drop.** IDEC lost more in four of five seeds (paired excess loss **1.32 ± 3.35** points). They started from identical weights and centers within each domain.
+Guo et al. report **88.06%** on full MNIST. Our author-checkpoint reproduction reaches **88.10%** on the same 70,000 images used for fitting. The 73.23% ordinary IDEC control above has different initialization, training size, update budget and evaluation data. The final weighting has been evaluated in the held-out experiment. [Original paper](https://www.ijcai.org/proceedings/2017/243) · [Reproduction record](IDEC/reference/result.json)
 
-Whole-image translation during pretraining gave **83.88% clean and 77.61% marked ACC for IDEC**, versus **81.36% and 77.18% for DEC**. IDEC gained 12.47 points on marked digits and 10.65 on clean digits. Its background penalty narrowed by 1.82 points on average (three of five seeds), and its background-redraw flip rate fell from 2.99% to 1.78% (all five seeds). Translation still requires the decoder to reproduce the entire shifted image. The Gaussian prior changes the reconstruction cost of a peripheral error.
+## Project files
 
-## MNIST evaluation protocols
-
-| Experiment | Images used for fitting | Clean MNIST metric | Ordinary IDEC |
-|---|---|---|---:|
-| Paper reproduction, author-pretrained autoencoder | All 70,000 | Accuracy on those same 70,000, seed 0, 20,000 updates | **88.10%** |
-| Background experiment, autoencoder trained from scratch | 12,000 training digits | Accuracy on 10,000 held-out digits, five seeds, 5,600 updates | **73.23%** |
-| Feature-selection experiment, fresh paired fits | Same 12,000 training digits | Same 10,000 held-out digits, five seeds, 5,600 updates | **73.63%** |
-
-## Supplementary feature-selection experiments
-
-On original MNIST, learning which reconstruction errors to emphasize from neighboring images lowered accuracy. The ordinary IDEC refit reached **73.70%**, the content-dependent weights reached **68.59%**, and the same weight maps assigned to other images reached **65.85%**. Ordinary IDEC led the content-dependent method in all five paired seeds. [Original-image experiment and results](IDEC/clean_neighborhood/design.md)
-
-A follow-up used two independent unlabeled graph partitions to select stroke measurements that separate reproducible groups. Reconstructing nine selected directions raised accuracy from **73.63% to 76.84%** in a new matched comparison on the 10,000 original test digits. On 48,000 further original digits withheld from fitting, the change was **72.80% to 76.71%**. Keeping the 98 highest-ranked individual measurements reached **75.82%** on the primary test, compared with **17.87%** for the lowest-ranked 98 and **72.43%** for random orientations selected in the same locations. Ordinary DEC reached **77.64%**, and the discarded feature span retained substantial digit information in a labeled evaluation probe. [Feature selection methods, controls and visual examples](IDEC/cluster_features/README.md)
-
-On **full MNIST**, switching from the authors' pixel checkpoint to the nine-feature target for fine-tuning gave **86.08%**, versus **88.03%** for its matched pixel rerun. Using selected features throughout pretraining and fine-tuning gave **82.10%**, versus **87.78%** for pixel IDEC trained from scratch on the same 70,000 images. Each comparison uses seed 0 and 20,000 clustering updates. [Full-data comparisons and external benchmarks](IDEC/external_benchmarks/README.md)
-
-On grayscale CIFAR-10, nine occupied consensus groups supported eight Fisher directions. Reconstructing them gave **18.50%** held-out accuracy, compared with **22.25%** for pixels and **18.18%** for eight PCA directions. [CIFAR-10 Fisher experiment](IDEC/external_benchmarks/cifar_fisher/README.md)
-
-The [project README](IDEC/README.md) gives setup and reproduction commands. The [DEC comparison design](IDEC/dec_background/design.md), [translation addendum](IDEC/dec_background/translation/design.md), [combined method table](IDEC/dec_background/translation/results/summary.csv) and [per-seed translation effects](IDEC/dec_background/translation/results/paired.csv) document the comparison. The [target ablation](IDEC/varied/results/paired.json) and [single-symbol augmentation controls](IDEC/photometric/analysis/summary.csv) address the reconstruction mechanism and alternative explanations.
+- [Run the final experiments or rebuild the tables and plots](IDEC/final/README.md)
+- [Editable report](IDEC/report/report.tex) and [editable Beamer slides](IDEC/slides/slides.tex)
+- [Earlier IDEC studies](IDEC/README.md), including reconstruction targets, training stages, whole-image translation and feature selection. The external dataset results concern earlier methods.

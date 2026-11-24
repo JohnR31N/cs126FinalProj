@@ -1,62 +1,105 @@
-\documentclass[10pt,letterpaper]{article}
-\usepackage[margin=0.86in,top=0.78in,bottom=0.78in]{geometry}
+\documentclass[11pt,letterpaper]{article}
+\usepackage[margin=.84in,top=.78in,bottom=.79in]{geometry}
 \usepackage{amsmath,amssymb,booktabs,graphicx,xcolor,hyperref,fancyhdr}
-\definecolor{ink}{HTML}{19344C}
-\definecolor{blue}{HTML}{255795}
-\definecolor{rust}{HTML}{A94520}
-\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue,pdftitle={What Does IDEC Preserve?},pdfauthor={John Zhang and Ryan Jian}}
-\pagestyle{fancy}\fancyhf{}\lhead{\small\textsf{COSI 126A \quad Unsupervised Learning and Data Mining}}
-\rhead{\small\textsf{IDEC / MNIST}}\cfoot{\small\thepage}
+\definecolor{ink}{HTML}{19344C}\definecolor{blue}{HTML}{255795}
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue,pdftitle={Selective Reconstruction in IDEC},pdfauthor={John Zhang and Ryan Jian}}
+\pagestyle{fancy}\fancyhf{}\lhead{\small\sffamily COSI 126A \quad Unsupervised Learning and Data Mining}
+\rhead{\small\sffamily Zhang and Jian}\cfoot{\small\thepage}
 \setlength{\headheight}{14pt}\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
-\newcommand{\sect}[1]{\vspace{3pt}{\large\bfseries\color{ink}#1}\par}
-\newcommand{\smallcap}[1]{\par{\small\color{ink}#1}\par}
+\newcommand{\sect}[1]{\vspace{3pt}{\sffamily\large\bfseries\color{ink}#1}\par}
+\newcommand{\capn}[1]{{\small\color{ink}#1}\par}
 \begin{document}
-{\sffamily\bfseries\color{ink}\fontsize{26}{30}\selectfont What does IDEC preserve?}\par
-{\large The cost of reconstructing irrelevant backgrounds in digit clustering}\par
-{\sffamily\color{ink}John Zhang and Ryan Jian}\par
-\input{comparison_abstract.tex}
+{\sffamily\bfseries\color{ink}\fontsize{27}{31}\selectfont Selective reconstruction in IDEC}\par
+{\large An adaptive Gaussian and cluster saliency for digit clustering}\par
+{\sffamily John Zhang and Ryan Jian}\par\medskip
+\textbf{Abstract.} Improved Deep Embedded Clustering (IDEC) uses a decoder to preserve structure while learning clusters. A decoder also earns credit for reproducing details unrelated to digit identity. We reproduce the paper's MNIST accuracy to within 0.04 percentage points, then test this drawback with two geometric marks that leave every digit stroke intact. On identical marked inputs, changing the reconstruction target to the known clean digit improves clustering by 6.04 points. We propose a label-free approximation that weights pretraining errors by an adaptive Gaussian and a teacher's cluster saliency. After clean-only training, accuracy on marked digits rises from 64.62\% with ordinary IDEC to 71.59\% with our method. A fixed Gaussian with the same saliency reaches 71.51\%. Joint weighting improves robustness here, while the extra value of moving the center remains uncertain.
 
-\sect{1 \quad The original IDEC paper and our research question}
-\textbf{Original research question.} In \href{https://ijcai.org/proceedings/2017/0243.pdf}{\emph{Improved Deep Embedded Clustering with Local Structure Preservation}}, Guo et al.\ (2017) investigate the effect of preserving local structure on clustering performance when a model jointly learns an embedding and cluster assignments from unlabeled data [1, Sec.~1].
+\sect{1 \quad Introduction and research question}
+Two handwritten sevens can differ in stroke width and still belong together. Adding a triangle beside one of them also changes its pixels, but tells us nothing about its digit identity. Both differences count toward a decoder's reconstruction error. \textbf{Our research question} is whether rewarding reconstruction of background features impairs digit clustering and whether emphasizing likely digit features during pretraining reduces that loss.
 
-\textbf{Challenge.} In high-dimensional inputs, distance can be a poor guide to similarity. Deep Embedded Clustering (DEC) learns an embedding using targets derived from its own predictions [2]. Without labels to correct an early mistake, the model can grow more confident in a wrong assignment. The loss can fall even as similar observations move apart [1, Secs.~1 and~3.2].
-
-\textbf{Philosophy.} Clustering should shape the representation, but the code for each observation should still contain enough information to reconstruct it. Guo et al.\ assume that requiring reconstruction through a low-dimensional code helps preserve useful local structure as the clusters change [1, Sec.~3.2].
-
-\textbf{Solution.} The authors pretrain a stacked denoising autoencoder and initialize cluster centers by running K-means on its codes. During fine-tuning, IDEC keeps the decoder and minimizes $L_{\rm recon}+\gamma\,\mathrm{KL}(P\Vert Q)$. Reconstruction penalizes loss of input detail, while the clustering term sharpens assignments. The authors report 86.55\% MNIST accuracy for DEC and 88.06\% for IDEC [1, Eqs.~6--8 and Table~2].
-
-\textbf{Our research question.} We examine how much digit clustering accuracy DEC and IDEC lose when unrelated shapes appear in the background, and whether giving central pixels more reconstruction weight reduces IDEC's loss of accuracy.
-
-\sect{2 \quad Reproducing the original method on MNIST}
-For image $x_i$ with code $z_i=f(x_i)$, the Student-$t$ assignment $q_{ij}$ measures affinity to center $\mu_j$. Squaring the assignments and adjusting for each cluster's total soft mass $f_j$ gives the target $p_{ij}$ [2].
-\[
- q_{ij}=\frac{(1+\lVert z_i-\mu_j\rVert^2)^{-1}}{\sum_k(1+\lVert z_i-\mu_k\rVert^2)^{-1}},
- \qquad p_{ij}=\frac{q_{ij}^2/f_j}{\sum_k q_{ik}^2/f_k},\qquad f_j=\sum_i q_{ij}.
-\]
-Between target refreshes we hold $P$ fixed and use pixel MSE for reconstruction, with $\gamma=0.1$ and a batch-mean KL loss.
+\sect{2 \quad The original method and its reproduction}
+\textbf{Original research question.} Guo et al.\ study whether preserving local data structure during joint embedding and cluster learning improves unsupervised clustering [1]. \textbf{Challenge.} DEC sharpens assignments produced by its own encoder [2]. Incorrect early assignments can distort its embedding. \textbf{Philosophy.} An embedding that still encodes enough of the input to reconstruct it should retain useful structure as clusters move. \textbf{Solution.} IDEC pretrains an autoencoder, initializes centers by K-means, and keeps the decoder during joint training. It minimizes $L_{\rm pixel}+\gamma\,\mathrm{KL}(P\Vert Q)$, where $Q$ holds Student-$t$ assignments and $P$ is their sharpened, cluster-frequency-adjusted target.
 
 \begin{center}\small
-\begin{tabular}{lrrrr}
-\toprule & \multicolumn{2}{c}{AE + K-means} & \multicolumn{2}{c}{IDEC}\\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}
-Protocol & ACC (\%) & NMI & ACC (\%) & NMI\\\midrule
-Guo et al., Table 2 & 81.82 & .7473 & 88.06 & .8672\\
-This reproduction, seed 0 & 81.85 & .7474 & 88.10 & .8650\\\bottomrule
-\end{tabular}
-\end{center}
-\smallcap{\textbf{Table 1.} Transductive MNIST clustering. All 70,000 images participate in model fitting and scoring, as in the original paper.}
-We loaded the authors' weights [3], checked eight layers against NumPy, and used pixel scaling by $1/50$, 20 K-means restarts, Adam at $10^{-3}$, batches of 256 and a target refresh every 140 updates. At the 20,000-update cap, ACC was 0.04 points above the paper and $0.51\%$ of assignments still changed (threshold $0.1\%$). The background study's 73.23\% clean control uses fresh pretraining on 12,000 digits and scores 10,000 held-out digits after 5,600 updates, averaged over five seeds.
+\begin{tabular}{lrrrr}\toprule
+&\multicolumn{2}{c}{Autoencoder + K-means}&\multicolumn{2}{c}{IDEC}\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5} & ACC (\%) & NMI & ACC (\%) & NMI\\\midrule
+Guo et al., Table 2 &81.82 &.7473 &88.06 &.8672\\
+Our reproduction, seed 0 &81.85 &.7474 &88.10 &.8650\\\bottomrule
+\end{tabular}\end{center}
+\capn{\textbf{Table 1.} Paper reproduction using all 70,000 MNIST images for fitting and scoring. NMI measures normalized mutual information with digit identity.}
+We loaded the authors' pretrained weights [3], checked their conversion against NumPy, and reached the 20,000-update limit with 0.51\% of assignments still changing. The 73.23\% ordinary IDEC control in our extension starts from fresh weights on 12,000 images and is scored on 10,000 held-out digits.
 
-\input{comparison_body.tex}
+\newpage
+\sect{3 \quad Identified limitation and hypothesis}
+\textbf{Drawback.} Under uniform pixel loss, reducing squared error by one unit on a background symbol earns the same reward as doing so on a stroke. A finite-dimensional code can therefore retain irrelevant detail at a cost to digit separation. We used two tests to distinguish sensitivity to visually harder inputs from an effect of the reconstruction target itself.
 
-\sect{9 \quad References}
-\small
-[1] X. Guo, L. Gao, X. Liu and J. Yin. \href{https://ijcai.org/proceedings/2017/243}{Improved Deep Embedded Clustering with Local Structure Preservation}. IJCAI, 2017.\par
-[2] J. Xie, R. Girshick and A. Farhadi. \href{https://proceedings.mlr.press/v48/xieb16.html}{Unsupervised Deep Embedding for Clustering Analysis}. ICML, 2016.\par
-[3] X. Guo. \href{https://github.com/XifengGuo/IDEC/tree/4a661c211f082022249758ab3312f7db21e2aa99}{Official IDEC implementation} and \href{https://github.com/XifengGuo/data-and-models/tree/d361bfe06686c0762df58624ef95a8c0fc9162be}{pretrained MNIST weights}. See README for file digest.\par
-[4] N. Mrabah et al. \href{https://arxiv.org/abs/1901.07752}{Deep Clustering with a Dynamic Autoencoder: From Reconstruction towards Centroids Construction}. Neural Networks, 2020.\par
-[5] Y. LeCun, C. Cortes and C. Burges. \href{https://www.tensorflow.org/datasets/catalog/mnist}{MNIST handwritten digits}. IDX files via the torchvision mirror.\par
-[6] P. Vincent et al. \href{https://www.jmlr.org/papers/v11/vincent10a.html}{Stacked Denoising Autoencoders}. JMLR, 2010.\par
-\textbf{Data and code.} \href{https://github.com/JohnR31N/cs126FinalProj/tree/main/IDEC}{Designs, training commands, per-image predictions and independent metric checks.}
-\input{feature_benchmarks.tex}
+\begin{center}\includegraphics[width=.54\linewidth]{../figures/varied.png}\end{center}
+\capn{\textbf{Figure 1.} Each row follows one digit. The generator adds two detached symbols in empty $5\times5$ boxes with a one-pixel clearance around ink. The rightmost views vary attributes at the same sites. Digits and symbols share the same grayscale channel.}
+
+\textbf{Test 1. Do the symbols hurt both methods?} We trained and tested DEC and IDEC on clean digits, then repeated on marked versions. Within each training domain, DEC and IDEC started with the same pretrained encoder and centers. DEC fell from 77.63\% to 70.86\% ($-6.77$ points) and IDEC from 73.23\% to 65.14\% ($-8.09$). Both declined in all five seeds. IDEC's excess decline averaged 1.32 points (paired SD 3.35), positive in four seeds. Background interference also affects DEC, which drops the decoder during fine-tuning.
+
+\textbf{Test 2. What happens when the decoder loses the reward for copying symbols?} In a separate five-seed experiment, we held the marked inputs, symbol positions and digits fixed and changed the reconstruction target. The generator supplied the original digit as a privileged diagnostic. A decoder response of one would mean the reconstructed change fully tracks the change in the input symbols.
+\begin{center}\small\input{../varied/results/stages.tex}\end{center}
+\capn{\textbf{Table 2.} On identical marked inputs, \emph{Full} targets include symbols and \emph{Clean} targets omit them. ACC and redraw flips are percentages. A flip is a cluster change when symbol attributes change.}
+Using clean targets in both stages raised ACC by $6.04\pm4.37$ points (all five seeds). The decoder tracked less of the change in symbols. Changing the pretraining target alone gave most of the accuracy gain. These results implicate the reward for reproducing background, although the code may still carry background information.
+
+\textbf{Philosophy and hypothesis.} Give more reconstruction weight to likely digit features and less to likely background. On centered digits, location gives one clue to relevance. Within that region, sensitivity of a teacher's cluster assignments gives a second clue. We predict that combining them during pretraining will improve performance when new background symbols appear at test time.
+
+\newpage
+\sect{4 \quad Proposed modification}
+\textbf{Estimate a center from each observed image.} Let $p$ be a pixel coordinate, $c_0=(13.5,13.5)$ and $G(p;c)=\exp[-\|p-c\|^2/(2\sigma^2)]$, with $\sigma=7$ pixels on $28\times28$ images. We reuse the width from the fixed prior. The intensity centroid under this prior is
+\[
+ c_x=\frac{\sum_p p\,x_p\,G(p;c_0)}{\sum_p x_p\,G(p;c_0)} .
+\]
+A blank input uses $c_0$. Central intensity moves the center more than equally bright ink at the margin. The estimate uses every observed pixel and requires no digit mask.
+
+\textbf{Estimate cluster saliency.} A frozen teacher consists of an ordinary autoencoder trained on the same unlabeled fitting images and K-means centers on its codes. For an image $x$, let $m(x)=d_2^2-d_1^2$ be the squared-distance gap between its second-nearest and nearest centers. Pixels that strongly affect this gap can help distinguish these two candidate clusters. Smooth $|x\odot\nabla_xm(x)|$ with a $3\times3$ average filter to get $a$. Set $S_x(p)=a_p/(a_p+\bar a)$, using zero for a zero signal. We cache $S_x$ in eight bits.
+
+\textbf{Weight only student pretraining.} Normalize each image's weights to mean one, so the objective changes which errors matter while keeping their average coefficient fixed.
+\[
+ u_x(p)=G(p;c_x)\,[0.5+S_x(p)],\quad
+ w_x(p)=u_x(p)/\overline{u_x},\quad
+ L_{\rm pre}=\frac1{784}\sum_p w_x(p)(x_p-\hat x_p)^2 .
+\]
+After pretraining, run K-means and fine-tune with ordinary IDEC's uniform pixel MSE and $\gamma=0.1$. At inference, the student encoder and cluster centers suffice. Each training domain requires one extra teacher fit and one saliency pass, shared across student seeds.
+
+\begin{center}\includegraphics[width=.74\linewidth]{../final/weights.png}\end{center}
+\capn{\textbf{Figure 2.} The first training digit in the clean and marked experiments, with each domain's own teacher. Gaussian and final weights share a scale (image mean 1). Saliency runs from dark (0) to bright (1). Only the clean domain fits the teacher and student in the primary experiment.}
+
+\sect{5 \quad Experimental setup}
+We sampled 12,000 digits without replacement from MNIST's official training set (split seed 126) and held out the 10,000 official test images. Encoder widths are 784--500--500--2000--10. All student arms use 100 pretraining epochs, 20 K-means restarts for 10 centers, Adam at $10^{-3}$, batch size 256, and 5,600 IDEC updates with target refresh every 140. The teacher uses seed 126. The five paired student seeds are 0--4.
+
+\newpage
+\sect{6 \quad Results and analysis}
+\textbf{Primary endpoint.} Freeze each clean-trained model and score the same 10,000 digits before and after adding two symbols from 96 combinations of shape, size, angle and brightness. For scoring, the Hungarian algorithm matches clusters to training digit labels once. The marked-fit column uses separate marked training and its own teacher. All ablation arms reconstruct the observed input.
+
+\begin{center}\small\input{../final/ablation.tex}\end{center}
+\capn{\textbf{Table 3.} Mean held-out digit accuracy (\%) over five paired seeds. The middle numeric column is the primary endpoint. Aligned saliency uses the input's own map. Shuffling substitutes another training image's map while preserving the input's adaptive center.}
+
+Ordinary IDEC lost 8.62 points when marks appeared at test time, compared with 4.50 for the final model. The latter also gained 2.86 points on clean digits. It gained $6.98\pm5.19$ points over ordinary IDEC and $2.67\pm2.01$ over the fixed Gaussian on the primary endpoint, both positive in every seed. With marked training and testing its ACC rose from 65.14\% to 71.06\%. Its redraw flip rate fell from 2.99\% to 2.47\%.
+
+\begin{center}\includegraphics[width=.80\linewidth]{../final/paired.png}\end{center}
+\capn{\textbf{Figure 3.} Final minus comparison accuracy on marked test digits after clean training. Each dot is a difference for one matched seed. Positive values favor the final model. Diamonds show means.}
+
+\textbf{Which component helped?} Saliency alone scored 64.33\%, close to ordinary IDEC. With an adaptive Gaussian, the input's own saliency gained 3.12 points over shuffled saliency (four of five seeds), supporting a role for image alignment. Adding saliency to the adaptive Gaussian gained 1.31 points (two of five positive). Moving the center with aligned saliency gained just 0.09 points (paired SD 2.54, two of five positive). The interaction, the saliency gain with an adaptive center minus the gain with a fixed center, was $-1.28\pm3.09$ points. The results leave the additional value of adapting a saliency-weighted center unresolved.
+
+\newpage
+\sect{7 \quad Limitations and conclusion}
+\textbf{What receives weight?} We used the generator's clean and marked training images after fitting to audit the weights. Ordinary IDEC assigns weight 1 to every pixel. In the marked-training branch, the final method assigns a mean of 2.62 to digit ink and 0.91 to symbol pixels. The fixed Gaussian alone gives 1.78 and 0.66. Saliency can emphasize visible symbols as well as ink. The final method increases the relative emphasis on handwriting compared with uniform loss, even though the simpler Gaussian assigns a smaller absolute weight to symbols.
+
+\textbf{What does the evidence establish?} The target intervention holds the input fixed and directly tests the incentive to reproduce a known nuisance. Its improvement supports a reconstruction-related drawback. The final model's higher accuracy and lower sensitivity to test marks are consistent with that explanation. Pixel weights and accuracy leave open how much information about the symbols the encoder retains. Some of the gain can also arise from improved clean representations.
+
+\textbf{Where does the assumption break?} MNIST digits are centered and our marks occupy empty space. A central distractor can receive a high weight, while an off-center digit can lose important strokes. A teacher can also assign high saliency to a nuisance it already uses to cluster. Five seeds vary training randomness on one previously inspected test split and share a teacher within each domain. A fresh split with off-center digits and central distractors would test the spatial assumption directly.
+
+\textbf{Comparison with DEC and augmentation.} Clean-trained DEC reached 75.62\% on the same marked test, above the final IDEC variant's 71.59\% in every seed. DEC still uses reconstruction for initialization. Whole-image translation during pretraining reached 77.61\% for IDEC on the separate marked-fit/marked-test comparison, while also improving clean-fit/clean-test accuracy by 10.65 points. Our experiment isolates a change to the pixel objective. The final combination remains unevaluated on CIFAR-10, CUB-200 and the 70,000-image paper protocol.
+
+\textbf{Conclusion.} On identical marked inputs, digit clusters improve when the decoder has less incentive to reproduce known background features. A label-free approximation combines a spatial prior with evidence from a cluster teacher. On centered MNIST it improves the primary endpoint by 6.98 points over ordinary IDEC. A fixed Gaussian with aligned saliency captures nearly all of that gain.
+
+\sect{8 \quad References and reproducibility}
+{\small
+[1] X. Guo, L. Gao, X. Liu and J. Yin. \emph{Improved Deep Embedded Clustering with Local Structure Preservation}. IJCAI, 2017. \href{https://www.ijcai.org/proceedings/2017/243}{Proceedings and paper.}\par
+[2] J. Xie, R. Girshick and A. Farhadi. \emph{Unsupervised Deep Embedding for Clustering Analysis}. ICML, 2016. \href{https://proceedings.mlr.press/v48/xieb16.html}{Proceedings and paper.}\par
+[3] X. Guo. \href{https://github.com/XifengGuo/IDEC/tree/4a661c211f082022249758ab3312f7db21e2aa99}{Official IDEC implementation} and \href{https://github.com/XifengGuo/data-and-models/tree/d361bfe06686c0762df58624ef95a8c0fc9162be}{pretrained MNIST weights}. Y. LeCun, C. Cortes and C. Burges. \href{https://www.tensorflow.org/datasets/catalog/mnist}{MNIST handwritten digits.}\par
+\textbf{Project materials.} Our PyTorch implementation, fitting commands, per-image assignments, five-seed contrasts and figure scripts are in the \href{https://github.com/JohnR31N/cs126FinalProj/tree/idec-final-v2.0}{versioned public repository}. An independent seed-0 refit from raw MNIST scored 72.86\% on marked digits, compared with 73.07\% in the archived seed-0 run. It is excluded from the five-seed means.}
 \end{document}
