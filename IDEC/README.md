@@ -1,13 +1,13 @@
 # IDEC final project
 
-IDEC gives an error on a decorative shape the same reconstruction cost as an equal error on a digit stroke. We add two random geometric symbols in a controlled experiment to measure the accuracy loss for DEC and IDEC. A separate diagnostic supplies a clean target from the generator. The fixed Gaussian prior assigns more reconstruction weight to central pixels. The neighborhood-weighting experiment estimates weights from the original unlabeled MNIST images and evaluates clustering on original test images.
+Our project tests a Gaussian center prior for IDEC on centered MNIST digits. The prior weights reconstruction errors by pixel location. We use two background symbols to measure its effect, compare three placements of the prior, and report the strongest marked accuracy among those placements when weighting only pretraining. The feature-selection studies are supplementary experiments.
 
 - [Research report (PDF)](report/report.pdf) and [editable LaTeX](report/report.tex)
-- [IDEC+ on all 70,000 clean MNIST images, plus USPS, KMNIST, Fashion-MNIST and grayscale CIFAR-10](external_benchmarks/README.md)
 - [Presentation slides (PDF)](slides/slides.pdf) and [editable Beamer source](slides/slides.tex)
 - [Reconstruction weighting on original MNIST](clean_neighborhood/design.md) and [paired results with ordinary and shuffled-weight IDEC](clean_neighborhood/results/summary.json)
 - [Selecting reconstruction features from reproducible unlabeled clusters](cluster_features/README.md), [named stroke bins](cluster_features/coordinates/bins.csv), and [per-seed assignments and scores](cluster_features/results/runs.csv)
 - [Matched DEC and IDEC protocol](dec_background/design.md), [method means](dec_background/results/summary.csv), [five paired differences](dec_background/results/paired.csv), [contrasts and variability](dec_background/results/contrasts.json) and [individual runs](dec_background/results/runs.csv)
+- [IDEC+ on all 70,000 clean MNIST images, plus USPS, KMNIST, Fashion-MNIST and grayscale CIFAR-10](external_benchmarks/README.md)
 - [Whole-image translation addendum](dec_background/translation/design.md), [combined comparison including DEC and IDEC with translation](dec_background/translation/results/summary.csv) and [per-seed augmentation effects](dec_background/translation/results/paired.csv)
 - [Random background protocol](varied/design.md), [45-model results](varied/results/summary.csv), [paired comparisons](varied/results/paired.json) and [paired image examples](figures/varied.png)
 - [Jitter protocol](photometric/design.md), [spatial protocol](photometric/spatial_design.md), [60-model results](photometric/analysis/summary.csv) and [within-seed effects](photometric/analysis/paired.json)
