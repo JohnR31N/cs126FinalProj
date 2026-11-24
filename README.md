@@ -2,7 +2,17 @@
 
 **John Zhang and Ryan Jian** · COSI 126A final project
 
-We reproduced IDEC on MNIST at **88.10%** clustering accuracy (paper **88.06%**). Two random background symbols provide a controlled way to test whether rewarding the reconstruction of irrelevant features harms digit clustering. We compare DEC and IDEC under that intervention and test a fixed Gaussian prior. A separate study learns reconstruction weights from the original unlabeled MNIST images and evaluates them on the original test digits.
+We reproduced IDEC on clean MNIST at **88.10%** clustering accuracy (paper **88.06%**). We then tested how reconstructing background symbols affects digit clustering, and whether a decoder trained to preserve selected features improves clustering on original images.
+
+| Experiment | Images used for fitting | Clean MNIST metric | Ordinary IDEC |
+|---|---|---|---:|
+| Paper reproduction, author-pretrained autoencoder | All 70,000 | Accuracy on those same 70,000, seed 0, 20,000 updates | **88.10%** |
+| Background experiment, autoencoder trained from scratch | 12,000 training digits | Accuracy on 10,000 held-out digits, five seeds, 5,600 updates | **73.23%** |
+| Feature-selection experiment, fresh paired fits | Same 12,000 training digits | Same 10,000 held-out digits, five seeds, 5,600 updates | **73.63%** |
+
+The background penalty compares **73.23% clean with 65.14% marked**. The selected-feature IDEC comparison uses its own pixel control and goes from **73.63% to 76.84%**. Each pair uses the same split and evaluation rule. [Paper reproduction record](IDEC/reference/result.json) · [Background experiment](IDEC/dec_background/design.md) · [Feature-selection experiment](IDEC/cluster_features/README.md)
+
+On **full MNIST**, switching from the authors' pixel checkpoint to the nine-feature target for fine-tuning gave **86.08%**, versus **88.03%** for its matched pixel rerun. Using selected features throughout pretraining and fine-tuning gave **82.10%**, versus **87.78%** for pixel IDEC trained from scratch on the same 70,000 images. Each comparison uses seed 0 and 20,000 clustering updates. [Full-data comparisons and external benchmarks](IDEC/external_benchmarks/README.md)
 
 ![Identical handwriting with fixed-form and varied background symbols](IDEC/figures/varied.png)
 
@@ -18,6 +28,6 @@ On original MNIST, learning which reconstruction errors to emphasize from neighb
 
 A follow-up used two independent unlabeled graph partitions to select stroke measurements that separate reproducible groups. Reconstructing nine selected directions raised accuracy from **73.63% to 76.84%** in a new matched comparison on the 10,000 original test digits. On 48,000 further original digits withheld from fitting, the change was **72.80% to 76.71%**. Keeping the 98 highest-ranked individual measurements reached **75.82%** on the primary test, compared with **17.87%** for the lowest-ranked 98 and **72.43%** for random orientations selected in the same locations. Ordinary DEC reached **77.64%**, and the discarded feature span retained substantial digit information in a labeled evaluation probe. [Feature selection methods, controls and visual examples](IDEC/cluster_features/README.md)
 
-[Read the report](IDEC/report/report.pdf) · [View the slides](IDEC/slides/slides.pdf) · [Download the submission package](https://github.com/JohnR31N/cs126FinalProj/releases/download/idec-final-v1.9/IDEC_final.zip)
+[Read the report](IDEC/report/report.pdf) · [View the slides](IDEC/slides/slides.pdf) · [Download the current project](https://github.com/JohnR31N/cs126FinalProj/archive/refs/heads/main.zip) · [Archived v1.9 background study](https://github.com/JohnR31N/cs126FinalProj/releases/download/idec-final-v1.9/IDEC_final.zip)
 
 The [project README](IDEC/README.md) gives setup and reproduction commands. The [DEC comparison design](IDEC/dec_background/design.md), [translation addendum](IDEC/dec_background/translation/design.md), [combined method table](IDEC/dec_background/translation/results/summary.csv) and [per-seed translation effects](IDEC/dec_background/translation/results/paired.csv) document the comparison. The [target ablation](IDEC/varied/results/paired.json) and [single-symbol augmentation controls](IDEC/photometric/analysis/summary.csv) address the reconstruction mechanism and alternative explanations.

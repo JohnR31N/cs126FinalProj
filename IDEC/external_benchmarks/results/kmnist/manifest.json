@@ -1,0 +1,67 @@
+{
+  "dataset": "kmnist",
+  "source_url": "https://codh.rois.ac.jp/kmnist/dataset/kmnist/",
+  "file_md5": {
+    "train-images-idx3-ubyte.gz": "bdb82020997e1d708af4cf47b453dcf7",
+    "train-labels-idx1-ubyte.gz": "e144d726b3acfaa3e44228e80efcd344",
+    "t10k-images-idx3-ubyte.gz": "5c965bf0a639b31b8f53240b1b52f4d7",
+    "t10k-labels-idx1-ubyte.gz": "7320c461ea6c1c855c0b718fb2a4b134"
+  },
+  "config": {
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "strengths": [
+      0.0,
+      0.3,
+      0.8
+    ],
+    "methods": [
+      "idec",
+      "projected",
+      "cluster_only"
+    ],
+    "split_seed": 126,
+    "train_size": 12000,
+    "train_orientation_seed": 1701,
+    "test_orientation_seed": 1702,
+    "dims": [
+      784,
+      500,
+      500,
+      2000,
+      10
+    ],
+    "clusters": 10,
+    "pretrain_epochs": 100,
+    "batch_size": 256,
+    "lr": 0.001,
+    "gamma": 0.1,
+    "target_interval": 140,
+    "updates": 5600,
+    "kmeans_restarts": 20
+  },
+  "source_sha256_lf": {
+    "protocol.json": "efc4df3e8be8228f317bfe788f5fc655fb26dd9487fce2d7a147280208ce62ad",
+    "external_benchmarks/design.md": "cecebe6afdfa2532224353d0a263f23a5d3a78fbd0639b04f85af408f1d4ef32",
+    "cluster_feature_selection.py": "b9ea2026782c0bd112380c208f5e389b1c594d9fcf2cbad96564302fc6f27cac",
+    "external_study.py": "521a1de519764d0143e238819e8e332ecf60029433ab2d8e75b955db6cc8df4e",
+    "external_data.py": "599fe799ba8778a2a86d574f37eda13f95604898f354ada77f3462df22d060ff",
+    "clean_neighborhood_study.py": "09999584b503ec05b67cff9ff0dc71af6ea4fd0dc63be150668b2a5fcb3547fe",
+    "dec_background_study.py": "910f45795dea24b7c314bc610dc04c44227805abb6afed8741dfa51adf42138c",
+    "varied_study.py": "625746a47fca4ec8a9a26e90611fdfd6fe4d9e7a468d8828ee75d234b902150c",
+    "idec_final/experiment.py": "619effc170e96a9335ff5dec15db841bb8dfd79f78e301b9fd2b95db9e43ef0c",
+    "idec_final/model.py": "1a7ac08dacba913ec2056a16fdc23b605310e39fc615daa06d76a5c77a38a20b",
+    "idec_final/utils.py": "6a6a2430e51723864c8f1820268da80ab0bd7d84bc89a8d536d2109eb3b7777e"
+  },
+  "device": "cuda",
+  "hardware": "NVIDIA GeForce RTX 5080",
+  "torch": "2.11.0+cu128",
+  "numpy": "2.5.4",
+  "scipy": "1.18.1",
+  "sklearn": "1.9.1"
+}

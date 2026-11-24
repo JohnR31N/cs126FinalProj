@@ -45,7 +45,7 @@ This reproduction, seed 0 & 81.85 & .7474 & 88.10 & .8650\\\bottomrule
 \end{tabular}
 \end{center}
 \smallcap{\textbf{Table 1.} Transductive MNIST clustering. All 70,000 images participate in model fitting and scoring, as in the original paper.}
-We loaded the authors' pretrained weights [3] into PyTorch and checked eight layers against an independent NumPy forward pass. We scaled raw pixels by $1/50$ and used 20 K-means restarts, Adam at $10^{-3}$, batches of 256 and target refreshes every 140 updates. Final ACC was 0.04 percentage points above the paper. The run reached the 20,000-update cap with $0.51\%$ of assignments still changing, above the $0.1\%$ stopping threshold.
+We loaded the authors' weights [3], checked eight layers against NumPy, and used pixel scaling by $1/50$, 20 K-means restarts, Adam at $10^{-3}$, batches of 256 and a target refresh every 140 updates. At the 20,000-update cap, ACC was 0.04 points above the paper and $0.51\%$ of assignments still changed (threshold $0.1\%$). The background study's 73.23\% clean control uses fresh pretraining on 12,000 digits and scores 10,000 held-out digits after 5,600 updates, averaged over five seeds.
 
 \input{comparison_body.tex}
 
@@ -58,4 +58,5 @@ We loaded the authors' pretrained weights [3] into PyTorch and checked eight lay
 [5] Y. LeCun, C. Cortes and C. Burges. \href{https://www.tensorflow.org/datasets/catalog/mnist}{MNIST handwritten digits}. IDX files via the torchvision mirror.\par
 [6] P. Vincent et al. \href{https://www.jmlr.org/papers/v11/vincent10a.html}{Stacked Denoising Autoencoders}. JMLR, 2010.\par
 \textbf{Data and code.} \href{https://github.com/JohnR31N/cs126FinalProj/tree/main/IDEC}{Designs, training commands, per-image predictions and independent metric checks.}
+\input{feature_benchmarks.tex}
 \end{document}

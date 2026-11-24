@@ -3,6 +3,7 @@
 IDEC gives an error on a decorative shape the same reconstruction cost as an equal error on a digit stroke. We add two random geometric symbols in a controlled experiment to measure the accuracy loss for DEC and IDEC. A separate diagnostic supplies a clean target from the generator. The fixed Gaussian prior assigns more reconstruction weight to central pixels. The neighborhood-weighting experiment estimates weights from the original unlabeled MNIST images and evaluates clustering on original test images.
 
 - [Research report (PDF)](report/report.pdf) and [editable LaTeX](report/report.tex)
+- [IDEC+ on all 70,000 clean MNIST images, plus USPS, KMNIST, Fashion-MNIST and grayscale CIFAR-10](external_benchmarks/README.md)
 - [Presentation slides (PDF)](slides/slides.pdf) and [editable Beamer source](slides/slides.tex)
 - [Reconstruction weighting on original MNIST](clean_neighborhood/design.md) and [paired results with ordinary and shuffled-weight IDEC](clean_neighborhood/results/summary.json)
 - [Selecting reconstruction features from reproducible unlabeled clusters](cluster_features/README.md), [named stroke bins](cluster_features/coordinates/bins.csv), and [per-seed assignments and scores](cluster_features/results/runs.csv)
@@ -18,7 +19,7 @@ IDEC gives an error on a decorative shape the same reconstruction cost as an equ
 
 ## Matched DEC and IDEC experiment
 
-Each method trains on clean digits and on the same digits with two fixed background symbols. Both domains use the same five seeds and the same train/test indices. The drop for a seed is clean-trained/clean-tested ACC minus marked-trained/marked-tested ACC, in percentage points. Subtracting DEC's drop from IDEC's drop compares sensitivity to these backgrounds. The files also include the result of adding symbols only at evaluation time to a frozen model.
+Each method trains on clean digits and on the same digits with two fixed background symbols. The 73.23% clean IDEC control uses fresh 100-epoch pretraining on 12,000 digits, 5,600 updates and scoring on 10,000 held-out digits, averaged over five seeds. The 88.10% reference starts from author weights and fits and scores all 70,000 digits, with 20,000 updates at seed 0. Both background conditions use the same five seeds and train/test indices. The drop for a seed is clean-trained/clean-tested ACC minus marked-trained/marked-tested ACC, in percentage points. Subtracting DEC's drop from IDEC's drop compares sensitivity to these backgrounds.
 
 Standard DEC uses an autoencoder for initialization. We fork the same pretrained weights and K-means centers in each domain, then compare a clustering KL loss alone (DEC) with the same KL plus uniform pixel MSE (IDEC). The Gaussian variant uses a fixed map centered at (13.5, 13.5), with a width of seven pixels and mean weight one. Test it in both stages, in pretraining only, and in fine-tuning only. The separate KL-only random-start control skips all reconstruction, including the pretraining updates. See the [method and loss table](dec_background/results/table.tex) and [seed plot](figures/dec_background_drops.png).
 

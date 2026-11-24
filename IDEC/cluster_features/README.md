@@ -4,7 +4,9 @@ We evaluate two meanings of keeping a feature. One keeps nine learned combinatio
 
 The first rule finds groups twice, using disjoint training halves. A direction receives a high Fisher score when the groups that both halves recover have different mean responses and relatively little variation within each group. Ten groups support at most nine between-group directions. The second rule measures separation independently for each of the 392 bin responses, takes the lower of the two half-scores, and keeps the highest quarter. There are eight unsigned gradient orientations per 4-by-4-pixel cell. A gradient angle is perpendicular to the edge it measures. [Subspace protocol](design.md) · [Named-bin protocol](coordinate_design.md)
 
-The released selectors can be applied to other 28-by-28 grayscale images represented as float32 intensities from zero to one. Run this from the IDEC directory with an array named `images`.
+The full-data MNIST comparison and four external benchmarks use the same nine-direction rule and fit it anew on each dataset. [Performance across protocols and datasets](../external_benchmarks/README.md)
+
+The released MNIST selectors can also be applied to other 28-by-28 grayscale images represented as float32 intensities from zero to one. Run this from the IDEC directory with an array named `images`.
 
 ```python
 import numpy as np

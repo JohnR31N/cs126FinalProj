@@ -1,0 +1,30 @@
+\newpage
+\sect{Appendix \quad Selecting reconstruction features on original images}
+
+\textbf{Research question.} We examine whether reconstructing features that separate repeatable unlabeled groups improves clustering on clean images. A stable group can reflect the class of interest or another regularity in the data.
+
+\textbf{Method.} We measure eight local gradient orientations in each of 49 image cells. We split the fitting images in half and independently cluster each half into ten groups using a neighbor graph. After aligning the groups, we retain images on which the two partitions agree. We learn nine Fisher directions that separate these groups relative to their within-group variation. In the full modification, called IDEC+ in this project, the autoencoder reconstructs these nine continuous measurements during both pretraining and clustering. The encoder sees the entire image. The selector uses no class labels, masks or synthetic backgrounds.
+
+\textbf{Full-data MNIST.} We fit and score the original 70,000 clean images, use seed 0, and run 20,000 clustering updates. In the first comparison, both arms start from identical author weights and centers. In the second, each arm pretrains from scratch for 100 epochs on its own target.
+
+\begin{center}\small
+\begin{tabular}{lrrr}\toprule
+Initialization & Pixel IDEC & Selected target & Difference (points)\\\midrule
+Author pixel checkpoint, change target in fine-tuning & 88.03 & 86.08 & $-1.95$\\
+From scratch, same target in both stages & 87.78 & 82.10 & $-5.68$\\\bottomrule
+\end{tabular}
+\end{center}
+\smallcap{\textbf{Table A1.} Transductive clustering ACC (\%). The archived reproduction in Table 1 reached 88.10\%. Both arms initialized from the authors' checkpoint have identical initial cluster assignments on every image.}
+
+The gain previously seen with 12,000 fitting images (73.63\% to 76.84\% on 10,000 held-out digits) reversed on full MNIST. In the from-scratch comparison, the gap was already visible immediately after pretraining and K-means (83.40\% for pixels, 80.33\% for selected features).
+
+\textbf{Other image classes.} For each source we fit a fresh selector on up to 12,000 training images, run the original 5,600-update budget for five paired seeds, and score its official test set. USPS uses all 7,291 training images and 2,007 test images. Each other test set has 10,000 images. USPS is resized from 16 to 28 pixels. CIFAR-10 is converted to grayscale and downsampled from 32 to 28 pixels for every method.
+
+\begin{center}\small
+\input{../external_benchmarks/heldout_table.tex}
+\end{center}
+\smallcap{\textbf{Table A2.} Mean held-out ACC (\%). Each difference subtracts the paired pixel IDEC score from IDEC+. Wins count seeds with a positive difference. Class mappings use training labels after fitting and stay fixed on the test set. A dash marks a failed selector fit. On KMNIST and grayscale CIFAR-10 only nine groups contained agreed examples, supporting at most eight Fisher directions.}
+
+On USPS and Fashion-MNIST, the selected features improved over pixel reconstruction in every seed. Using the same selected-feature pretraining with KL-only fine-tuning reached 76.64\% and 60.25\%, respectively. The gains over pixel IDEC therefore also appear when reconstruction ends after pretraining.
+
+\href{https://github.com/JohnR31N/cs126FinalProj/tree/main/IDEC/external_benchmarks}{Dataset sources, per-seed scores, graph and DEC controls, and reproducible assignments.}
