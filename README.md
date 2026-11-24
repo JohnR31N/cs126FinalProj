@@ -14,6 +14,8 @@ The background penalty compares **73.23% clean with 65.14% marked**. The selecte
 
 On **full MNIST**, switching from the authors' pixel checkpoint to the nine-feature target for fine-tuning gave **86.08%**, versus **88.03%** for its matched pixel rerun. Using selected features throughout pretraining and fine-tuning gave **82.10%**, versus **87.78%** for pixel IDEC trained from scratch on the same 70,000 images. Each comparison uses seed 0 and 20,000 clustering updates. [Full-data comparisons and external benchmarks](IDEC/external_benchmarks/README.md)
 
+On grayscale CIFAR-10, nine occupied consensus groups supported eight Fisher directions. Reconstructing them gave **18.50%** held-out accuracy, compared with **22.25%** for pixels and **18.18%** for eight PCA directions. [CIFAR-10 Fisher experiment](IDEC/external_benchmarks/cifar_fisher/README.md)
+
 ![Identical handwriting with fixed-form and varied background symbols](IDEC/figures/varied.png)
 
 In the reconstruction-target diagnostic, changing the target from the complete marked image to the known clean digit raised marked accuracy from **65.40% to 71.44%**. All five seeds improved. The clean target uses privileged generator information. The Gaussian method needs only the observed image and its pixel coordinates. On the training data, it assigned mean weight **1.78** to digit ink and **0.66** to the added symbols, against a uniform weight of one.

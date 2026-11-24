@@ -32,6 +32,8 @@ The differences use unrounded values within each seed. On USPS and Fashion-MNIST
 
 On Kuzushiji-MNIST, 10,163 of 12,000 images received agreeing group assignments, but one of the ten aligned groups contained zero agreed examples. The same happened on grayscale CIFAR-10, with 5,881 agreements in total. Nine occupied consensus groups support at most eight between-group directions. The fixed nine-direction selector stopped before student training, so there is no IDEC+ accuracy on either dataset. This concerns missing agreement within the learned partitions. Both evaluation datasets contain all ten true classes. The graph-only test accuracies were 45.86% and 21.51%, respectively.
 
+A subsequent CIFAR-10 fit retained the eight supported directions and kept the student at ten clusters. Fisher reconstruction gave **18.50%** held-out ACC, compared with **22.25%** for pixels and **18.18%** for equal-width PCA. All five Fisher fits scored below their paired pixel controls. [Supported-rank experiment and per-seed results](cifar_fisher/README.md)
+
 USPS inputs are resized from 16×16. For CIFAR-10, all arms receive the same grayscale 28×28 adaptation of the original color images. [USPS ZIP digits](https://hastie.su.domains/ElemStatLearn/data.html) · [Kuzushiji-MNIST source](https://github.com/rois-codh/kmnist) · [Fashion-MNIST source](https://github.com/zalandoresearch/fashion-mnist) · [CIFAR-10 source](https://www.cs.toronto.edu/~kriz/cifar.html)
 
 ## Reproduce or rescore
