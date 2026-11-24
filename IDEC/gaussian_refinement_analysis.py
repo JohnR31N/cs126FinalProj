@@ -13,26 +13,38 @@ from gaussian_refinement_study import ARMS, DOMAINS, SOURCES
 from idec_final.utils import ROOT, save_json
 
 
-def analyze(results, output):
-    meta = check_manifest(results, "marked_mnist", SOURCES)
+def analyze(results, output, study="gaussian_refinement"):
+    arms, sources = ARMS, SOURCES
+    extra = set()
+    if study == "gaussian_saliency":
+        from gaussian_saliency_study import ARMS as saliency_arms, SOURCES as saliency_sources, donor_order
+        arms, sources = saliency_arms, saliency_sources
+        for domain in DOMAINS:
+            name = f"{domain}_maps.npz"
+            extra.add(name)
+            with np.load(results / name) as saved:
+                maps = saved["saliency"]
+                assert maps.shape == (12000, 784) and maps.dtype == np.uint8 and maps.max() > 0
+                np.testing.assert_array_equal(saved["donor"], donor_order(len(maps)))
+    meta = check_manifest(results, "marked_mnist", sources)
     cfg = json.loads((ROOT / "protocol.json").read_text())
-    assert meta["config"] == cfg and meta["arms"] == list(ARMS) and cfg["seeds"] == list(range(5))
-    expected = {f"{domain}_{arm}_{seed}.npz" for domain in DOMAINS for arm in ARMS for seed in cfg["seeds"]}
-    assert expected == {p.name for p in results.glob("*.npz")}
+    assert meta["config"] == cfg and meta["arms"] == list(arms) and cfg["seeds"] == list(range(5))
+    expected = {f"{domain}_{arm}_{seed}.npz" for domain in DOMAINS for arm in arms for seed in cfg["seeds"]}
+    assert expected | extra == {p.name for p in results.glob("*.npz")}
     old = ROOT / "dec_background/results"
     with np.load(ROOT / "varied/results/evaluation.npz") as e:
         train_y, test_y = e["train_digit"], e["test_digit"]
     rows, means, series = [], {}, {}
-    for arm in ("idec", "gaussian_pretrain", *ARMS):
+    for arm in ("idec", "gaussian_pretrain", *arms):
         runs = []
         for seed in cfg["seeds"]:
             values = {}
             for domain in DOMAINS:
                 cell = f"{domain}_{seed}"
-                path = results / f"{domain}_{arm}_{seed}.npz" if arm in ARMS else old / cell / "predictions.npz"
+                path = results / f"{domain}_{arm}_{seed}.npz" if arm in arms else old / cell / "predictions.npz"
                 with np.load(path) as pred:
                     keys = [arm + "_" + key for key in ("train", "clean", "backgrounds")]
-                    if arm in ARMS:
+                    if arm in arms:
                         assert set(pred.files) == set(keys)
                     measured = scores({k: pred[k] for k in keys}, arm, domain, train_y, test_y, None)
                     values[domain] = measured["domain_acc_pct"]
@@ -47,7 +59,7 @@ def analyze(results, output):
         series[arm] = {k: [row[k] for row in runs] for k in runs[0]}
         means[arm] = {k: float(np.mean(v)) for k, v in series[arm].items()}
     contrasts = {arm: {k: paired(series[arm][k], series["gaussian_pretrain"][k])
-                       for k in series[arm]} for arm in ARMS}
+                       for k in series[arm]} for arm in arms}
     with (old / "summary.csv").open(encoding="utf-8") as file:
         archived = {r["method"]: r for r in csv.DictReader(file)}
     for arm in ("idec", "gaussian_pretrain"):
@@ -59,13 +71,17 @@ def analyze(results, output):
     audit["idec"] = {"ink": 1.0, "symbol": 1.0}
     output.mkdir(parents=True, exist_ok=True)
     csv_write(output / "runs.csv", rows)
-    save_json(output / "summary.json", {"means_pct": means, "minus_fixed_gaussian_pp": contrasts,
-                                        "mean_training_weights": audit})
+    summary = {"means_pct": means, "minus_fixed_gaussian_pp": contrasts, "mean_training_weights": audit}
+    if study == "gaussian_saliency":
+        summary["combined_minus_shuffled_pp"] = {k: paired(v, series["shuffled"][k])
+                                                  for k, v in series["combined"].items()}
+    save_json(output / "summary.json", summary)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--results", type=Path, default=ROOT / "gaussian_refinement/results")
-    parser.add_argument("--output", type=Path, default=ROOT / "gaussian_refinement")
+    parser.add_argument("--study", choices=("gaussian_refinement", "gaussian_saliency"), default="gaussian_refinement")
+    parser.add_argument("--results", type=Path)
+    parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    analyze(args.results, args.output)
+    analyze(args.results or ROOT / args.study / "results", args.output or ROOT / args.study, args.study)

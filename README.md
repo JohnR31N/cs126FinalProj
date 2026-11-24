@@ -23,6 +23,8 @@ Pretraining-only weighting improved marked accuracy by 3.66 percentage points on
 
 A follow-up changed the Gaussian center using only the observed image. Clean ACC rose from 74.07% to 76.20% and marked ACC from 68.80% to 69.71% (three of five paired seeds improved on marked digits). The clean-to-marked gap widened and the mean weight on symbols rose slightly. Giving every pixel a weight floor of 0.5 yielded 68.96% marked ACC. [Gaussian refinement methods and results](IDEC/gaussian_refinement/README.md)
 
+We also used a label-free cluster saliency map to adjust the Gaussian during pretraining. When training used only clean digits, marked-test ACC reached 71.51% with each image's own map, 68.27% with shuffled maps and 68.92% with the fixed Gaussian. When training also contained background symbols, the same methods reached 70.52%, 71.05% and 68.80%, respectively. [Saliency maps, controls and results](IDEC/gaussian_saliency/README.md)
+
 In the reconstruction-target diagnostic, changing the target from the complete marked image to the known clean digit raised marked accuracy from **65.40% to 71.44%**. All five seeds improved. The clean target uses privileged generator information. The Gaussian method needs only the observed image and its pixel coordinates. On the training data, it assigned mean weight **1.78** to digit ink and **0.66** to the added symbols, against a uniform weight of one.
 
 In the matched comparison, both methods lost accuracy in every seed. **DEC fell from 77.63% to 70.86%, a 6.77-point drop. IDEC fell from 73.23% to 65.14%, an 8.09-point drop.** IDEC lost more in four of five seeds (paired excess loss **1.32 ± 3.35** points). They started from identical weights and centers within each domain.
