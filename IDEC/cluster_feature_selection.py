@@ -79,7 +79,12 @@ def fisher_basis(features, groups):
     centered = x - means[groups]
     within = centered.T @ centered / len(x)
     within.flat[::within.shape[0]+1] += 0.1 * np.trace(within) / within.shape[0]
-    eig, directions = linalg.eigh(between, within, subset_by_index=(x.shape[1]-9, x.shape[1]-1))
+    try:
+        eig, directions = linalg.eigh(between, within, subset_by_index=(x.shape[1]-9, x.shape[1]-1))
+    except linalg.LinAlgError:
+        # The subset driver can fail on exactly repeated roots. The full solver returns their span.
+        eig, directions = linalg.eigh(between, within, driver="gvd")
+        eig, directions = eig[-9:], directions[:, -9:]
     if eig[0] <= 0:
         raise ValueError("The consensus partition does not support nine discriminant directions.")
     basis, _ = np.linalg.qr(directions[:, ::-1])
