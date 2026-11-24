@@ -3,7 +3,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from tempfile import NamedTemporaryFile
+from tempfile import TemporaryDirectory
 
 import numpy as np
 import torch
@@ -68,9 +68,10 @@ def fit(train, weights, cfg, seed):
 
 
 def save_predictions(path, **arrays):
-    with NamedTemporaryFile(dir=path.parent, suffix=".npz", delete=False) as temp:
-        np.savez_compressed(temp, **arrays)
-    Path(temp.name).replace(path)
+    with TemporaryDirectory(dir=path.parent) as temp:
+        pending = Path(temp) / path.name
+        np.savez_compressed(pending, **arrays)
+        pending.replace(path)
 
 
 def train_runs(out, device):
@@ -166,12 +167,15 @@ if __name__ == "__main__":
         result = score(args.output)
         if args.evaluate_only:
             stored = json.loads((args.output / "summary.json").read_text())
+            assert set(stored) == set(result)
+            assert set(stored["runs"]) == set(stored["means"]) == set(ARMS)
+            assert result["paired"] == stored["paired"]
             for arm in ARMS:
+                assert len(stored["runs"][arm]) == len(result["runs"][arm])
                 for actual, expected in zip(result["runs"][arm], stored["runs"][arm]):
                     assert actual.keys() == expected.keys()
                     np.testing.assert_allclose(list(actual.values()), [expected[k] for k in actual], atol=1e-12, rtol=0)
-            assert result["paired"] == stored["paired"]
-            for arm in ARMS:
+                assert stored["means"][arm].keys() == result["means"][arm].keys()
                 for key, value in result["means"][arm].items():
                     np.testing.assert_allclose(value, stored["means"][arm][key], atol=1e-12, rtol=0)
         else:

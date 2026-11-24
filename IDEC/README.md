@@ -1,9 +1,10 @@
 # IDEC final project
 
-IDEC gives an error on a decorative shape the same reconstruction cost as an equal error on a digit stroke. We add two random geometric symbols to the background of each MNIST digit and measure the accuracy loss for DEC and IDEC. Our proposed modification gives central pixels more reconstruction weight using a fixed Gaussian prior. In the marked domain these models see a single composite image per digit. A separate diagnostic supplies a clean target from the generator.
+IDEC gives an error on a decorative shape the same reconstruction cost as an equal error on a digit stroke. We add two random geometric symbols in a controlled experiment to measure the accuracy loss for DEC and IDEC. A separate diagnostic supplies a clean target from the generator. The fixed Gaussian prior assigns more reconstruction weight to central pixels. The neighborhood-weighting experiment estimates weights from the original unlabeled MNIST images and evaluates clustering on original test images.
 
 - [Research report (PDF)](report/report.pdf) and [editable LaTeX](report/report.tex)
 - [Presentation slides (PDF)](slides/slides.pdf) and [editable Beamer source](slides/slides.tex)
+- [Reconstruction weighting on original MNIST](clean_neighborhood/design.md) and [paired results with ordinary and shuffled-weight IDEC](clean_neighborhood/results/summary.json)
 - [Matched DEC and IDEC protocol](dec_background/design.md), [method means](dec_background/results/summary.csv), [five paired differences](dec_background/results/paired.csv), [contrasts and variability](dec_background/results/contrasts.json) and [individual runs](dec_background/results/runs.csv)
 - [Whole-image translation addendum](dec_background/translation/design.md), [combined comparison including DEC and IDEC with translation](dec_background/translation/results/summary.csv) and [per-seed augmentation effects](dec_background/translation/results/paired.csv)
 - [Random background protocol](varied/design.md), [45-model results](varied/results/summary.csv), [paired comparisons](varied/results/paired.json) and [paired image examples](figures/varied.png)
@@ -87,7 +88,7 @@ Run from **this folder**. For the tested Windows setup use Python 3.12, PyTorch 
 uv venv .venv --python 3.12
 uv pip install --python .venv/Scripts/python.exe -r requirements.txt
 uv pip install --python .venv/Scripts/python.exe torch==2.11.0 --index-url https://download.pytorch.org/whl/cu128
-.venv/Scripts/python.exe -m pytest -q test_objectives.py test_geometry.py test_photometric.py test_varied.py test_dec_background.py
+.venv/Scripts/python.exe -m pytest -q test_objectives.py test_geometry.py test_photometric.py test_varied.py test_dec_background.py test_clean_neighborhood.py
 ```
 
 For Linux/macOS use `.venv/bin/python`. A CPU-only PyTorch installation works with `--device cpu`. When working inside the original parent repository, its configured Python can also be used. MNIST's four original IDX gzip files are downloaded from the torchvision mirror, verified against their expected MD5 digests, and recorded with SHA-256 in the cache manifest. Set `MNIST_CACHE` to an existing folder of verified IDX files to reuse it. Author AE weights (about 13 MB) are fetched from the pinned revision below and checked before conversion.
@@ -103,6 +104,7 @@ For Linux/macOS use `.venv/bin/python`. A CPU-only PyTorch installation works wi
 .venv/Scripts/python.exe varied_figure.py --effects figures/varied_effects.png
 .venv/Scripts/python.exe dec_background_analysis.py
 .venv/Scripts/python.exe translation_analysis.py
+.venv/Scripts/python.exe clean_neighborhood_study.py --output clean_neighborhood/results --evaluate-only
 .venv/Scripts/python.exe dec_background_figures.py --prior figures/gaussian_prior.png --effects figures/dec_background_drops.png
 ```
 
@@ -110,6 +112,7 @@ For Linux/macOS use `.venv/bin/python`. A CPU-only PyTorch installation works wi
 
 ```powershell
 .venv/Scripts/python.exe reproduce_paper.py --output scratch/reference
+.venv/Scripts/python.exe clean_neighborhood_study.py --output scratch/clean_neighborhood
 .venv/Scripts/python.exe -m idec_final.experiment --output scratch/study
 .venv/Scripts/python.exe analyze.py --reference scratch/reference --input scratch/study --figures scratch/figures
 .venv/Scripts/python.exe train_stages.py --output scratch/stages

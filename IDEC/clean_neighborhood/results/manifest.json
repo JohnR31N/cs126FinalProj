@@ -1,0 +1,51 @@
+{
+  "arms": [
+    "uniform",
+    "neighborhood",
+    "shuffled"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "config": {
+    "dims": [
+      784,
+      500,
+      500,
+      2000,
+      10
+    ],
+    "clusters": 10,
+    "split_seed": 126,
+    "train_size": 12000,
+    "pretrain_epochs": 100,
+    "batch_size": 256,
+    "lr": 0.001,
+    "gamma": 0.1,
+    "target_interval": 140,
+    "updates": 5600,
+    "kmeans_restarts": 20
+  },
+  "mnist_md5": {
+    "train-images-idx3-ubyte.gz": "f68b3c2dcbeaaa9fbdd348bbdeb94873",
+    "train-labels-idx1-ubyte.gz": "d53e105ee54ea40749a09fcbcd1e9432",
+    "t10k-images-idx3-ubyte.gz": "9fb629c4189551a2d022fa330f9573f3",
+    "t10k-labels-idx1-ubyte.gz": "ec29112dd5afa0611ce80d1b7f02629c"
+  },
+  "intensity_scale": 5.1,
+  "source_sha256_lf": {
+    "clean_neighborhood_study.py": "74fed73ae2013de44425a58ba9829e84dc3199b7db83a3a435360ed86d8e73a0",
+    "neighborhood_weights.py": "fe04ae5f3896d8daaa96224b07a0e03de5dea856f0cda8abb371433143389c50",
+    "idec_final/model.py": "1a7ac08dacba913ec2056a16fdc23b605310e39fc615daa06d76a5c77a38a20b",
+    "idec_final/data.py": "390bf8bbb4d20d0124378a84facb765807e6d028892b3e5321ab3bb4dcd6bba0",
+    "idec_final/utils.py": "6a6a2430e51723864c8f1820268da80ab0bd7d84bc89a8d536d2109eb3b7777e",
+    "idec_final/experiment.py": "619effc170e96a9335ff5dec15db841bb8dfd79f78e301b9fd2b95db9e43ef0c"
+  },
+  "torch": "2.11.0+cu128",
+  "device": "cuda",
+  "hardware": "NVIDIA GeForce RTX 5080"
+}
