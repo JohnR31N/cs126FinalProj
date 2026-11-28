@@ -4,7 +4,7 @@
 
 Uniform reconstruction rewards an IDEC decoder for copying both digit strokes and unrelated marks. Our method weights reconstruction with a **circular Gaussian centered separately on each observed image**, with a fixed width of seven pixels. The center is an intensity centroid under a broad central prior. That image's cluster saliency modulates the Gaussian before we normalize its weights to mean one. We apply these weights only to student autoencoder pretraining. Ordinary IDEC fine-tuning and inference use the observed images at their original coordinates. The primary teacher and students train on clean unlabeled digits.
 
-[Research report (PDF)](IDEC/report/report.pdf) · [Presentation (PDF)](IDEC/slides/slides.pdf) · [Complete project ZIP](https://github.com/JohnR31N/cs126FinalProj/releases/download/idec-final-v2.1/IDEC_final.zip) · [Reproduction commands and sources](IDEC/final/README.md)
+[Research report (PDF)](IDEC/report/report.pdf) · [Presentation (PDF)](IDEC/slides/slides.pdf) · [Complete project ZIP](https://github.com/JohnR31N/cs126FinalProj/releases/download/idec-final-v2.2/IDEC_final.zip) · [Reproduction commands and sources](IDEC/final/README.md)
 
 ## Evidence for the drawback
 
@@ -34,12 +34,16 @@ For context, clean-trained **DEC reached 75.62% on the same marked test**, above
 
 The [shape follow-up](IDEC/gaussian_shape/README.md) adds 25 clean-trained fits and a second 10,000-digit marked holdout. Ordinary IDEC scored **64.65%**, the adaptive circle **70.65%**, and a Gaussian elongated along the observed strokes **70.98%**. The ellipse reduced cluster changes after adding symbols in all five seeds, but raised accuracy over the circle in only three. The adaptive circle remains the final method under the prespecified four-of-five rule.
 
+## Does the encoder forget the background?
+
+We changed only the brightness of two symbols on the same digit and froze each trained encoder. After marked training, a linear readout correctly identified the brighter view in **91.93%** of pairs with ordinary IDEC and **93.35%** with adaptive Gaussian × saliency. Yet brightening the symbols changed **4.16%** of ordinary cluster assignments and **3.19%** of adaptive assignments, a reduction in every seed. The background change remains readable in the code even as it affects fewer digit decisions. [Controlled image pairs, complete results and interpretation](IDEC/background_probe/README.md)
+
 ## Original paper reproduction on full MNIST
 
-Guo et al. report **88.06%** on full MNIST. Our author-checkpoint reproduction reaches **88.10%** on the same 70,000 images used for fitting. The 73.23% ordinary IDEC control above has different initialization, training size, update budget and evaluation data. The final weighting has been evaluated in the held-out experiment. [Original paper](https://www.ijcai.org/proceedings/2017/243) · [Reproduction record](IDEC/reference/result.json)
+Guo et al. report **88.06%** on full MNIST. Our author-checkpoint reproduction reaches **88.10%** on the same 70,000 images used for fitting. On these clean images, two freshly pretrained seed-0 students reached **87.68%** with ordinary IDEC and **87.36%** with the final adaptive weighting (−0.32 points). Both used 20,000 IDEC updates. The 73.23% five-seed control above starts with 12,000 fitting digits and scores unseen digits. [Full-data experiment and assignments](IDEC/full_gaussian/README.md) · [Original paper](https://www.ijcai.org/proceedings/2017/243) · [Reproduction record](IDEC/reference/result.json)
 
 ## Project files
 
 - [Run the final experiments or rebuild the tables and plots](IDEC/final/README.md)
 - [Editable report](IDEC/report/report.tex) and [editable Beamer slides](IDEC/slides/slides.tex)
-- [Earlier IDEC studies](IDEC/README.md), including reconstruction targets, training stages, whole-image translation and feature selection. The external dataset results concern earlier methods.
+- [Earlier IDEC studies and supplementary controls](IDEC/README.md). The external dataset results concern earlier methods.

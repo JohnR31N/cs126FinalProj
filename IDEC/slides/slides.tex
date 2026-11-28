@@ -23,7 +23,7 @@
 
 \begin{frame}{Why IDEC keeps a decoder}
 \key{Original research question}\par
-Guo et al.\ investigate whether preserving local structure improves joint learning of an embedding and its clusters.\par\bigskip
+Guo et al.\ investigate the effect of local structure preservation on joint learning of an embedding and its clusters.\par\bigskip
 \begin{columns}[T,onlytextwidth]
 \column{.47\textwidth}
 \key{Challenge}\par\smallskip
@@ -35,6 +35,7 @@ Keep enough information in the code to reconstruct each input. IDEC adds pixel r
 \vfill
 \key{Paper reproduction}\quad 88.06\% published $\;\cdot\;$ 88.10\% reproduced\par
 {\small All 70,000 MNIST digits used for fitting and scoring with author-pretrained weights.}
+\par\medskip{\small With fresh pretraining on the same 70,000 clean images, ordinary IDEC reached 87.68\% and our adaptive weighting reached 87.36\% (one matched seed).}
 \notefoot{\href{https://www.ijcai.org/proceedings/2017/243}{Guo et al., IJCAI 2017}\quad $\cdot$\quad \href{https://proceedings.mlr.press/v48/xieb16.html}{Xie et al., ICML 2016}}
 \end{frame}
 
@@ -78,7 +79,7 @@ Use two clues available without labels to give likely digit strokes more weight.
 \begin{columns}[T,onlytextwidth]
 \column{.48\textwidth}
 \key{Adaptive Gaussian}\par\smallskip
-Start with a broad Gaussian at image center. Use its intensity-weighted centroid to locate a new Gaussian for this image.
+Estimate a center from the observed intensities under a broad central prior. Use it to center a Gaussian on the original pixel grid.
 \column{.47\textwidth}
 \key{Cluster saliency}\par\smallskip
 A frozen autoencoder and K-means teacher identify pixels that influence the distance gap between its two closest clusters.
@@ -114,10 +115,26 @@ Normalize weights to mean one per image. Apply them in pretraining, then fine-tu
 \notefoot{Five-seed mean digit accuracy (\%). DEC reached 75.62\% on the same official marked test.}
 \end{frame}
 
-\begin{frame}{How much does moving the center add?}
+\begin{frame}{How much does an image-specific center add?}
 \centering\includegraphics[height=.52\paperheight]{../final/paired.png}\par
 \raggedright\small
-With the same saliency, moving the center adds \key{0.09 points} on average (two of five seeds improve). With the same adaptive center, aligning saliency to the image gains \key{3.12 points} over shuffling it (four of five improve).
+Estimating a separate Gaussian center adds \key{0.09 points} over using the image midpoint with the same saliency (two of five seeds improve). With the same adaptive center, aligning saliency to the image gains \key{3.12 points} over shuffling it (four of five improve).
+\end{frame}
+
+\begin{frame}{The code still distinguishes brighter symbols}
+\begin{columns}[c,onlytextwidth]
+\column{.52\textwidth}
+\includegraphics[width=\linewidth]{../background_probe/pairs.png}\par\smallskip
+{\scriptsize Same digit, same symbols and sites. Only the symbols' brightness changes.}
+\column{.45\textwidth}
+\small
+\setlength{\tabcolsep}{3.5pt}\begin{tabular}{@{}lrr@{}}\toprule & Ordinary & Adaptive\\\midrule
+Read brighter view &91.93\% &93.35\%\\
+Change cluster &4.16\% &3.19\%\\
+Digit ACC &64.12\% &70.54\%\\\bottomrule\end{tabular}
+\end{columns}\par\bigskip
+After marked training, brightness remains readable from paired codes. It changes the digit cluster less often in all five seeds. After clean training, cluster flips also fall, from 11.32\% to 7.60\%.
+\notefoot{The table uses marked training. The linear readout was fitted on 4,000 separate digits and scored on 4,000 unseen pairs. Chance is 50\%.}
 \end{frame}
 
 \begin{frame}{Does following the handwriting's shape help?}
@@ -144,7 +161,7 @@ On identical marked inputs, a decoder trained to recover only the digit yields b
 \key{Solution}\par
 Adaptive Gaussian $\times$ image-specific saliency narrows the clean-trained model's accuracy loss from \textbf{8.62 to 4.50 points} when marks appear.\par\medskip
 \key{Boundary}\par
-A fixed Gaussian with aligned saliency performs almost identically. Elongation reduces the response to added marks, but wins only three of five accuracy comparisons. We keep the image-specific center and the circular Gaussian of width seven.
-\notefoot{\href{https://github.com/JohnR31N/cs126FinalProj/tree/idec-final-v2.1}{Public code, per-image assignments, report and reproduction commands}}
+A fixed center with the same saliency comes within 0.09 points. Background brightness remains readable in the adaptive model's code even as it changes fewer cluster assignments.
+\notefoot{\href{https://github.com/JohnR31N/cs126FinalProj/tree/idec-final-v2.2}{Public code, per-image assignments, report and reproduction commands}}
 \end{frame}
 \end{document}

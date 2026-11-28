@@ -3,6 +3,8 @@
 Our final model weights IDEC pretraining by an **adaptive-center Gaussian multiplied by each image's own cluster saliency**. Clean-trained students reach 71.59% on marked test digits, compared with 64.62% for ordinary IDEC and 71.51% for a fixed Gaussian with the same saliency. The five paired seed results and the three single-component ablations are collected in the [final experiment guide](final/README.md).
 
 - [Run a fresh clean-only fit or regenerate the final tables](final/README.md)
+- [Fixed-site brightness readout on frozen adaptive and ordinary IDEC encoders](background_probe/README.md)
+- [Final Gaussian weighting on all 70,000 clean MNIST digits](full_gaussian/README.md)
 - [Gaussian shape follow-up](gaussian_shape/README.md) with a second holdout, a rotated-ellipse control, and a whole-image position test
 - [Component means](final/ablation.csv), [paired differences](final/paired.csv) and [per-seed scores](final/per_seed.csv)
 

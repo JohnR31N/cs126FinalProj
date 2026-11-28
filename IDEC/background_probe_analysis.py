@@ -1,6 +1,7 @@
 """Re-fit both brightness readouts on CPU and score the archived, frozen embeddings."""
 import argparse
 import json
+from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 
 import numpy as np
@@ -115,6 +116,18 @@ def report(results, output):
     output.mkdir(parents=True, exist_ok=True)
     for name, data in (("per_seed", rows), ("summary", means), ("paired", contrasts)):
         csv_write(output / f"{name}.csv", data)
+    table = [r"\begin{tabular}{llrrrrr}\toprule",
+             r"& & \multicolumn{2}{c}{Brightness ACC} & Code & Cluster & Digit\\",
+             r"\cmidrule(lr){3-4}Training & Student & Paired & Single & distance & flips & ACC\\\midrule"]
+    columns = ("paired_pct", "single_pct", "code_distance", "flip_pct", "marked_acc_pct")
+    for row in means:
+        training = "Marked" if row["domain"] == "varied" else "Clean"
+        student = "Ordinary" if row["arm"] == "uniform" else "Adaptive"
+        values = [str(Decimal(f"{row[k]:.10f}").quantize(Decimal(".001" if k == "code_distance" else ".01"),
+                                                         rounding=ROUND_HALF_UP)) for k in columns]
+        table.append(" & ".join([training, student, *values]) + r"\\")
+    table.append(r"\bottomrule\end{tabular}")
+    (output / "table.tex").write_text("\n".join(table) + "\n", encoding="utf-8")
     for row in means:
         print(row["domain"], row["arm"], {k: round(float(v), 4) for k, v in row.items() if k not in ("domain", "arm")})
 

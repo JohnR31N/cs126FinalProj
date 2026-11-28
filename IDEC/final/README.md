@@ -50,6 +50,8 @@ Architecture, optimizer and seeds are in [protocol.json](../protocol.json). Inpu
 
 ## Refit the controls and original baseline
 
+The [fixed-site brightness experiment](../background_probe/README.md) refits the final encoder and ordinary IDEC in both training domains and provides 20 sets of raw embeddings for CPU readout analysis. The [full clean MNIST comparison](../full_gaussian/README.md) evaluates both students after matched fresh pretraining on all 70,000 digits. Both guides include training and rescoring commands.
+
 The [Gaussian shape follow-up](../gaussian_shape/README.md) adds a covariance-based ellipse, a perpendicular-ellipse control, five-seed refits of the circular controls and the ordinary baseline, plus a second held-out set. Run the candidate from raw MNIST with `python fit_final.py --shape ellipse --seed 0 --output scratch/ellipse_fit`. The archived ablation above uses the adaptive circle.
 
 | Experiment | Command from IDEC |
