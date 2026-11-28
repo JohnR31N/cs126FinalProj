@@ -2,17 +2,17 @@
 \usepackage[margin=.84in,top=.78in,bottom=.79in]{geometry}
 \usepackage{amsmath,amssymb,booktabs,graphicx,xcolor,hyperref,fancyhdr}
 \definecolor{ink}{HTML}{19344C}\definecolor{blue}{HTML}{255795}
-\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue,pdftitle={Selective Reconstruction in IDEC},pdfauthor={John Zhang and Ryan Jian}}
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue,pdftitle={Adaptive Gaussian Reconstruction for IDEC},pdfauthor={John Zhang and Ryan Jian}}
 \pagestyle{fancy}\fancyhf{}\lhead{\small\sffamily COSI 126A \quad Unsupervised Learning and Data Mining}
 \rhead{\small\sffamily Zhang and Jian}\cfoot{\small\thepage}
 \setlength{\headheight}{14pt}\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
 \newcommand{\sect}[1]{\vspace{3pt}{\sffamily\large\bfseries\color{ink}#1}\par}
 \newcommand{\capn}[1]{{\small\color{ink}#1}\par}
 \begin{document}
-{\sffamily\bfseries\color{ink}\fontsize{27}{31}\selectfont Selective reconstruction in IDEC}\par
-{\large An adaptive Gaussian and cluster saliency for digit clustering}\par
+{\sffamily\bfseries\color{ink}\fontsize{24}{28}\selectfont Adaptive Gaussian reconstruction for IDEC}\par
+{\large Weighting digit reconstruction with an image-specific center and cluster saliency}\par
 {\sffamily John Zhang and Ryan Jian}\par\medskip
-\textbf{Abstract.} Improved Deep Embedded Clustering (IDEC) uses a decoder to preserve structure while learning clusters. A decoder also earns credit for reproducing details unrelated to digit identity. We reproduce the paper's MNIST accuracy to within 0.04 percentage points, then test this drawback with two geometric marks that leave every digit stroke intact. On identical marked inputs, changing the reconstruction target to the known clean digit improves clustering by 6.04 points. We propose a label-free approximation that weights pretraining errors by an adaptive Gaussian and a teacher's cluster saliency. After clean-only training, accuracy on marked digits rises from 64.62\% with ordinary IDEC to 71.59\% with our method. A fixed Gaussian with the same saliency reaches 71.51\%. Joint weighting improves robustness here, while the extra value of moving the center remains uncertain.
+\textbf{Abstract.} Improved Deep Embedded Clustering (IDEC) uses reconstruction to preserve structure while learning clusters. The same objective rewards a decoder for copying details unrelated to digit identity. We reproduce the paper's MNIST accuracy to within 0.04 percentage points, then add two marks that leave every digit stroke intact. On identical marked inputs, changing the reconstruction target to the known clean digit improves clustering by 6.04 points. Our method centers a Gaussian on each observed training image and multiplies it by that image's cluster saliency to weight pretraining errors. After clean-only training, marked accuracy rises from 64.62\% with ordinary IDEC to 71.59\%. A fixed Gaussian with the same saliency reaches 71.51\%. On a second marked holdout, the adaptive circular Gaussian reaches 70.65\% versus 64.65\% for ordinary IDEC. Elongating the Gaussian along the strokes reduces background-induced cluster changes, with inconsistent accuracy gains.
 
 \sect{1 \quad Introduction and research question}
 Two handwritten sevens can differ in stroke width and still belong together. Adding a triangle beside one of them also changes its pixels, but tells us nothing about its digit identity. Both differences count toward a decoder's reconstruction error. \textbf{Our research question} is whether rewarding reconstruction of background features impairs digit clustering and whether emphasizing likely digit features during pretraining reduces that loss.
@@ -47,7 +47,7 @@ Using clean targets in both stages raised ACC by $6.04\pm4.37$ points (all five 
 \textbf{Philosophy and hypothesis.} Give more reconstruction weight to likely digit features and less to likely background. On centered digits, location gives one clue to relevance. Within that region, sensitivity of a teacher's cluster assignments gives a second clue. We predict that combining them during pretraining will improve performance when new background symbols appear at test time.
 
 \newpage
-\sect{4 \quad Proposed modification}
+\sect{4 \quad Adaptive Gaussian reconstruction}
 \textbf{Estimate a center from each observed image.} Let $p$ be a pixel coordinate, $c_0=(13.5,13.5)$ and $G(p;c)=\exp[-\|p-c\|^2/(2\sigma^2)]$, with $\sigma=7$ pixels on $28\times28$ images. We reuse the width from the fixed prior. The intensity centroid under this prior is
 \[
  c_x=\frac{\sum_p p\,x_p\,G(p;c_0)}{\sum_p x_p\,G(p;c_0)} .
@@ -85,21 +85,37 @@ Ordinary IDEC lost 8.62 points when marks appeared at test time, compared with 4
 \textbf{Which component helped?} Saliency alone scored 64.33\%, close to ordinary IDEC. With an adaptive Gaussian, the input's own saliency gained 3.12 points over shuffled saliency (four of five seeds), supporting a role for image alignment. Adding saliency to the adaptive Gaussian gained 1.31 points (two of five positive). Moving the center with aligned saliency gained just 0.09 points (paired SD 2.54, two of five positive). The interaction, the saliency gain with an adaptive center minus the gain with a fixed center, was $-1.28\pm3.09$ points. The results leave the additional value of adapting a saliency-weighted center unresolved.
 
 \newpage
+\sect{6.1 \quad Testing the shape of the spatial prior}
+Moving the center helped little once saliency was present. In the 12,000 clean fitting images, the estimated center moved only 0.67 pixels on average (95th percentile 1.21) relative to a Gaussian width of seven. We therefore tested whether adapting the direction and elongation of the window could preserve useful strokes while reducing the response to background marks.
+
+\textbf{One change to the prior.} Compute the spatial covariance of the same intensity masses used to estimate the center and add $I$ in squared-pixel units. For its ordered eigenvalues $\lambda_{\max}\geq\lambda_{\min}$, set $r=\min(2,(\lambda_{\max}/\lambda_{\min})^{1/4})$. Align a Gaussian with the covariance axes, using variances $49r$ and $49/r$. Its continuous area equals the circle's. A control rotates the same ellipse $90^\circ$ while keeping its center, elongation and saliency. We fixed the rule before fitting.
+
+\begin{center}\includegraphics[width=.66\linewidth]{../gaussian_shape/weights.png}\end{center}
+\capn{\textbf{Figure 4.} First two clean training images. Each white curve marks the Gaussian's half maximum. Color shows the reconstruction weight after multiplying by the same saliency map.}
+
+\textbf{Evaluation.} Refit all methods on the same 12,000 clean images with five paired seeds. Draw new marks on 10,000 other digits from the original training pool, disjoint from the fitting and official test sets. We used this marked holdout for the follow-up decision. The same models also predict the earlier official views. For a position test, shift the whole digit and its marks together by three pixels in a randomly assigned cardinal direction. Exactly 4,879 pairs fit without clipping. Compare their centered and shifted versions.
+
+\begin{center}\small\setlength{\tabcolsep}{6pt}\input{../gaussian_shape/table.tex}\end{center}
+\capn{\textbf{Table 4.} Fresh five-seed mean digit ACC (\%). Every Gaussian uses aligned saliency. The last two columns score the same 4,879 pairs with the training-derived cluster mapping fixed.}
+
+\textbf{Results.} The aligned ellipse gained $0.33\pm3.00$ points over the adaptive circle on the new marked holdout (three of five seeds) and 0.31 points on the official marked test. Against its rotated control, it gained $1.89\pm4.23$ points on the holdout (three of five). Relative to the circle, fewer assignments changed when adding symbols (10.57\% to 10.09\%) and mean decoder response to the added pixels fell from 0.00445 to 0.00377. Both reductions occurred in every seed. The ellipse missed the prespecified requirement of four positive accuracy differences, so the adaptive circle remains our final method.
+
+\newpage
 \sect{7 \quad Limitations and conclusion}
 \textbf{What receives weight?} We used the generator's clean and marked training images after fitting to audit the weights. Ordinary IDEC assigns weight 1 to every pixel. In the marked-training branch, the final method assigns a mean of 2.62 to digit ink and 0.91 to symbol pixels. The fixed Gaussian alone gives 1.78 and 0.66. Saliency can emphasize visible symbols as well as ink. The final method increases the relative emphasis on handwriting compared with uniform loss, even though the simpler Gaussian assigns a smaller absolute weight to symbols.
 
 \textbf{What does the evidence establish?} The target intervention holds the input fixed and directly tests the incentive to reproduce a known nuisance. Its improvement supports a reconstruction-related drawback. The final model's higher accuracy and lower sensitivity to test marks are consistent with that explanation. Pixel weights and accuracy leave open how much information about the symbols the encoder retains. Some of the gain can also arise from improved clean representations.
 
-\textbf{Where does the assumption break?} MNIST digits are centered and our marks occupy empty space. A central distractor can receive a high weight, while an off-center digit can lose important strokes. A teacher can also assign high saliency to a nuisance it already uses to cluster. Five seeds vary training randomness on one previously inspected test split and share a teacher within each domain. A fresh split with off-center digits and central distractors would test the spatial assumption directly.
+\textbf{Where does the assumption break?} MNIST digits usually occupy the middle of the frame. On the same 4,879 marked pairs in Table 4, moving the entire image by three pixels reduces the circular model's accuracy from 71.50\% to 23.84\%. A spatial weight applied during pretraining gives the fully connected encoder no explicit translation invariance. The response to central distractors and natural photographs remains open. Five student seeds share a teacher and split, so their spread measures training variation conditional on those choices.
 
 \textbf{Comparison with DEC and augmentation.} Clean-trained DEC reached 75.62\% on the same marked test, above the final IDEC variant's 71.59\% in every seed. DEC still uses reconstruction for initialization. Whole-image translation during pretraining reached 77.61\% for IDEC on the separate marked-fit/marked-test comparison, while also improving clean-fit/clean-test accuracy by 10.65 points. Our experiment isolates a change to the pixel objective. The final combination remains unevaluated on CIFAR-10, CUB-200 and the 70,000-image paper protocol.
 
-\textbf{Conclusion.} On identical marked inputs, digit clusters improve when the decoder has less incentive to reproduce known background features. A label-free approximation combines a spatial prior with evidence from a cluster teacher. On centered MNIST it improves the primary endpoint by 6.98 points over ordinary IDEC. A fixed Gaussian with aligned saliency captures nearly all of that gain.
+\textbf{Conclusion.} On identical marked inputs, digit clusters improve when the decoder has less incentive to reproduce known background features. An adaptive-center Gaussian, modulated by each image's cluster saliency, gains 6.98 points over ordinary IDEC on the original marked test. A fixed center captures nearly all of that gain. Adapting the shape as well reduces sensitivity to symbols, but its small accuracy gain varies across seeds. Our final method uses the image-specific center and a circular Gaussian of fixed width.
 
 \sect{8 \quad References and reproducibility}
 {\small
 [1] X. Guo, L. Gao, X. Liu and J. Yin. \emph{Improved Deep Embedded Clustering with Local Structure Preservation}. IJCAI, 2017. \href{https://www.ijcai.org/proceedings/2017/243}{Proceedings and paper.}\par
 [2] J. Xie, R. Girshick and A. Farhadi. \emph{Unsupervised Deep Embedding for Clustering Analysis}. ICML, 2016. \href{https://proceedings.mlr.press/v48/xieb16.html}{Proceedings and paper.}\par
 [3] X. Guo. \href{https://github.com/XifengGuo/IDEC/tree/4a661c211f082022249758ab3312f7db21e2aa99}{Official IDEC implementation} and \href{https://github.com/XifengGuo/data-and-models/tree/d361bfe06686c0762df58624ef95a8c0fc9162be}{pretrained MNIST weights}. Y. LeCun, C. Cortes and C. Burges. \href{https://www.tensorflow.org/datasets/catalog/mnist}{MNIST handwritten digits.}\par
-\textbf{Project materials.} Our PyTorch implementation, fitting commands, per-image assignments, five-seed contrasts and figure scripts are in the \href{https://github.com/JohnR31N/cs126FinalProj/tree/idec-final-v2.0}{versioned public repository}. An independent seed-0 refit from raw MNIST scored 72.86\% on marked digits, compared with 73.07\% in the archived seed-0 run. It is excluded from the five-seed means.}
+\textbf{Project materials.} Our PyTorch implementation, fitting commands, per-image assignments, five-seed contrasts and figure scripts are in the \href{https://github.com/JohnR31N/cs126FinalProj/tree/idec-final-v2.1}{versioned public repository}. An independent seed-0 refit from raw MNIST scored 72.86\% on marked digits, compared with 73.07\% in the archived seed-0 run. It is excluded from the five-seed means.}
 \end{document}

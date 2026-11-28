@@ -1,0 +1,10 @@
+{
+  "shift_eligible": 4879,
+  "paired_fits": 25,
+  "checks": {
+    "at_least_four_positive_primary_seeds": false,
+    "positive_mean_marked_on_both_sets": true,
+    "clean_mean_loss_at_most_one_point_on_both": true
+  },
+  "selected": "circle"
+}

@@ -10,13 +10,13 @@
 \setbeamertemplate{footline}{\hfill\textcolor{navy}{\scriptsize COSI 126A \hspace{5mm} \insertframenumber\hspace{8mm}}\vskip3mm}
 \newcommand{\key}[1]{{\color{blue}\bfseries #1}}
 \newcommand{\notefoot}[1]{\par\vfill{\scriptsize\color{navy}#1}}
-\hypersetup{pdftitle={Selective Reconstruction in IDEC},pdfauthor={John Zhang and Ryan Jian}}
+\hypersetup{pdftitle={Adaptive Gaussian Reconstruction for IDEC},pdfauthor={John Zhang and Ryan Jian}}
 \begin{document}
 \begin{frame}
 \vfill
 {\small\color{rust}Unsupervised Learning and Data Mining}\par\vspace{5mm}
-{\fontsize{30}{34}\selectfont\bfseries Selective reconstruction in IDEC}\par\vspace{3mm}
-{\Large Digit clustering with an adaptive Gaussian\\and image-specific saliency}\par\vspace{8mm}
+{\fontsize{29}{33}\selectfont\bfseries Adaptive Gaussian reconstruction for IDEC}\par\vspace{3mm}
+{\Large An image-specific center and cluster saliency for digit clustering}\par\vspace{8mm}
 {\normalsize\bfseries John Zhang and Ryan Jian}
 \vfill
 \end{frame}
@@ -72,7 +72,7 @@ Changing only the target gains \key{6.04 points}, positive in all five seeds.
 \notefoot{Values are accuracy (\%). The right panel is a separate experiment. Its clean target is available from the generator.}
 \end{frame}
 
-\begin{frame}{Which reconstruction errors should count more?}
+\begin{frame}{Our method weights reconstruction with an adaptive Gaussian}
 \key{Our philosophy}\par
 Use two clues available without labels to give likely digit strokes more weight.\par\medskip
 \begin{columns}[T,onlytextwidth]
@@ -111,7 +111,7 @@ Normalize weights to mean one per image. Apply them in pretraining, then fine-tu
 \input{../final/ablation.tex}\par\medskip
 \raggedright
 \key{Primary endpoint}\quad After clean training, the final model reaches 71.59\% on marked digits, up from 64.62\% in ordinary IDEC. Every paired seed improves.
-\notefoot{All table entries are mean digit accuracy (\%) across the same five student seeds.}
+\notefoot{Five-seed mean digit accuracy (\%). DEC reached 75.62\% on the same official marked test.}
 \end{frame}
 
 \begin{frame}{How much does moving the center add?}
@@ -120,13 +120,31 @@ Normalize weights to mean one per image. Apply them in pretraining, then fine-tu
 With the same saliency, moving the center adds \key{0.09 points} on average (two of five seeds improve). With the same adaptive center, aligning saliency to the image gains \key{3.12 points} over shuffling it (four of five improve).
 \end{frame}
 
+\begin{frame}{Does following the handwriting's shape help?}
+\begin{columns}[c,onlytextwidth]
+\column{.54\textwidth}
+\includegraphics[width=\linewidth]{../gaussian_shape/weights.png}\par
+{\scriptsize White contours show the spatial prior. Colors include the same saliency in each weighted panel.}
+\column{.42\textwidth}
+\key{New marked holdout}\par\smallskip
+10,000 digits held apart from fitting and the official test.\par\medskip
+\small
+\begin{tabular}{lr}\toprule Gaussian & ACC\\\midrule
+Adaptive circle &70.65\%\\
+Aligned ellipse &70.98\%\\
+Rotated ellipse &69.09\%\\\bottomrule\end{tabular}
+\end{columns}\par\medskip
+\small The ellipse reduced background-induced assignment changes in all five seeds. Its accuracy gain averaged \key{0.33 points} and occurred in three seeds. We retain the adaptive circle.
+\end{frame}
+
+
 \begin{frame}{What the experiment establishes}
 \key{Drawback}\par
 On identical marked inputs, a decoder trained to recover only the digit yields better clusters. The reconstruction target contributes to the performance loss.\par\medskip
 \key{Solution}\par
 Adaptive Gaussian $\times$ image-specific saliency narrows the clean-trained model's accuracy loss from \textbf{8.62 to 4.50 points} when marks appear.\par\medskip
 \key{Boundary}\par
-A fixed Gaussian with aligned saliency performs almost identically. DEC reaches 75.62\% on the same primary test. A central distractor or an off-center digit could violate the spatial assumption.
-\notefoot{\href{https://github.com/JohnR31N/cs126FinalProj/tree/idec-final-v2.0}{Public code, per-image assignments, report and reproduction commands}}
+A fixed Gaussian with aligned saliency performs almost identically. Elongation reduces the response to added marks, but wins only three of five accuracy comparisons. We keep the image-specific center and the circular Gaussian of width seven.
+\notefoot{\href{https://github.com/JohnR31N/cs126FinalProj/tree/idec-final-v2.1}{Public code, per-image assignments, report and reproduction commands}}
 \end{frame}
 \end{document}

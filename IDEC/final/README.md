@@ -50,6 +50,8 @@ Architecture, optimizer and seeds are in [protocol.json](../protocol.json). Inpu
 
 ## Refit the controls and original baseline
 
+The [Gaussian shape follow-up](../gaussian_shape/README.md) adds a covariance-based ellipse, a perpendicular-ellipse control, five-seed refits of the circular controls and the ordinary baseline, plus a second held-out set. Run the candidate from raw MNIST with `python fit_final.py --shape ellipse --seed 0 --output scratch/ellipse_fit`. The archived ablation above uses the adaptive circle.
+
 | Experiment | Command from IDEC |
 |---|---|
 | Author-checkpoint, 70,000-image reproduction | `python reproduce_paper.py --output scratch/reference` |

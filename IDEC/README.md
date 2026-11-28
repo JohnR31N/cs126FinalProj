@@ -3,6 +3,7 @@
 Our final model weights IDEC pretraining by an **adaptive-center Gaussian multiplied by each image's own cluster saliency**. Clean-trained students reach 71.59% on marked test digits, compared with 64.62% for ordinary IDEC and 71.51% for a fixed Gaussian with the same saliency. The five paired seed results and the three single-component ablations are collected in the [final experiment guide](final/README.md).
 
 - [Run a fresh clean-only fit or regenerate the final tables](final/README.md)
+- [Gaussian shape follow-up](gaussian_shape/README.md) with a second holdout, a rotated-ellipse control, and a whole-image position test
 - [Component means](final/ablation.csv), [paired differences](final/paired.csv) and [per-seed scores](final/per_seed.csv)
 
 - [Research report (PDF)](report/report.pdf) and [editable LaTeX](report/report.tex)
@@ -21,6 +22,8 @@ Our final model weights IDEC pretraining by an **adaptive-center Gaussian multip
 - [Training-stage follow-up design](stage/design.md), [the four final conditions and two initializations](stage/results/summary.csv), [within-seed effects](stage/results/paired.json)
 
 ## Earlier matched DEC and IDEC experiment
+
+The [supplementary position experiment](position_alignment/README.md) examines the location sensitivity of frozen students on displaced test images. The main Gaussian reconstruction study and its ablations are linked above.
 
 Each method trains on clean digits and on the same digits with two fixed background symbols. The 73.23% clean IDEC control uses fresh 100-epoch pretraining on 12,000 digits, 5,600 updates and scoring on 10,000 held-out digits, averaged over five seeds. The 88.10% reference starts from author weights and fits and scores all 70,000 digits, with 20,000 updates at seed 0. Both background conditions use the same five seeds and train/test indices. The drop for a seed is clean-trained/clean-tested ACC minus marked-trained/marked-tested ACC, in percentage points. Subtracting DEC's drop from IDEC's drop compares sensitivity to these backgrounds.
 
