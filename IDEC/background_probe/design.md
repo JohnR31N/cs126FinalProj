@@ -1,0 +1,18 @@
+# Can the frozen encoder distinguish a change in the background?
+
+The final method uses an image-centered circular Gaussian multiplied by aligned cluster saliency during student pretraining. We test whether it reduces the information about background brightness that a linear readout can recover from the final ten-dimensional code. The primary comparison uses marked training images, where both decoders have actually been rewarded for reproducing background symbols. We repeat the comparison after clean-only training to connect it to the main deployment experiment.
+
+## Locked comparison
+
+- Fit ordinary IDEC and the final weighted student on identical images for each training domain and each of the five original seeds (0–4). Reuse the original 12,000-image split, optimizer, 100 pretraining epochs, 5,600 ordinary IDEC updates and frozen unsupervised saliency maps. Freeze each encoder and its cluster centers before collecting readouts.
+- Use the official MNIST training pool permutation with seed 126. Positions 32,000–35,999 calibrate the probe and 36,000–39,999 test it. These 8,000 digits are separate from student and teacher fitting. Use site seed 8101 and attribute seed 8102 for the concatenated probe set.
+- For every digit render a dim and a bright copy. The two previously empty symbol sites, shape, size, angle and handwriting match pixel for pixel wherever intensity is held fixed. Both symbols use 0.6 intensity in one view and 1.0 in the other, drawn from the original 96-template generator. Each individual digit contributes both labels. Keep all image and symbol coordinates fixed.
+
+## Outcomes and controls
+
+1. **Primary outcome.** Can a linear readout identify the brighter member of a pair? Scale each coordinate by its calibration standard deviation over both views. Fit a logistic regression (`C=1`, zero intercept) to calibrated bright-minus-dim differences and their negatives with opposite labels. On unseen pairs, score the fraction with a positive signed margin, counting ties as one half. A reduction for the weighted method supports lower linear accessibility of this attribute. Report the paired change in percentage points and all five seeds, including any reversals.
+2. Fit a separate standardized logistic regression (`C=1`, intercept fitted) to one code at a time. Report balanced brightness accuracy on unseen digits. This harder task gives the readout no companion digit. A readout near chance limits what this endpoint can establish.
+3. Quantify response magnitude with the mean Euclidean distance between paired codes after whitening by the calibration clean-code covariance (ridge equal to 0.0001 times its mean eigenvalue). Score clean digit ACC, mean dim/bright digit ACC and the percentage of pairs that change cluster. Learn the cluster-to-digit mapping on student fitting labels only after training. Percentages and distances describe different properties of the same frozen encoder.
+4. Verify that total image intensity orders every pixel pair correctly. Repeating the identical dim code must score 50% on the paired readout. Use 200 deterministic within-pair test-label randomizations (seed 8103) for an additional chance control. Save split IDs, original geometry, labels, embeddings, centers and training assignments for independent CPU reanalysis. The unit of training replication is the seed, and each test digit supplies one matched pair.
+
+The result concerns the intensity of these detached marks under these readouts. General semantic feature identification, all possible nuisance information and the fraction of accuracy gains mediated by brightness are beyond this experiment.
